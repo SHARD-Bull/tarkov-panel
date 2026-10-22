@@ -296,6 +296,46 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 nav button{background:transparent;border-color:transparent;color:var(--mute)}
 nav button:hover{color:var(--txt)}
 nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;border-color:transparent;box-shadow:inset 0 -2px 0 var(--acc)}
+/* ── Items · Llaves · Hideout ── */
+.iseg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.iseg button{background:transparent;border:0;color:var(--mute);padding:6px 16px;border-radius:7px;font:inherit;font-size:14px;cursor:pointer}
+.iseg button b{font-weight:600;font-size:12px;margin-left:6px;color:var(--mute)}
+.iseg button.on{background:rgba(130,168,200,.15);color:var(--acc2);box-shadow:inset 0 -2px 0 var(--acc)}
+.ich{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:5px 12px;color:var(--mute);font:inherit;font-size:13px;cursor:pointer}
+.ich:hover{border-color:var(--acc)}.ich.on{background:rgba(130,168,200,.15);color:var(--acc2);border-color:transparent}
+.ikpis{display:flex;gap:12px;flex-wrap:wrap;margin:2px 0 12px}
+.ikpi{flex:1;min-width:160px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 14px}.ikpi small{color:var(--mute);display:block;font-size:12px}.ikpi b{font-size:20px;color:var(--acc2)}
+.ic{width:46px;height:46px;border-radius:8px;background:#0c1014;border:1px solid var(--line);display:grid;place-items:center;flex:none;overflow:hidden}
+.ic img,.ic .ph{width:100%;height:100%;object-fit:contain;background:transparent;display:grid;place-items:center}
+.ic.sm{width:28px;height:28px;border-radius:6px}.ic.big{width:64px;height:64px}
+.bd{font-size:11px;padding:1px 7px;border-radius:9px;border:1px solid var(--line);color:var(--mute);white-space:nowrap;display:inline-block}
+.bd.h{color:#9fd0b6;border-color:#3b5d4d}.bd.q{color:#9dbcd6;border-color:#3a5670}.bd.k{color:#b3a3e0;border-color:#5a4f86}.bd.r{color:#e0a0a0;border-color:#7a3f3f}.bd.w{color:#d9a46a;border-color:#7a5b35}.bd.g{color:var(--ok);border-color:#3b6b55}
+.it2{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:grid;grid-template-columns:46px minmax(0,1fr) 250px;gap:14px;align-items:start}
+.it2.dn{opacity:.5}.it2 h4{margin:0;font-size:16px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.it2 h4 .needn{margin-left:auto;font-size:13px;color:var(--mute)}.it2 h4 .needn b{font-size:20px;color:var(--acc2)}
+.it2 .pl{font-size:12.5px;color:var(--mute);margin-top:3px}
+.it2 .use{font-size:13px;color:#b8c3cf;margin-top:5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.it2 .use>b{color:var(--acc2);min-width:28px}
+.it2 .ir{text-align:right}.it2 .ir .pbar{height:5px;background:#0c1014;border-radius:3px;overflow:hidden;margin-top:8px}.it2 .ir .pbar u{display:block;height:100%;background:var(--acc)}.it2 .ir .m{font-size:12.5px;margin-top:6px}
+.tg{color:var(--acc2);border-bottom:1px dashed var(--acc);cursor:pointer}
+.dd{background:#141a20;border:1px solid var(--line);border-radius:9px;margin-top:8px;overflow:auto}.dd table{width:100%;border-collapse:collapse;font-size:13px;min-width:620px}
+.dd th{text-align:left;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.5px;padding:7px 12px;border-bottom:1px solid var(--line)}.dd td{padding:7px 12px;border-bottom:1px solid #222b34}.dd tr:last-child td{border:0}.rt{text-align:right}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.kc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer}.kc:hover{border-color:var(--acc)}.kc.own{opacity:.6}
+.kt{display:flex;gap:10px;align-items:center;margin-bottom:8px}.kc h5{margin:0;font-size:14.5px;line-height:1.2}.kc .m{font-size:12px}
+.ktags{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}.krow{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:4px 0;border-top:1px solid #222b34;margin-top:3px}
+.kback{margin-bottom:12px}.kdt{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:16px;align-items:start}
+.kbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}.kbox h6{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--mute)}
+.khead{display:flex;gap:12px;align-items:center}.kname{font-size:18px}
+.kln{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px solid #222b34;font-size:13.5px}.kln:first-of-type{border:0}
+.kw ul{margin:4px 0 8px 18px;padding:0;font-size:13.5px;color:var(--txt)}.kw li{margin:3px 0}.wg b{display:block;margin-top:6px;color:var(--acc2);font-size:13px}
+.pdot.spawn{background:#d9a46a;box-shadow:0 0 0 2px #0008}
+.kleg{display:flex;gap:16px;flex-wrap:wrap;padding:8px 4px 2px;font-size:12.5px;color:var(--mute)}.kleg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}.kleg .kdl{background:#e5271b}.kleg .kds{background:#d9a46a}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.hcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}.hcard.rdy{border-color:#3b6b55;box-shadow:inset 3px 0 0 var(--ok)}.hcard.fin{opacity:.55}
+.hcard h4{margin:0 0 6px;font-size:15px;display:flex;gap:8px;align-items:center}.hcard h4 .sp{flex:1}.hlv{font-weight:400;font-size:13px}.rd{color:var(--ok);font-size:12.5px;font-weight:600}
+.pips{display:flex;gap:4px;margin:4px 0 10px}.pips i{width:22px;height:6px;border-radius:3px;background:#0c1014;border:1px solid var(--line)}.pips i.d{background:var(--acc);border-color:var(--acc)}.pips i.n{border-color:var(--acc2)}
+.hneed{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px}.hneed .g{margin-left:auto}.hact{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.lvl2{border-top:1px solid #222b34;padding:8px 0}.lvl2.done{opacity:.5}.lvl2 .chk{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+@media (max-width:900px){.it2{grid-template-columns:46px minmax(0,1fr)}.it2 .ir{grid-column:1/-1;text-align:left}.kdt{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -332,7 +372,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
 
 /* ───────── Constantes ───────── */
 const WIKI = 'https://escapefromtarkov.fandom.com/wiki/';
-const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v9', LS_PRICES = 'tkv_prices_v2';
+const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v11', LS_PRICES = 'tkv_prices_v2';
 const DATA_MAX = 24 * 3600e3, PRICE_MAX = 3600e3;
 
 // Cada paso: ['Título', 'objetivo', 'objetivo opcional*', ...]  (el asterisco final marca un objetivo opcional)
@@ -397,7 +437,7 @@ const STORY = [
  ['Datos de Rzhevsky','Recuperar los datos del disco duro del coche de Rzhevsky','Leer la transcripción de la conversación de Rzhevsky'],
  ['Investigación del catalizador Blue Ice','Localizar y obtener los documentos sobre la investigación del catalizador de combustible Blue Ice','Encontrar la mayor información posible sobre los planes de los Unheard'],
  ['Rastrear a A.P.','Aprender más sobre las actividades de A.P.','Aprender más sobre el papel de A.P.','Buscar cualquier mención de A.P. en The Lab'],
- ['Habitación y objetos de A.P.','Localizar la habitación de A.P. en el Balneario de Salud','Averiguar qué habitación tenía asignada A.P.*','Obtener las pertenencias personales de A.P.','Obtener el dispositivo de almacenamiento de datos de A.P.'],
+ ['Habitación y objetos de A.P.','Localizar la habitación de A.P. en el Health Resort','Averiguar qué habitación tenía asignada A.P.*','Obtener las pertenencias personales de A.P.','Obtener el dispositivo de almacenamiento de datos de A.P.'],
  ['Descifrar la memoria USB','Descifrar la memoria USB de la habitación de A.P.'],
  ['Pedir ayuda a Mechanic','Pedir ayuda a Mechanic'],
  ['Entrega a Mechanic','Entregar 5.000.000 de rublos a Mechanic','Entregar la memoria USB de A.P. a Mechanic'],
@@ -541,14 +581,14 @@ const STORY = [
 ];
 /* Mapas (límites, rotación y capa tomados del mapa interactivo de tarkov.dev) */
 const MAPS = {
-  customs: { ids: ['56f40101d2720b2a4d8b45d6'], rot: 180, b: [[698, -307], [-372, 237]], svg: 'Customs', layer: 'Ground_Level', es: 'Aduanas', en: 'Customs' },
-  factory: { ids: ['55f2d3fd4bdc2d5f408b4567', '59fc81d786f774390775787e'], rot: 90, b: [[77, -64.5], [-65.5, 67.4]], svg: 'Factory', layer: 'Ground_Floor', es: 'Fábrica', en: 'Factory' },
-  woods: { ids: ['5704e3c2d2720bac5b8b4567'], rot: 180, b: [[646, -914], [-761, 442]], svg: 'Woods', layer: 'Ground_Level', es: 'Bosque', en: 'Woods' },
-  shoreline: { ids: ['5704e554d2720bac5b8b456e'], rot: 180, b: [[504, -415], [-1056, 618]], svg: 'Shoreline', layer: 'Ground_Level', es: 'Costa', en: 'Shoreline' },
-  reserve: { ids: ['5704e5fad2720bc05b8b4567'], rot: 180, b: [[289, -293], [-303, 244]], svg: 'Reserve', layer: 'Ground_Level', es: 'Reserva', en: 'Reserve' },
-  lighthouse: { ids: ['5704e4dad2720bb55b8b4567'], rot: 180, b: [[515, -998], [-545, 725]], svg: 'Lighthouse', layer: 'Ground_Level', es: 'Faro', en: 'Lighthouse' },
-  interchange: { ids: ['5714dbc024597771384a510d'], rot: 180, b: [[598, -442], [-433, 426]], svg: 'Interchange', layer: 'Ground_Level', es: 'Intercambio', en: 'Interchange' },
-  streets: { ids: ['5714dc692459777137212e12'], rot: 180, b: [[323, -295], [-280, 532]], svg: 'StreetsOfTarkov', layer: 'Ground_Level', es: 'Calles de Tarkov', en: 'Streets of Tarkov' },
+  customs: { ids: ['56f40101d2720b2a4d8b45d6'], rot: 180, b: [[698, -307], [-372, 237]], svg: 'Customs', layer: 'Ground_Level', es: 'Customs', en: 'Customs' },
+  factory: { ids: ['55f2d3fd4bdc2d5f408b4567', '59fc81d786f774390775787e'], rot: 90, b: [[77, -64.5], [-65.5, 67.4]], svg: 'Factory', layer: 'Ground_Floor', es: 'Factory', en: 'Factory' },
+  woods: { ids: ['5704e3c2d2720bac5b8b4567'], rot: 180, b: [[646, -914], [-761, 442]], svg: 'Woods', layer: 'Ground_Level', es: 'Woods', en: 'Woods' },
+  shoreline: { ids: ['5704e554d2720bac5b8b456e'], rot: 180, b: [[504, -415], [-1056, 618]], svg: 'Shoreline', layer: 'Ground_Level', es: 'Shoreline', en: 'Shoreline' },
+  reserve: { ids: ['5704e5fad2720bc05b8b4567'], rot: 180, b: [[289, -293], [-303, 244]], svg: 'Reserve', layer: 'Ground_Level', es: 'Reserve', en: 'Reserve' },
+  lighthouse: { ids: ['5704e4dad2720bb55b8b4567'], rot: 180, b: [[515, -998], [-545, 725]], svg: 'Lighthouse', layer: 'Ground_Level', es: 'Lighthouse', en: 'Lighthouse' },
+  interchange: { ids: ['5714dbc024597771384a510d'], rot: 180, b: [[598, -442], [-433, 426]], svg: 'Interchange', layer: 'Ground_Level', es: 'Interchange', en: 'Interchange' },
+  streets: { ids: ['5714dc692459777137212e12'], rot: 180, b: [[323, -295], [-280, 532]], svg: 'StreetsOfTarkov', layer: 'Ground_Level', es: 'Streets of Tarkov', en: 'Streets of Tarkov' },
   'ground-zero': { ids: ['653e6760052c01c1c805532f', '65b8d6f5cdde2479cb2a3125'], rot: 180, b: [[249, -124], [-99, 364]], svg: 'GroundZero', layer: 'Ground_Level', es: 'Ground Zero', en: 'Ground Zero' },
   'the-lab': { ids: ['5b0fc42d86f7744a585f9105'], rot: 270, b: [[-80, -477], [-287, -193]], svg: '', layer: '', es: 'The Lab', en: 'The Lab' },
   labyrinth: { ids: ['6733700029c367a3d40b02af'], rot: 180, b: [[60, -60], [-60, 60]], svg: '', layer: '', es: 'The Labyrinth', en: 'The Labyrinth' },
@@ -772,17 +812,21 @@ const tx = (es, en) => S.lang === 'en' ? en : es;
 const LOC = () => S.lang === 'en' ? 'en' : 'es';
 const fmt = n => n == null ? '—' : new Intl.NumberFormat(S.lang === 'en' ? 'en-US' : 'es-ES').format(Math.round(n)) + ' ₽';
 const trn = id => { const x = D && D.trn && D.trn[id]; return x ? (S.lang === 'en' ? x.en : x.es) : tx('Comerciante', 'Trader'); };
-const mapName = k => { const x = D && D.mapn && D.mapn[k]; const m = MAPS[k] || {}; return x ? (S.lang === 'en' ? x.en : x.es) : (S.lang === 'en' ? m.en : m.es) || k; };
+/* Los nombres de mapas, bosses y lugares se muestran siempre con su nombre original en inglés, en cualquier idioma. */
+const mapName = k => { const x = D && D.mapn && D.mapn[k]; const m = MAPS[k] || {}; return (x && (x.en || x.es)) || m.en || k; };
 const stn = id => { const x = D && D.stn && D.stn[id]; return x ? (S.lang === 'en' ? x.en : x.es) : '?'; };
 const searchLink = name => WIKI + 'Special:Search?query=' + encodeURIComponent(name);
 
 /* ───────── Estado (progreso del usuario) ───────── */
-let S = { mode:'pve', done:{}, story:{}, hideout:{}, collected:{}, hcol:{}, order:[], level:0, view:'quests',
+let S = { mode:'pve', done:{}, story:{}, hideout:{}, collected:{}, hcol:{}, icol:{}, iview:'items', isrc:'all', ihide:true, kmap:'all', kdet:null, hnext:true, hready:false, hopen:{}, order:[], level:0, view:'quests',
           lang:null, plan:{}, pmap:null, pfocus:null, planOpen:true, tfilter:'imp', extShow:true, extNames:true, hideDone:false, hideLocked:false, hideBuilt:true, q:'', trader:'prapor', obj:{}, sobj:{}, chapter:null, sel:null, zoom:1, itemFilter:'pending', hview:'summary', open:{}, custom:[], adding:false, gsel:null, gown:{} };
 function loadState(){ try { const r = localStorage.getItem(LS_STATE); if (r) S = Object.assign(S, JSON.parse(r)); } catch(e){} if (S.view === 'hideout' || S.view === 'items') S.view = 'both';
+  if (!S.icol) S.icol = {}; if (!S.hopen) S.hopen = {};
+  if (!S.mig17) { S.mig17 = 1; const o = Object.assign({}, S.hcol || {}); Object.entries(S.collected || {}).forEach(([k, v]) => { o[k] = Math.max(o[k] || 0, v); }); S.icol = Object.assign(o, S.icol); }
+  if (!['items', 'keys', 'hideout'].includes(S.iview)) S.iview = 'items';
   if (S.lang !== 'es' && S.lang !== 'en') S.lang = /^es/i.test(navigator.language || '') ? 'es' : 'en';
   if (!S.v4) { S.v4 = 1; S.trader = 'all'; S.zoom = 0.6; }
-  if (!S.seed5) { S.seed5 = 1; S.custom = S.custom || []; S.custom.push({ id: 'c_hidden_route', name: 'Hidden Route', en: 'Hidden Route', trader: 'therapist', traderName: 'Therapist', lvl: 0, map: 'Factory', req: [], obj: ['Localiza el tránsito al laboratorio (The Lab) en Factory'], objEn: ['Locate the transit to The Lab on Factory'] }); } }
+  if (!S.seed5) { S.seed5 = 1; S.custom = S.custom || []; S.custom.push({ id: 'c_hidden_route', name: 'Hidden Route', en: 'Hidden Route', trader: 'therapist', traderName: 'Therapist', lvl: 0, map: 'Factory', req: [], obj: ['Localiza el tránsito a The Lab en Factory'], objEn: ['Locate the transit to The Lab on Factory'] }); } }
 let warnedSave = false;
 function saveState(){ try { localStorage.setItem(LS_STATE, JSON.stringify(S)); } catch(e){ if(!warnedSave){ warnedSave=true; setStatus(tx('No se puede guardar el progreso en este navegador (¿modo privado?). Usa «Guardar copia».','Progress cannot be saved in this browser (private mode?). Use “Save backup”.'),'warn'); } } }
 
@@ -860,7 +904,7 @@ async function fetchStatic(){
     const base = src.normalizedName || id;
     items[key] = { id: key, rawId: id, nameEs: nm || base, nameEn: nmE || nm || base, shortEs: sh || nm || base, shortEn: shE || nmE || nm || base,
                    nn: src.normalizedName || '', bp: src.basePrice || 0, wiki: src.wikiLink || '', icon: src.iconLink || '', grid: src.gridImageLink || src.iconLink || '',
-                   special: !!special, key: !special && (src.types || []).includes('keys') };
+                   special: !!special, key: !special && (src.types || []).includes('keys'), wt: src.weight || 0, us: (src.properties && src.properties.uses) || 0 };
     return items[key];
   };
   const push = (tid, r) => { (reqs[tid] = reqs[tid] || []).push(r); };
@@ -934,16 +978,39 @@ async function fetchStatic(){
   Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
     (m.extracts || []).forEach(x => { if (!x.position || (x.faction !== 'pmc' && x.faction !== 'shared')) return; const list = ext[k] = ext[k] || []; if (list.some(e => e[6] === x.name)) return;
       list.push([mapsEs[x.name] || mapsEn[x.name] || x.name, mapsEn[x.name] || mapsEs[x.name] || x.name, r1(x.position.x), r1(x.position.z), r1(x.position.y || 0), x.faction === 'shared' ? 1 : 0, x.name, ...(() => { const ti = x.transferItem, it = ti && regItem(ti.item); return it ? [it.id, ti.count || 1] : []; })()]); }); });
-  return { ts: Date.now(), tasks, reqs, items, hideout, gun, trn: trnames, stn, mapn, ext, barters, traders, warnings, prices: buildPrices(allItems, items) };
+  const keyRaw = {}; Object.values(items).forEach(it => { if (it.key && !it.special) keyRaw[it.rawId] = it.id; });
+  const klock = {}, kloose = {}, kseen = new Set();
+  Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
+    (m.locks || []).forEach(l => { const id = keyRaw[l.key]; if (!id || !l.position) return; const sk = 'L|' + id + '|' + k + '|' + Math.round(l.position.x) + '|' + Math.round(l.position.z); if (kseen.has(sk)) return; kseen.add(sk);
+      (klock[id] = klock[id] || []).push([k, r1(l.position.x), r1(l.position.z), r1(l.position.y || 0), l.lockType === 'trunk' ? 1 : 0, l.needsPower ? 1 : 0]); });
+    (m.lootLoose || []).forEach(sp => { if (!sp.position) return; (sp.items || []).forEach(iid => { const id = keyRaw[iid]; if (!id) return; const sk = 'S|' + id + '|' + k + '|' + Math.round(sp.position.x) + '|' + Math.round(sp.position.z); if (kseen.has(sk)) return; kseen.add(sk);
+      (kloose[id] = kloose[id] || []).push([k, r1(sp.position.x), r1(sp.position.z), r1(sp.position.y || 0)]); }); }); });
+  const pl = []; Object.keys(mapsEs).forEach(k => { const es = mapsEs[k], en = mapsEn[k];
+    if (typeof es !== 'string' || typeof en !== 'string' || es === en || /^[0-9a-f]{24}/.test(k) || /_(DESC|COND)$/.test(k) || /^(QuestCondition|FAC_)/.test(k)) return;
+    if (es.length < 4 || es.length > 50 || !/^[A-ZÁÉÍÓÚÑ0-9]/.test(es)) return; pl.push([es, en]); });
+  Object.values(items).forEach(it => { if (it.key && !it.special && it.nameEs && it.nameEn && it.nameEs !== it.nameEn) pl.push([it.nameEs, it.nameEn]); });
+  return { ts: Date.now(), tasks, reqs, items, hideout, gun, trn: trnames, stn, mapn, ext, barters, traders, klock, kloose, pl, warnings, prices: buildPrices(allItems, items) };
 }
 
 /* Elige los textos según el idioma (los dos idiomas se guardan siempre). */
+/* Sustituye, dentro de los textos en español del juego, los nombres de lugares traducidos por su nombre original en inglés. */
+const PL_CUR = [['Calles de Tarkov', 'Streets of Tarkov'], ['centro comercial Klimov', 'Klimov Shopping Mall'], ['Centro Comercial ULTRA', 'ULTRA Mall'], ['centro comercial ULTRA', 'ULTRA Mall'], ['Calle Klimov', 'Klimov Street'], ['Avenida Primorsky', 'Primorsky Ave'], ['Avda. Primorsky', 'Primorsky Ave'],
+  ['Zona cero', 'Ground Zero'], ['Ojo del Mundo', 'The Eye of the World'], ['Los Inauditos', 'The Unheard'], ['Peón negro', 'Black Pawn'], ['Peón blanco', 'White Pawn'], ['Balneario', 'Health Resort'], ['Refugio', 'Hideout'], ['Dormitorios', 'Dorms'], ['dormitorios', 'Dorms'], ['aserradero', 'Sawmill'],
+  ['Aduanas', 'Customs'], ['Bosque', 'Woods'], ['Costa', 'Shoreline'], ['Reserva', 'Reserve'], ['Faro', 'Lighthouse'], ['Intercambio', 'Interchange'], ['Fábrica', 'Factory'], ['Laboratorio', 'The Lab'], ['Laberinto', 'The Labyrinth'], ['Rompehielos', 'Icebreaker']];
+let PLRE = null, PLSRC = null;
+const PL_EMPTY = { pl: [] };
+function plApply(s, d){
+  if (!s) return s; d = d || D; const src = (d && d.pl) || [];
+  if (PLSRC !== src) { PLSRC = src; PLRE = src.concat(PL_CUR).filter(p => p[0] && p[1] && p[0] !== p[1]).sort((a, b) => b[0].length - a[0].length)
+    .map(p => [new RegExp('(?<![\\p{L}\\d])' + p[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}\\d])', 'gu'), p[1]]); }
+  let r = s; PLRE.forEach(([re, en]) => { r = r.replace(re, en); }); return r;
+}
 function applyLang(d){
   const en = S.lang === 'en', pick = (a, b) => en ? (b || a) : (a || b);
   d.tasks.forEach(t => { if (t.custom) return;
-    t.name = pick(t.nameEs, t.en); t.trader.name = pick(t.trader.nameEs, t.trader.nameEn); t.map = pick(t.mapEs, t.mapEn);
-    t.obj.forEach(o => { o.x = pick(o.xEs, o.xEn); }); });
-  Object.values(d.items).forEach(i => { i.name = pick(i.nameEs, i.nameEn); i.short = pick(i.shortEs, i.shortEn); i.sq = norm([i.nameEs, i.nameEn, i.shortEs, i.shortEn].join(' ')); });
+    t.name = pick(t.nameEs, t.en); t.trader.name = pick(t.trader.nameEs, t.trader.nameEn); t.map = t.mapEn || t.mapEs;
+    t.obj.forEach(o => { o.x = en ? (o.xEn || o.xEs) : plApply(o.xEs || o.xEn, d); }); });
+  Object.values(d.items).forEach(i => { i.name = i.key ? (i.nameEn || i.nameEs) : pick(i.nameEs, i.nameEn); i.short = i.key ? (i.shortEn || i.shortEs) : pick(i.shortEs, i.shortEn); i.sq = norm([i.nameEs, i.nameEn, i.shortEs, i.shortEn].join(' ')); });
   d.hideout.forEach(s => { s.name = pick(s.nameEs, s.nameEn); s.sq = norm(s.nameEs + ' ' + s.nameEn); s.levels.forEach(l => l.skills.forEach(k => { k.name = pick(k.nameEs, k.nameEn); })); });
   Object.values(d.gun || {}).forEach(g => g.builds.forEach(b => { b.cats = (en ? b.catsEn : b.catsEs) || []; }));
   Object.values(d.traders || {}).forEach(t => { t.name = pick(t.nameEs, t.nameEn); });
@@ -985,7 +1052,7 @@ async function loadData(force){
   try {
     setStatus(tx('Descargando misiones, Hideout y precios (', 'Downloading quests, Hideout and prices (') + S.mode.toUpperCase() + tx(') desde tarkov.dev… puede tardar unos segundos', ') from tarkov.dev… this may take a few seconds'));
     const fresh = await fetchStatic(); P = fresh.prices; delete fresh.prices; D = fresh; computeOrder(D);
-    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, barters:D.barters, traders:D.traders, warnings:D.warnings })); } catch(e){}
+    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, klock:D.klock, kloose:D.kloose, pl:D.pl, barters:D.barters, traders:D.traders, warnings:D.warnings })); } catch(e){}
     try { localStorage.setItem(LS_PRICES + S.mode, JSON.stringify(P)); } catch(e){}
   } catch(e) {
     if (cached) { D = cached; computeOrder(D); setStatus(tx('No se pudo actualizar (', 'Could not update (') + e.message + tx('). Usando datos guardados de hace ', '). Using saved data from ') + Math.round((Date.now()-cached.ts)/3600e3) + tx(' h.', ' h ago.'), 'warn'); return; }
@@ -1270,41 +1337,6 @@ function chapterHtml(c){
     <ol class="steps">${steps || `<li class="msg">${tx('Has completado todos los pasos de este capítulo.', 'You have completed every step of this chapter.')}</li>`}</ol>`;
 }
 
-/* ───────── Vista: Objetos y llaves de misiones ───────── */
-function aggregateQuestItems(){
-  const agg = new Map();
-  for (const t of D.tasks) { if (S.done[t.id]) continue;
-    for (const r of D.reqs[t.id] || []) {
-      const a = agg.get(r.itemId) || { id: r.itemId, need: 0, access: false, fir: false, uses: [] };
-      if (r.type === 'access') a.access = true; else { a.need += r.count; if (r.fir) a.fir = true; }
-      a.uses.push({ t, count: r.count, access: r.type === 'access', fir: r.fir }); agg.set(r.itemId, a);
-    } }
-  return [...agg.values()].map(a => { a.need = Math.max(a.need, a.access ? 1 : 0); return a; });
-}
-let OUT = { sum: '#sumH', list: '#listH' };
-function renderItems(){
-  const q = norm(S.q); const f = S.itemFilter;
-  let rows = aggregateQuestItems().filter(a => D.items[a.id]);
-  rows.forEach(a => { a.have = S.collected[a.id] || 0; a.item = D.items[a.id]; a.done = a.have >= a.need; });
-  const pend = rows.filter(a => !a.done);
-  let est = 0, estMissing = 0;
-  pend.forEach(a => { if (a.fir) { return; } const c = cheapest(a.id); if (c == null) estMissing++; else est += c * (a.need - a.have); });
-  rows = rows.filter(a => (!q || a.item.sq.includes(q))
-    && (f === 'all' || (f === 'pending' && !a.done) || (f === 'done' && a.done) || (f === 'keys' && a.item.key) || (f === 'items' && !a.item.key)));
-  rows.sort((a, b) => a.done - b.done || b.item.key - a.item.key || a.item.name.localeCompare(b.item.name, LOC()));
-  $(OUT.sum).innerHTML = tx(`Pendientes: <b>${pend.length}</b> objetos distintos de <b>${aggregateQuestItems().length}</b> · Coste aproximado de lo que falta (lo más barato entre flea y trader, sin contar los «en incursión»): <b>${fmt(est)}</b>${estMissing ? ` <small>(${estMissing} sin precio)</small>` : ''}`,
-    `Pending: <b>${pend.length}</b> different items out of <b>${aggregateQuestItems().length}</b> · Approximate cost of what is missing (cheapest of flea and trader, not counting “found in raid” items): <b>${fmt(est)}</b>${estMissing ? ` <small>(${estMissing} without price)</small>` : ''}`);
-  $(OUT.list).innerHTML = rows.map(a => {
-    const it = a.item, left = Math.max(0, a.need - a.have);
-    const uses = `<details class="uses"><summary>${tx(`Usado en ${a.uses.length} misión${a.uses.length > 1 ? 'es' : ''}`, `Used in ${a.uses.length} quest${a.uses.length > 1 ? 's' : ''}`)}</summary><ul>${a.uses.map(u => `<li>${esc(u.t.name)} — ${u.access ? tx('necesaria para acceder (no se gasta)', 'needed for access (not consumed)') : u.count + tx(' ud.', ' pcs')}${u.fir ? tx(' · en incursión', ' · found in raid') : ''}</li>`).join('')}</ul></details>`;
-    return `<div class="item ${a.done ? 'done' : ''}">${itemImg(it)}
-      <div><div class="nm">${itemLink(it)} ${it.key ? `<span class="b key">${tx('Llave', 'Key')}</span>` : ''} ${a.fir ? `<span class="b fir">${tx('En incursión', 'Found in raid')}</span>` : ''} ${a.access && !a.uses.some(u => !u.access) ? `<span class="b">${tx('Solo acceso', 'Access only')}</span>` : ''}</div>
-        <div class="meta">${esc(it.short !== it.name ? it.short : '')}</div>
-        <div class="prices">${a.fir && !it.special ? `<span class="pr">${tx('Para entregar tiene que ser encontrado en incursión (no vale comprarlo).', 'To hand in it must be found in raid (bought items do not count).')}</span>` : ''}${priceHtml(a.id, left)}</div>${uses}</div>
-      <div class="right"><div class="need">${tx('Necesito', 'I need')} <strong>${a.need}</strong> · ${tx('faltan', 'missing')} <strong>${left}</strong></div>${counter('collected', a.id, a.need)}</div></div>`;
-  }).join('') || `<div class="msg">${tx('No hay objetos que coincidan con el filtro.', 'No items match the filter.')}</div>`;
-}
-
 /* ───────── Vista: Hideout ───────── */
 function orderedStations(){
   const ids = D.hideout.map(s => s.id);
@@ -1318,40 +1350,189 @@ function levelReqHtml(l){
   const extra = [...l.stations.map(r => `${esc(stn(r.sid))} ${lv} ${r.level}`), ...l.traders.map(r => `${esc(trn(r.tid))} ${tx('nv. de lealtad', 'loyalty level')} ${r.level}`), ...l.skills.map(r => `${esc(r.name)} ${lv} ${r.level}`)];
   return extra.length ? `<div><small>${tx('Requisitos', 'Requirements')}: ${extra.join(' · ')}</small></div>` : '';
 }
-function renderHideout(){
-  const q = norm(S.q), stations = orderedStations();
-  if (S.hview === 'summary') {
-    const m = new Map(); let rank = 0;
-    stations.forEach(s => s.levels.forEach(l => { if (S.hideout[l.id]) return;
-      l.items.forEach(r => { const a = m.get(r.itemId) || { id: r.itemId, need: 0, rank: rank++, uses: [] }; a.need += r.count; a.uses.push(`${s.name} ${l.level} (×${r.count})`); m.set(r.itemId, a); }); }));
-    let rows = [...m.values()].filter(a => D.items[a.id]);
-    rows.forEach(a => { a.item = D.items[a.id]; a.have = S.hcol[a.id] || 0; });
-    const pend = rows.filter(a => a.have < a.need); let est = 0;
-    pend.forEach(a => { const c = cheapest(a.id); if (c != null) est += c * (a.need - a.have); });
-    $(OUT.sum).innerHTML = tx(`Objetos distintos por conseguir: <b>${pend.length}</b> · Coste aproximado (flea o trader, lo más barato): <b>${fmt(est)}</b> · Ordenados por la prioridad de las estaciones (puedes cambiarla en «Por estación»).`, `Different items to get: <b>${pend.length}</b> · Approximate cost (flea or trader, whichever is cheaper): <b>${fmt(est)}</b> · Sorted by station priority (you can change it in “By station”).`);
-    rows = rows.filter(a => !q || a.item.sq.includes(q)).sort((a, b) => (a.have >= a.need) - (b.have >= b.need) || a.rank - b.rank);
-    $(OUT.list).innerHTML = rows.map((a, i) => { const left = Math.max(0, a.need - a.have);
-      return `<div class="item ${a.have >= a.need ? 'done' : ''}">${itemImg(a.item)}
-        <div><div class="nm">${itemLink(a.item)} ${a.item.key ? `<span class="b key">${tx('Llave', 'Key')}</span>` : ''}</div>
-          <div class="meta">${tx('Lo pide', 'Required by')}: ${esc(a.uses.slice(0, 4).join(' · '))}${a.uses.length > 4 ? ' …' : ''}</div><div class="prices">${priceHtml(a.id, left)}</div></div>
-        <div class="right"><div class="need">${tx('Necesito', 'I need')} <strong>${a.need}</strong> · ${tx('faltan', 'missing')} <strong>${left}</strong></div>${counter('hcol', a.id, a.need)}</div></div>`; }).join('') || `<div class="msg">${tx('No hay objetos pendientes.', 'No pending items.')}</div>`;
-    return;
-  }
-  let html = ''; let totalL = 0, doneL = 0;
-  stations.forEach((s, i) => {
-    const lv = s.levels.filter(l => l.items.length || l.stations.length || l.traders.length || l.skills.length || true);
-    totalL += lv.length; doneL += lv.filter(l => S.hideout[l.id]).length;
-    const shown = lv.filter(l => !(S.hideBuilt && S.hideout[l.id]) && (!q || s.sq.includes(q) || l.items.some(r => D.items[r.itemId] && D.items[r.itemId].sq.includes(q))));
-    if (!shown.length) return;
-    const wiki = WIKI + encodeURIComponent((s.en || s.name).replace(/ /g, '_'));
-    html += `<div class="station"><h3><span>${i + 1}.</span> <a href="${wiki}" target="_blank" rel="noopener">${esc(s.name)}</a> <span class="cnt">${lv.filter(l => S.hideout[l.id]).length}/${lv.length}</span><span class="sp"></span>
-      <button class="btn" data-act="up" data-id="${esc(s.id)}" title="${tx('Subir prioridad', 'Raise priority')}">▲</button><button class="btn" data-act="down" data-id="${esc(s.id)}" title="${tx('Bajar prioridad', 'Lower priority')}">▼</button></h3>` +
-      shown.map(l => `<div class="lvl ${S.hideout[l.id] ? 'done' : ''}"><label class="chk"><input type="checkbox" data-act="hlvl" data-id="${esc(l.id)}" ${S.hideout[l.id] ? 'checked' : ''}><span class="name">${tx('Nivel', 'Level')} ${l.level}</span></label>
-        <div class="reqs">${l.items.map(r => { const it = D.items[r.itemId]; return it ? `<div>${r.count}× ${itemLink(it)} ${it.key ? `<span class="b key">${tx('Llave', 'Key')}</span>` : ''} ${r.fir ? `<span class="b fir">${tx('En incursión', 'Found in raid')}</span>` : ''}<div class="prices">${priceHtml(it.id, r.count)}</div></div>` : ''; }).join('') || `<div><small>${tx('Sin objetos', 'No items')}</small></div>`}${levelReqHtml(l)}</div></div>`).join('') + '</div>';
-  });
-  $(OUT.sum).textContent = tx(`Niveles construidos: ${doneL} de ${totalL}`, `Levels built: ${doneL} of ${totalL}`);
-  $(OUT.list).innerHTML = html || `<div class="msg">${tx('No hay nada que mostrar con este filtro.', 'Nothing to show with this filter.')}</div>`;
+/* ───────── Items, llaves y Hideout ───────── */
+const QO = {};          // desplegables de misiones abiertos (no se guardan)
+let KMAP = null;        // mapa que se ve en la ficha de la llave
+const WK = {};          // textos de la wiki ya descargados
+function consumeLevel(l){ l.items.forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special) return; S.icol[it.id] = Math.max(0, (S.icol[it.id] || 0) - r.count); }); }
+function consumeQuest(id){ (D.reqs[id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special || r.type === 'access') return; S.icol[it.id] = Math.max(0, (S.icol[it.id] || 0) - r.count); }); }
+function setDone(id, on){ if (on && !S.done[id]) { S.done[id] = true; consumeQuest(id); } else if (!on) delete S.done[id]; }
+/* Lo que falta por conseguir: solo cuentan los niveles de Hideout sin construir y las misiones sin completar. */
+function itemNeeds(){
+  const m = new Map();
+  const ent = id => { let a = m.get(id); if (!a) { a = { id, item: D.items[id], hide: [], q: [], need: 0, fir: 0, nq: 0 }; m.set(id, a); } return a; };
+  orderedStations().forEach(s => s.levels.forEach(l => { if (S.hideout[l.id]) return;
+    l.items.forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special) return; const a = ent(r.itemId); a.hide.push({ s, l, n: r.count, fir: r.fir }); a.need += r.count; if (r.fir) a.fir += r.count; }); }));
+  D.tasks.forEach(t => { if (S.done[t.id]) return;
+    (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special || r.type === 'access') return; const a = ent(r.itemId); a.q.push({ t, n: r.count, fir: r.fir, type: r.type }); a.need += r.count; a.nq += r.count; if (r.fir) a.fir += r.count; }); });
+  const out = [...m.values()];
+  out.forEach(a => { a.have = S.icol[a.id] || 0; a.left = Math.max(0, a.need - a.have); a.done = a.have >= a.need; });
+  return out;
 }
+function priceLine(id, left, firN){
+  if (!P) return `<span class="m">${tx('Precios cargando…', 'Loading prices…')}</span>`;
+  const p = P.byId[id]; if (!p) return `<span class="m">${tx('Sin datos de precio', 'No price data')}</span>`;
+  const fl = p.flea != null ? p.flea : p.avg, bu = p.buy ? p.buy.p : null;
+  const cf = fl != null && (bu == null || fl < bu), cb = bu != null && (fl == null || bu <= fl);
+  const who = p.buy ? trn(p.buy.t) + (p.buy.l > 1 ? tx(' nv.', ' LL') + p.buy.l : '') : '';
+  let s = `Flea <b class="pr ${cf ? 'cheap' : ''}">${fmt(fl)}</b>${p.flea == null && p.avg != null ? ' <small>' + tx('(media 24h)', '(24h avg)') + '</small>' : ''} · Trader ${bu != null ? `<b class="pr ${cb ? 'cheap' : ''}">${fmt(bu)}</b> <small>(${esc(who)})</small>` : `<span class="m">${tx('no se vende', 'not sold')}</span>`}`;
+  const c = cheapest(id), n = Math.max(0, left - (firN || 0));
+  if (c != null && n > 0) s += ` · ${tx('Faltan', 'Missing')} ≈ <b class="pr">${fmt(c * n)}</b>`;
+  return s;
+}
+function questRows(a){
+  return [...a.q].sort((x, y) => x.t.lvl - y.t.lvl).map(u => { const t = u.t;
+    const prev = (t.req || []).map(i => D.byId[i]).filter(Boolean), miss = prev.filter(p => !S.done[p.id]);
+    const unlock = `${tx('Nivel', 'Level')} ${t.lvl}${prev.length ? ' · ' + tx('requiere', 'requires') + ' ' + prev.slice(0, 2).map(p => esc(p.name)).join(', ') + (prev.length > 2 ? '…' : '') : ''}`;
+    const cond = (u.fir ? `<span class="bd r">🎯 ${tx('En incursión', 'Found in raid')}</span>` : `<span class="bd g">${tx('Vale comprado', 'Bought is fine')}</span>`)
+      + (miss.length ? ` <span class="bd w">${tx('Bloqueada', 'Locked')}</span> <span class="m">${tx(`faltan ${miss.length} previas`, `${miss.length} previous missing`)}</span>` : (S.level && t.lvl > S.level ? ` <span class="bd w">${tx('Nivel', 'Level')} ${t.lvl}</span>` : ''));
+    return `<tr><td><b>${esc(t.name)}</b></td><td>${esc(t.trader.name)}</td><td>${unlock}</td><td>${esc(t.map || '—')}</td><td class="rt pr">×${u.n}</td><td>${cond}</td></tr>`; }).join('');
+}
+function itemRowHtml(a){
+  const it = a.item, pct = Math.min(100, Math.round(a.have * 100 / a.need));
+  const hq = a.hide.reduce((s, x) => s + x.n, 0);
+  const hl = a.hide.length ? `<div class="use"><b>×${hq}</b><span class="bd h">Hideout</span><span>${a.hide.map(x => `${esc(x.s.name)} ${tx('nv.', 'lvl')} ${x.l.level} (×${x.n})${x.fir ? ` <span class="bd r">🎯 ${tx('en incursión', 'found in raid')}</span>` : ''}`).join(' · ')}</span></div>` : '';
+  const qf = a.q.reduce((s, x) => s + (x.fir ? x.n : 0), 0);
+  const ql = a.q.length ? `<div class="use"><b>×${a.nq}</b><span class="bd q">${tx('Misiones', 'Quests')}</span><span class="tg" data-act="qdd" data-id="${esc(a.id)}">${a.q.length} ${tx(a.q.length > 1 ? 'misiones' : 'misión', a.q.length > 1 ? 'quests' : 'quest')} ${QO[a.id] ? '▴' : '▾'}</span>${qf ? `<span class="bd r">🎯 ${qf === a.nq ? tx('en incursión', 'found in raid') : '×' + qf + ' ' + tx('en incursión', 'found in raid')}</span>` : ''}</div>`
+    + (QO[a.id] ? `<div class="dd"><table><tr><th>${tx('Misión', 'Quest')}</th><th>${tx('Comerciante', 'Trader')}</th><th>${tx('Se desbloquea', 'Unlocks')}</th><th>${tx('Mapa', 'Map')}</th><th class="rt">${tx('Cantidad', 'Amount')}</th><th>${tx('Condición', 'Condition')}</th></tr>${questRows(a)}</table></div>` : '') : '';
+  return `<div class="it2 ${a.done ? 'dn' : ''}"><div class="ic">${itemImg(it)}</div><div class="ib"><h4>${itemLink(it)} ${it.short && it.short !== it.name ? `<small class="m">${esc(it.short)}</small>` : ''}<span class="needn">${tx('Necesito', 'I need')} <b>${a.need}</b></span></h4>
+    <div class="pl">${priceLine(a.id, a.left, a.fir)}</div>${hl}${ql}</div>
+    <div class="ir">${counter('icol', a.id, a.need)}<div class="pbar"><u style="width:${pct}%"></u></div><div class="m">${tx('Faltan', 'Missing')} <b>${a.left}</b></div></div></div>`;
+}
+const kpiHtml = list => `<div class="ikpis">${list.map(k => `<div class="ikpi"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('')}</div>`;
+function renderItemsList(){
+  const q = norm(S.q), all = itemNeeds(), pend = all.filter(a => !a.done);
+  let est = 0; pend.forEach(a => { const c = cheapest(a.id); if (c != null) est += c * Math.max(0, a.left - a.fir); });
+  $('#sum').innerHTML = kpiHtml([[tx('Items por conseguir', 'Items to get'), pend.length], [tx('Coste aprox. de lo que falta (lo más barato)', 'Approx. cost of what is missing (cheapest)'), fmt(est)], [tx('Con entrega en incursión', 'Needing found in raid'), pend.filter(a => a.fir > 0).length], [tx('Ya conseguidos', 'Already collected'), all.length - pend.length]]);
+  const rows = all.filter(a => (!q || a.item.sq.includes(q)) && (!S.ihide || !a.done) && (S.isrc === 'all' || (S.isrc === 'h' && a.hide.length) || (S.isrc === 'q' && a.q.length) || (S.isrc === 'fir' && a.fir > 0)))
+    .sort((a, b) => a.done - b.done || a.item.name.localeCompare(b.item.name, LOC()));
+  const note = `<p class="note">${tx('Solo cuentan los niveles de Hideout sin construir y las misiones sin completar. Al marcar un nivel como construido o una misión como completada, los items que pedían dejan de contarse (y se restan de lo que tenías anotado). Los objetos que solo existen para una misión (documentos, paquetes…) no salen aquí: están dentro de cada misión. «Mejor precio de trader» no comprueba si ya tienes el nivel de lealtad.', 'Only unbuilt Hideout levels and uncompleted quests count. When you mark a level as built or a quest as completed, the items they asked for stop counting (and are subtracted from what you had noted). Items that only exist for one quest (documents, packages…) are not listed here: they are inside each quest. “Best trader price” does not check your loyalty level.')}</p>`;
+  $('#list').innerHTML = (rows.length ? rows.map(itemRowHtml).join('') : `<div class="msg">${tx('No hay items que coincidan.', 'No items match.')}</div>`) + note;
+}
+/* ── Llaves ── */
+function keyList(){
+  const m = new Map();
+  D.tasks.forEach(t => { if (S.done[t.id]) return; (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || !it.key) return; let a = m.get(it.id); if (!a) { a = { id: it.id, it, q: [] }; m.set(it.id, a); } if (!a.q.includes(t)) a.q.push(t); }); });
+  return [...m.values()].map(a => { a.maps = [...new Set(((D.klock && D.klock[a.id]) || []).map(x => x[0]))]; a.own = (S.icol[a.id] || 0) >= 1; return a; });
+}
+function keyWhere(id){
+  if (!P) return { t: tx('Precios cargando…', 'Loading prices…'), buy: null, raid: false };
+  const p = P.byId[id] || {}, fl = p.flea != null ? p.flea : null, bu = p.buy ? p.buy.p : null;
+  if (bu != null && (fl == null || bu <= fl)) return { t: `${esc(trn(p.buy.t))}${p.buy.l > 1 ? tx(' nv.', ' LL') + p.buy.l : ''} · ${fmt(bu)}`, buy: bu };
+  if (fl != null) return { t: `Flea · ${fmt(fl)}`, buy: fl };
+  return { t: tx('Solo en incursión', 'Raid only'), buy: null, raid: true };
+}
+function renderKeys(){
+  const q = norm(S.q);
+  if (S.kdet && D.items[S.kdet]) { $('#sum').innerHTML = ''; $('#list').innerHTML = keyDetailHtml(S.kdet); drawPlanMap(); loadKeyWiki(S.kdet); return; }
+  S.kdet = null;
+  const all = keyList(), mapsAll = [...new Set(all.flatMap(a => a.maps))];
+  if (S.kmap !== 'all' && !mapsAll.includes(S.kmap)) S.kmap = 'all';
+  const w = all.map(a => ({ a, w: keyWhere(a.id) }));
+  $('#sum').innerHTML = kpiHtml([[tx('Llaves que piden tus misiones', 'Keys your quests ask for'), all.length], [tx('Ya las tienes', 'You have them'), all.filter(a => a.own).length], [tx('Solo en incursión', 'Raid only'), w.filter(x => x.w.raid).length], [tx('Se pueden comprar', 'Can be bought'), w.filter(x => x.w.buy != null).length]]);
+  const rows = w.filter(x => (!q || x.a.it.sq.includes(q)) && (!S.ihide || !x.a.own) && (S.kmap === 'all' || x.a.maps.includes(S.kmap)))
+    .sort((x, y) => x.a.own - y.a.own || (x.a.maps[0] ? mapName(x.a.maps[0]) : 'zz').localeCompare(y.a.maps[0] ? mapName(y.a.maps[0]) : 'zz', LOC()) || x.a.it.name.localeCompare(y.a.it.name, LOC()));
+  $('#list').innerHTML = rows.length ? `<div class="kgrid">` + rows.map(({ a, w }) => `<div class="kc ${a.own ? 'own' : ''}" data-act="kopen" data-id="${esc(a.id)}"><div class="kt"><div class="ic">${itemImg(a.it)}</div><div><h5>${esc(a.it.name)}</h5><div class="m">${a.maps.length ? esc(a.maps.map(mapName).join(', ')) : tx('Mapa sin datos', 'No map data')}</div></div></div>
+    <div class="ktags"><span class="bd k">${tx('Llave', 'Key')}</span><span class="bd q">${a.q.length} ${tx(a.q.length > 1 ? 'misiones' : 'misión', a.q.length > 1 ? 'quests' : 'quest')}</span>${a.own ? `<span class="bd g">${tx('La tienes', 'Owned')}</span>` : ''}</div>
+    <div class="krow"><span class="m">${tx('Conseguirla', 'Get it')}</span><span class="${w.raid ? 'm' : 'pr'}">${w.t}</span></div><div class="krow"><span class="m">${tx('Usos', 'Uses')}</span><span>${a.it.us ? a.it.us : '—'}</span></div>
+    <div class="krow"><button class="btn sm" data-act="kown" data-id="${esc(a.id)}">${a.own ? tx('✓ La tengo', '✓ I have it') : tx('Marcar que la tengo', 'Mark as owned')}</button></div></div>`).join('') + `</div>` : `<div class="msg">${tx('No hay llaves que coincidan.', 'No keys match.')}</div>`;
+}
+function keyMapHtml(id){
+  const locks = (D.klock && D.klock[id]) || [], loose = (D.kloose && D.kloose[id]) || [];
+  const ks = [...new Set(locks.map(x => x[0]).concat(loose.map(x => x[0])))];
+  if (!ks.length) return `<div class="kbox"><p class="m">${tx('tarkov.dev no tiene la posición de esta puerta ni puntos de botín para esta llave (puede ser una llave de una zona nueva).', 'tarkov.dev has no position for this door nor loot points for this key (it may belong to a new area).')}</p></div>`;
+  if (!ks.includes(KMAP)) KMAP = ks[0];
+  const k = KMAP, g = mapGeo(k), pos = (x, z) => { const [u, v] = g.uv(x, z); return `left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%`; };
+  const nl = locks.filter(x => x[0] === k).length, ns = loose.filter(x => x[0] === k).length;
+  const dots = loose.filter(x => x[0] === k).map(x => `<i class="pdot loc spawn" style="${pos(x[1], x[2])}" data-act="ppt" data-txt="${esc(tx('Punto de botín suelto donde puede aparecer esta llave', 'Loose-loot point where this key can spawn'))}"></i>`).join('')
+    + locks.filter(x => x[0] === k).map(x => `<i class="pdot" style="${pos(x[1], x[2])}" data-act="ppt" data-txt="${esc((x[4] ? tx('Maletero que abre', 'Trunk it opens') : tx('Puerta que abre', 'Door it opens')) + (x[5] ? tx(' (necesita electricidad)', ' (needs power)') : ''))}"></i>`).join('');
+  return `${ks.length > 1 ? `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="kmap2" data-id="${x}">${esc(mapName(x))}</button>`).join('')}</div>` : ''}
+    <div class="pmapbox"><div id="pmap" data-map="${k}"><div id="pin"><img id="pimg" alt="" src="${svgCache[k] || ''}">${dots}</div></div>
+    <div class="pzoom"><button data-act="pzoom" data-d="in">+</button><button data-act="pzoom" data-d="out">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button></div></div>
+    <div class="kleg"><span><i class="kdl"></i>${tx('Puerta que abre', 'Door it opens')} (${nl})</span><span><i class="kds"></i>${tx('Puntos de botín donde puede aparecer', 'Loot points where it can spawn')} (${ns})</span><span class="m">${tx('Rueda = zoom · arrastra para moverte · pulsa un punto', 'Wheel = zoom · drag to move · click a dot')}</span></div>
+    <div id="plabel"></div><div class="pnote" id="pnote"></div>`;
+}
+function keyDetailHtml(id){
+  const it = D.items[id], p = (P && P.byId[id]) || {}, w = keyWhere(id), own = (S.icol[id] || 0) >= 1;
+  const tasks = D.tasks.filter(t => (D.reqs[t.id] || []).some(r => r.itemId === id)).sort((a, b) => a.lvl - b.lvl);
+  const nLocks = ((D.klock && D.klock[id]) || []).length;
+  const buyLn = p.buy ? `<div class="kln"><span>${tx('Comprar a trader', 'Buy from trader')}</span><span class="pr">${esc(trn(p.buy.t))}${p.buy.l > 1 ? tx(' nv.', ' LL') + p.buy.l : ''} · ${fmt(p.buy.p)}</span></div>` : `<div class="kln"><span>${tx('Comprar a trader', 'Buy from trader')}</span><span class="m">${tx('No se vende', 'Not sold')}</span></div>`;
+  const flLn = `<div class="kln"><span>Flea</span><span class="${p.flea != null ? 'pr' : 'm'}">${p.flea != null ? fmt(p.flea) : tx('No disponible', 'Not available')}</span></div>`;
+  return `<button class="btn kback" data-act="kback">${tx('← Volver a las llaves', '← Back to keys')}</button>
+  <div class="kdt"><div class="kcol">
+    <div class="kbox"><div class="khead"><div class="ic big">${itemImg(it)}</div><div><b class="kname">${esc(it.name)}</b>${S.lang === 'es' && it.nameEs && it.nameEs !== it.name ? `<div class="m" style="font-size:12.5px">${esc(plApply(it.nameEs, PL_EMPTY))}</div>` : ''}<div class="ktags" style="margin-top:6px"><span class="bd k">${tx('Llave', 'Key')}</span>${it.us ? `<span class="bd w">${it.us} ${tx('usos', 'uses')}</span>` : ''}${((D.klock && D.klock[id]) || []).length ? [...new Set(D.klock[id].map(x => x[0]))].map(m => `<span class="bd q">${esc(mapName(m))}</span>`).join('') : ''}</div></div></div>
+      <div class="ikpis" style="margin:12px 0 10px">${[[tx('Valor de venta', 'Sell value'), p.sell ? fmt(p.sell.p) : fmt(it.bp)], [tx('Peso', 'Weight'), (it.wt || 0).toLocaleString(S.lang === 'en' ? 'en-US' : 'es-ES') + ' kg'], [tx('Estado', 'Status'), own ? `<span style="color:var(--ok);font-size:16px">${tx('La tienes', 'Owned')}</span>` : `<span style="color:var(--warn);font-size:16px">${tx('No la tienes', 'Not owned')}</span>`]].map(k => `<div class="ikpi"><small>${k[0]}</small><b style="font-size:16px">${k[1]}</b></div>`).join('')}</div>
+      <button class="btn" data-act="kown" data-id="${esc(id)}">${own ? tx('✓ La tengo (quitar)', '✓ I have it (remove)') : tx('Marcar que la tengo', 'Mark as owned')}</button> ${it.wiki ? `<a class="btn" href="${esc(it.wiki)}" target="_blank" rel="noopener">${tx('Wiki ↗', 'Wiki ↗')}</a>` : ''}</div>
+    <div class="kbox"><h6>${tx('Qué abre', 'What it opens')}</h6><div class="kln"><span>${tx('Cerraduras en tarkov.dev', 'Locks on tarkov.dev')}</span><span>${nLocks}</span></div><div id="kwLock" class="kw m">${tx('Cargando información de la wiki…', 'Loading wiki information…')}</div></div>
+    <div class="kbox"><h6>${tx('Misiones que la piden', 'Quests that ask for it')}</h6>${tasks.map(t => `<div class="kln"><span><b>${esc(t.name)}</b> <span class="m">· ${esc(t.trader.name)}</span> ${S.done[t.id] ? `<span class="bd g">${tx('hecha', 'done')}</span>` : ''}</span><span class="m">${tx('nv.', 'lvl')} ${t.lvl}</span></div>`).join('') || `<span class="m">—</span>`}</div>
+    <div class="kbox"><h6>${tx('Dónde conseguirla', 'Where to get it')}</h6>${buyLn}${flLn}<div class="kln"><span class="${w.raid ? 'pr' : ''}">${tx('Encontrarla en incursión', 'Find it in a raid')}</span><span class="m">${w.raid ? tx('Única opción', 'Only option') : tx('También posible', 'Also possible')}</span></div></div>
+  </div><div class="kcol">
+    <div class="kbox" style="padding:10px">${keyMapHtml(id)}</div>
+    <div class="kbox"><h6>${tx('Dónde suele aparecer', 'Where it usually spawns')} <small class="m" style="text-transform:none;letter-spacing:0">${(S.lang === 'es' && KEYWIKI_ES[keyPage(it)]) ? tx('(traducido de la wiki)', '') : tx('(texto de la wiki, en inglés)', '(wiki text)')}</small></h6><div id="kwLoc" class="kw m">${tx('Cargando información de la wiki…', 'Loading wiki information…')}</div>
+      <p class="m" style="font-size:12px;margin:10px 0 0">${tx('Los puntos naranjas del mapa son los sitios de botín suelto donde tarkov.dev dice que esta llave puede aparecer; los cajones, cajas y chaquetas no tienen datos exactos.', 'The orange dots on the map are loose-loot points where tarkov.dev says this key can spawn; drawers, boxes and jackets have no exact data.')}</p></div>
+  </div></div>`;
+}
+/* ── Texto de la wiki (se descarga al abrir una llave y se guarda en el navegador) ── */
+function wikiClean(s){ return s.replace(/<li[^>]*>\s*<gallery[\s\S]*?<\/gallery>\s*<\/li>/gi, '').replace(/<gallery[\s\S]*?<\/gallery>/gi, '').replace(/\{\{[^{}]*\}\}/g, '').replace(/\[\[(?:File|Image):[^\]]*\]\]/gi, '').replace(/\[\[[^\]|]*\|([^\]]*)\]\]/g, '$1').replace(/\[\[([^\]]*)\]\]/g, '$1').replace(/'{2,3}/g, '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim(); }
+function wikiSec(w, names){ const m = new RegExp('^==\\s*(?:' + names + ')\\s*==[ \\t]*\\n([\\s\\S]*?)(?=^==[^=]|(?![\\s\\S]))', 'mi').exec(w); return m ? m[1] : ''; }
+function parseKeyWiki(w){
+  const use = /\|\s*usage\s*=\s*([^\n]*)/i.exec(w);
+  const generic = /^(in |inside )?(the )?(jackets?|drawers?|pockets|scavs?|raiders?|bosses|cultists?)\b/i;
+  const loc = []; let cur = { h: '', l: [] };
+  wikiClean(wikiSec(w, 'Key Locations?|Location|Spawn locations?|Spawn')).split('\n').forEach(line => { const h = /^===\s*(.*?)\s*===$/.exec(line.trim());
+    if (h) { if (cur.l.length) loc.push(cur); cur = { h: wikiClean(h[1]), l: [] }; return; }
+    const b = /^\*+\s*(.+)$/.exec(line.trim()); if (b && !generic.test(b[1].trim()) && b[1].trim().length > 3) cur.l.push(b[1].trim()); });
+  if (cur.l.length) loc.push(cur);
+  const bullets = t => wikiClean(t).split('\n').map(x => /^\*+\s*(.+)$/.exec(x.trim())).filter(Boolean).map(x => x[1]);
+  return { usage: use ? wikiClean(use[1]) : '', loc: loc.slice(0, 6).map(g => ({ h: g.h, l: g.l.slice(0, 8) })), lock: wikiClean(wikiSec(w, 'Lock Locations?')).split('\n').find(x => x.trim()) || '', behind: bullets(wikiSec(w, 'Behind the Lock|Behind the lock')).slice(0, 8) };
+}
+const KEYWIKI_ES = {"Dorm_overseer_key":{"usage":"Puerta de la habitación entre la 209 y la 211, en la segunda planta de los Dorms de tres plantas de Customs.","loc":[],"lock":"","behind":["Botín suelto (monedas GP, objetos de valor, provisiones, mods de armas)","1x cadáver de PMC","Posible carabina Lone Star TX-15 DML 5.56x45 (variante D-WARRIOR)","Posible subfusil FN P90 5.7x28 (variante DEVGRU)","Posible subfusil modificado TDI KRISS Vector Gen.2 9x19","Posible fusil modificado FN SCAR-H 7.62x51","Posible fusil modificado Desert Tech MDR 5.56x45","Posible fusil modificado Kalashnikov AKMN 7.62x39"]},"Military_checkpoint_key":{"usage":"Puerta de la torre del military checkpoint de Customs.","loc":[{"h":"Customs","l":["Junto al Scav muerto, en el sofá del Warehouse #7.","Sobre una bolsa de basura en la caseta azul de guardia, al sur del Warehouse rojo de Paradigm.","En el suelo junto a la escalera de la obra (construction site), al sur del Warehouse #17.","En la tienda de campaña ensangrentada del campamento, al este de los Dorms de tres plantas."]}],"lock":"","behind":["2x caja de granadas","2x caja de munición de madera","1x taquilla de armas"]},"TerraGroup_storage_room_keycard":{"usage":"Puerta del TerraGroup storage room de Factory, junto a la extracción de Scav \"Camera Bunker Door\" en el subterráneo.","loc":[{"h":"","l":["En Cultists"]}],"lock":"","behind":["2x caja fuerte TerraGroup","1x chaqueta","1x caja de herramientas","1x Medbag","1x taquilla de armas","Posible LEDX Skin Transilluminator en la esquina superior de la estantería izquierda","Posible spawn de Physical Bitcoin"]},"ZB-014_key":{"usage":"Dentro del búnker ZB-014, en el oeste de Woods.","loc":[],"lock":"","behind":["1x caja de armas (6x6)","Botín suelto (medicinas, materiales de construcción)","Varios cargadores de AK-74 5.45x39 6L31 de 60 balas","Extracción ZB-014 (bengala verde = abierta)"]},"Gas_station_storage_room_key":{"usage":"La primera habitación a la derecha del pasillo dentro de la New Gas Station de Customs.","loc":[{"h":"Customs","l":["Debajo del escritorio de la oficina de la New Gas Station."]}],"lock":"","behind":["1x Medbag","1x Medcase"]},"Dorm_room_303_key":{"usage":"Tercera planta de los Dorms de tres plantas de Customs.","loc":[{"h":"Customs","l":["En un armario de llaves del puesto de guardia de los Dorms de dos plantas.","En el vehículo Tigr junto al military checkpoint.","Warehouse #6, junto a los silos de combustible: en la parte norte de la segunda planta, en un armario de herramientas colgante."]}],"lock":"","behind":["Una caja de madera","Botín suelto (armas)","Posible spawn de arma rara (HK G28 7.62x51 o FN SCAR-H 7.62x51)"]},"Health_Resort_west_wing_room_306_key":{"usage":"Tercera planta, habitación 306 del West Wing del Health Resort de Shoreline.","loc":[{"h":"Shoreline","l":["En el hueco para los pies del copiloto de una de las ambulancias de la extracción \"Tunnel\".","En el patio de la villa cerrada, sobre una camilla junto a la ambulancia.","En la parte trasera de la ambulancia aparcada frente al Health Resort."]},{"h":"Factory","l":["En una taquilla de la segunda planta de la zona de oficinas."]}],"lock":"","behind":["Spawn de tarjeta azul","Botín suelto (dinero, medicinas)","Un spawn de arma (M4A1)","Dos Scavs muertos"]},"Beluga_restaurant_director_key":{"usage":"Puertas del despacho del director en la tercera planta del restaurante Beluga de Streets of Tarkov.","loc":[],"lock":"","behind":["1x caja fuerte cerrada (ahora mismo no existe llave para ella en el juego)","1x PC block","1x chaqueta","2x cajón","1x bolsa de deporte","Botín suelto (objetos de valor, materiales domésticos, provisiones, otros)"]},"TerraGroup_Labs_access_keycard":{"usage":"Pantalla de selección de mapa de The Lab.","loc":[{"h":"","l":["En el Common fund stash","En Bosses","En cajas de objetos de valor raros"]},{"h":"Hideout Cultist Circle","l":["Se puede conseguir 1 con un sacrificio especial"]},{"h":"Customs","l":["En los Dorms de tres plantas, en la \"marked room\""]},{"h":"Reserve","l":["En las \"marked rooms\" RB-BK, RB-PKPM y RB-VO"]},{"h":"Streets of Tarkov","l":["En la \"marked room\" de la abandoned factory","En la \"marked room\" de Chekannaya 13"]}],"lock":"","behind":["The Lab"]},"Factory_emergency_exit_key":{"usage":"Dos extracciones adicionales y una habitación cerrada junto a la oficina de Factory:","loc":[{"h":"Customs","l":["Sobre una mesa junto a la tele rota, en la oficina del puesto de guardia de los Dorms de tres plantas.","En una taquilla azul dentro del Warehouse #7."]}],"lock":"","behind":["Extracción \"Med Tent Gate\"","Extracción \"Cellars\" en el subterráneo","Habitación cerrada en la 3ª planta de la zona de oficinas:","Spawn de la Portable bunkhouse key","1x chaqueta"]},"Operating_room_key":{"usage":"En la planta baja del office building #1, en la zona de la water treatment plant, al norte de Lighthouse.","loc":[{"h":"Lighthouse","l":["Building #1 de la water treatment plant, en los laboratorios de la primera planta.","Building #2 de la water treatment plant, sobre el escritorio de la oficina oeste.","Building #2 de la water treatment plant, sobre un escritorio de la oficina de arriba a la izquierda."]}],"lock":"","behind":["Botín suelto (objetos de valor, electrónica)","1x Medbag","1x Scav muerto"]},"Mysterious_room_marked_key":{"usage":"Marked room en la primera planta del edificio de apartamentos Chekannaya 13 de Streets of Tarkov.","loc":[],"lock":"","behind":["Botín suelto (varios objetos de valor muy raros, armas, contenedores, dinero, tarjetas)"]},"Object_21WS_keycard":{"usage":"Al suroeste del mall, en un recinto de contenedores de Interchange. Sobre el contenedor rojo de TerraGroup apilado encima de otros contenedores.","loc":[{"h":"","l":["En Cultists","En The Goons","En cajas de objetos de valor raros"]},{"h":"Factory","l":["En Tagilla"]},{"h":"Customs","l":["En Partisan","En los Dorms de tres plantas, en la \"marked room\"","En el \"giving tree\" detrás de la \"Old Gas Station\""]},{"h":"Woods","l":["En Partisan","En Shturman"]},{"h":"Shoreline","l":["En Partisan"]},{"h":"Interchange","l":["En Killa","En Tagilla"]}],"lock":"","behind":["Botín suelto (mods de armas, objetos de valor)","1x caja de armas (4x4)","1x caja de armas (6x4)","1x caja de armas (6x2)","1x spawn de subfusil SIG MPX 9x19","1x spawn de chaleco HighCom Trooper TFO (MultiCam)"]},"Abandoned_factory_marked_key":{"usage":"Marked room en la tercera planta del edificio norte de la abandoned factory de Streets of Tarkov.","loc":[],"lock":"","behind":["2x caja de armas (6x2)","Botín suelto (varios objetos de valor muy raros, armas, contenedores, dinero, tarjetas)"]},"RB-ST_key":{"usage":"En los Repair Warehouses de los Repair Point Buildings de Reserve.","loc":[{"h":"Reserve","l":["En distintos puntos del comedor de la tercera planta del repair building marcado con el black knight."]}],"lock":"","behind":["Una caja de armas (6x6)","Una caja de armas (6x2)","Una caja de armas (6x4)","Dos cajas de granadas","Botín suelto (munición, mods de armas y electrónica)","Dos spawns de batería militar 6-STEN-140-M","Tres spawns de proyectil OFZ 30x165mm","Dos spawns de Phased array element"]},"Pinewood_hotel_room_215_key":{"usage":"Habitación 215, en la segunda planta del edificio norte del Pinewood hotel de Streets of Tarkov.","loc":[],"lock":"","behind":["1x maleta de plástico (cerrada)","Botín suelto (provisiones, electrónica, elementos de energía, materiales inflamables)"]},"Labrys_access_keycard":{"usage":"En el sótano del West Wing del Health Resort de Shoreline. Hace falta la Knossos LLC facility key.","loc":[{"h":"Factory","l":["En Tagilla"]},{"h":"The Labyrinth","l":["En Shadow of Tagilla","En Vengeful Killa"]}],"lock":"","behind":["The Labyrinth"]},"Primorsky_46-48_skybridge_key":{"usage":"Puerta del apartamento nº 10 de Primorsky 48, en el skybridge que lo une con la escalera de Primorsky 46, en Streets of Tarkov. La puerta de entrada del apartamento 10 se puede reventar desde dentro para salir.","loc":[],"lock":"","behind":["1x PC block","Botín suelto (objetos de valor, electrónica)"]},"Machinery_key":{"usage":"Se usa en la puerta del conductor del camión de combustible de la zona de obras (construction area) de Customs.","loc":[{"h":"Customs","l":["Dentro de las chaquetas azules de la habitación 205 de los Dorms de tres plantas. Spawn garantizado en cada raid."]}],"lock":"","behind":[]},"Chekannaya_15_apartment_key":{"usage":"La puerta más al este de la segunda planta del edificio de apartamentos Chekannaya 15 de Streets of Tarkov. Solo se accede por la escalera oeste desde la tercera planta, a través de un agujero en el suelo de la celda #5. Los escombros del pasillo de la segunda planta solo se pasan en posición tumbada.","loc":[],"lock":"","behind":["Botín suelto (objetos de valor, electrónica, estimulantes)"]},"Tarcone_Director's_office_key":{"usage":"Puerta de la zona de oficinas de la segunda planta del Warehouse rojo de Paradigm, en Customs.","loc":[{"h":"Customs","l":["En una estantería de uno de los bunkhouses al suroeste del Warehouse rojo de Paradigm. Hay una llave garantizada en cada raid.","En una estantería metálica del almacén de la New Gas Station.","Warehouse #3 del crane yard, en el suelo junto al cadáver.","Warehouse #5 del crane yard, en la estantería con los depósitos de agua junto a la furgoneta azul de reparto.","En un armario de llaves del puesto de guardia de los Dorms de dos plantas."]}],"lock":"","behind":["Spawn de la Health Resort east wing room 306 key","1× bolsa de deporte","3× PC block","1× caja fuerte","1× chaqueta","1× spawn de mochila Flyye MBSS (UCP)","1× spawn de chaleco PACA Soft Armor","1× spawn de Intelligence folder"]},"Health_Resort_east_wing_room_328_key":{"usage":"Tercera planta, habitación 328 del East Wing del Health Resort de Shoreline.","loc":[{"h":"Shoreline","l":["Sobre una mesa en la isla, junto a un motor fueraborda.","Sobre un escritorio dentro de la hydroelectric power station.","En un armario de llaves de la West Wing room 202 del Health Resort.","En el suelo, bajo el armario de llaves del cuarto de servicio junto a la West Wing room 227 del Health Resort.","En el armario de llaves junto a las escaleras centrales de la segunda planta del East Wing del Health Resort.","En el suelo, bajo el armario de llaves junto a las escaleras centrales de la tercera planta del East Wing del Health Resort."]}],"lock":"","behind":["Habitación 328:","1× spawn de LEDX","1× spawn de tarjeta gráfica","2× spawns de electrónica","1× spawn de arma","1× PC block","1× bolsa de deporte","Botín suelto (mods de armas, dinero)"]},"Missam_forklift_key":{"usage":"Ninguno.","loc":[{"h":"","l":["En bolsas de deporte"]}],"lock":"","behind":[]},"Corpse_room_key":{"usage":"Puerta de la corpse room de The Labyrinth.","loc":[{"h":"The Labyrinth","l":["En Shadow of Tagilla","En uno de seis puntos. Spawn garantizado en cada raid."]}],"lock":"","behind":["Botín suelto (varios objetos de valor muy raros, contenedores)"]},"Dorm_room_214_key":{"usage":"En la segunda planta de los Dorms de tres plantas de Customs.","loc":[{"h":"Customs","l":["La llave aparece entre palés en un garaje con el número 88, en el lado este de Customs."]}],"lock":"","behind":["Una caja fuerte","Botín suelto (munición)","Posible Dorm room 203 key en la taza roja"]},"Dorm_room_220_key":{"usage":"Segunda planta de los Dorms de tres plantas de Customs.","loc":[{"h":"Customs","l":["En un vagón de tren en el lado oeste de la zona.","En la parte trasera del camión amarillo no destruido junto al Warehouse #7.","Sobre una caja de madera en la segunda planta del warehouse justo al lado de la extracción del búnker ZB-1011.","Sobre un carrito de herramientas en el edificio pequeño entre los silos de combustible del norte, junto a la extracción del búnker ZB-1011."]}],"lock":"","behind":["Spawn de la ZB-014 key","Chaqueta","Bolsa de deporte","Botín suelto (rublos)"]},"Portable_bunkhouse_key":{"usage":"Se usa en la cabina prefabricada de la segunda planta, entre la bus depot y la zona de obras (construction area) de Customs.","loc":[{"h":"Factory","l":["En el suelo, bajo una chaqueta, en la habitación cerrada junto a la oficina de Factory. Hace falta la Factory emergency exit key. Por su baja probabilidad de aparición, no es la forma más fiable de conseguir esta llave."]}],"lock":"","behind":["1 o 2x caja de armas (6x2)","Botín suelto (paquetes de munición)"]},"Trailer_park_portable_cabin_key":{"usage":"Puerta de la cabina prefabricada de guardia del trailer park de Customs.","loc":[{"h":"Customs","l":["En un armario de llaves del puesto de guardia de los Dorms de dos plantas."]}],"lock":"","behind":[]},"Unknown_key":{"usage":"Abre una cabina del crane yard de Customs.","loc":[{"h":"Customs","l":["En un Scav muerto situado en un arbusto detrás de los garajes. Hay una llave garantizada en cada raid."]}],"lock":"","behind":[]},"Dorm_room_114_key":{"usage":"Primera planta de los Dorms de dos plantas de Customs.","loc":[],"lock":"","behind":["1x Medcase","1x caja fuerte","1x PC block"]},"Dorm_room_206_key":{"usage":"Segunda planta de los Dorms de dos plantas de Customs.","loc":[],"lock":"","behind":["Botella de agua (0.6L)","Botella de agua Aquamari con filtro","Filtro de agua","Bidón de agua purificada","Botella de agua YMXC","Ración de agua de emergencia"]},"Dorm_room_203_key":{"usage":"Segunda planta de los Dorms de tres plantas de Customs.","loc":[{"h":"Customs","l":["Dentro de una taza roja en la Dorm room 214.","Warehouse #4 del crane yard, sobre una mesa en la parte norte de la planta superior.","Warehouse #5 del crane yard, sobre la mesa con la lámpara cerca de una carretilla elevadora.","Warehouse #6 junto a los silos de combustible, sobre una mesa del taller en la parte sur de la segunda planta."]}],"lock":"","behind":["2x bolsa de deporte"]},"Goshan_cash_register_key":{"usage":"Cajas registradoras de la parte delantera de la tienda Goshan de Interchange.","loc":[{"h":"Customs","l":["En el asiento de un autobús blanco que forma parte del bloqueo de carretera junto a la New Gas Station."]}],"lock":"","behind":["El contenido de 30x caja registradora TAR2-2"]},"Health_Resort_east_wing_room_306_key":{"usage":"Tercera planta, habitación 306 del East Wing del Health Resort de Shoreline.","loc":[{"h":"Customs","l":["En el Tarcone Director's Office, sobre el escritorio de la habitación que se puede reventar."]},{"h":"Woods","l":["En la mesilla de noche de la 2ª cabaña, la de la caja fuerte."]},{"h":"Shoreline","l":["Sobre el escritorio con ordenador de la segunda planta del edificio de oficinas del pier.","Sobre el escritorio de la oficina pequeña junto a la entrada del edificio de administración del Health Resort.","En un armario de llaves de la West Wing room 202 del Health Resort.","En el suelo, bajo el armario de llaves del cuarto de servicio junto a la West Wing room 227 del Health Resort.","En el armario de llaves junto a las escaleras centrales de la segunda planta del East Wing del Health Resort.","En el suelo, bajo el armario de llaves junto a las escaleras centrales de la tercera planta del East Wing del Health Resort."]}],"lock":"","behind":["Habitación 306:","1× spawn de LEDX Skin Transilluminator","1× spawn de DVL-10","1× spawn de mochila Flyye MBSS (UCP)","4× PC block","1× caja de armas (4x4)","Spawn raro","Botín suelto (dinero)"]},"Health_Resort_east_wing_room_308_key":{"usage":"Tercera planta, habitación 308 del East Wing del Health Resort de Shoreline.","loc":[{"h":"Woods","l":["En la cabaña nº 1 del lumber camp, sobre una mesilla de noche entre dos camas colocadas pies con pies. Es la cabaña más cercana al camión Yotota."]}],"lock":"","behind":["Habitación 306:","1× spawn de LEDX Skin Transilluminator","1× spawn de DVL-10","1× spawn de mochila Flyye MBSS (UCP)","4× PC block","1× caja de armas (4x4)","Spawn raro","Botín suelto (dinero)"]},"OLI_logistics_department_office_key":{"usage":"Abre la puerta de la oficina del departamento de logística de OLI en Interchange.","loc":[{"h":"Customs","l":["Dentro del maletero del coche azul, justo al lado del atajo entre la zona de Factory de Customs y la New Gas Station."]}],"lock":"","behind":["1x PC","Botín suelto"]},"Health_Resort_west_wing_room_219_key":{"usage":"Segunda planta, habitación 219 del West Wing del Health Resort de Shoreline.","loc":[{"h":"Shoreline","l":["En el faro (lighthouse) del pier, en la segunda planta, sobre una caja de madera rota.","En un armario de llaves del cuarto de servicio junto a la West Wing room 227 del Health Resort.","En el armario de llaves junto a las escaleras centrales de la segunda planta del East Wing del Health Resort."]}],"lock":"","behind":["Spawn de tarjeta azul","1x armario de armas","1x caja de armas (6x4)","1x spawn de chaleco BNTI Module-3M","1x spawn de arma (AK-74N)","Botín suelto (dinero, paquetes de munición, medicinas, suministros médicos)"]},"Health_Resort_west_wing_room_220_key":{"usage":"Segunda planta, habitación 220 del West Wing del Health Resort de Shoreline.","loc":[{"h":"Shoreline","l":["En un armario de llaves de la villa abierta.","En una estantería del warehouse sur de la smuggler base.","En un armario de llaves de la West Wing room 202 del Health Resort.","En el suelo, bajo el armario de llaves del cuarto de servicio junto a la West Wing room 227 del Health Resort.","En el armario de llaves junto a las escaleras centrales de la segunda planta del East Wing del Health Resort.","En el suelo, bajo un armario de llaves junto a las escaleras centrales de la tercera planta del East Wing del Health Resort."]}],"lock":"","behind":["1x caja de armas (4x4)","2x caja de armas (6x2)","1x caja de madera","Botín suelto (objetos de valor, medicinas, suministros médicos, dinero)"]},"IDEA_cash_register_key":{"usage":"Cajas registradoras de la parte delantera de la tienda IDEA de Interchange.","loc":[{"h":"Interchange","l":["En el asiento de un autobús blanco situado fuera de la tienda IDEA."]}],"lock":"","behind":["Tienda IDEA:","20x caja registradora TAR2-2","Farmacia NecrusPharm:","2x caja registradora TAR2-2"]},"OLI_cash_register_key":{"usage":"Cajas registradoras de la parte delantera de la tienda OLI de Interchange.","loc":[{"h":"Interchange","l":["Sobre una mesa de una oficina al fondo de la tienda OLI."]}],"lock":"","behind":["El contenido de 18x caja registradora TAR2-2"]},"Keycard_with_a_blue_marking":{"usage":"La puerta justo delante del Laboratory block (G22), en el segundo nivel de The Lab.","loc":[{"h":"","l":["En Sanitar"]}],"lock":"","behind":["Botín suelto (medicinas y suministros médicos)","1x chaqueta","Spawns de Ophthalmoscope","Estimulantes"]},"RB-KSM_key":{"usage":"Segunda planta del edificio HQ (White Bishop) de Reserve. (Resaltado en verde)","loc":[],"lock":"","behind":["Botín suelto (suministros médicos)","Una bolsa de deporte"]},"RB-SMP_key":{"usage":"Segunda planta del edificio HQ (White Bishop) de Reserve. (Resaltado en verde)","loc":[{"h":"","l":["En el Common fund stash (caja de Shturman)"]}],"lock":"","behind":["Botín suelto (suministros médicos, objetos médicos, estimulantes)"]},"Cottage_back_door_key":{"usage":"Puerta trasera del cottage del este de Shoreline.","loc":[{"h":"Shoreline","l":["En el patio de la villa cerrada, sobre los barriles atados.","En un armario de llaves de la villa abierta.","En un armario de llaves del garaje de la casa nº 5, en la parte este de la west village.","En un armario de llaves del granero de la casa nº 4, en la parte este de la west village."]}],"lock":"","behind":["Spawn de tarjeta amarilla","1x PC block","3x bolsa de deporte","2x armario de armas","2x caja fuerte (una cerrada)","1x chaqueta","Botín suelto (objetos de valor, provisiones, dinero, materiales de construcción, otros)","Spawn de fusil Kalashnikov AKS-74U 5.45x39 en el sofá"]},"Shturman's_stash_key":{"usage":"En la zona del sawmill de Woods, sobre un neumático junto a una pila de troncos.","loc":[{"h":"","l":["En Shturman"]}],"lock":"","behind":["El contenido del Common fund stash."]},"RB-OB_key":{"usage":"East barracks de Reserve. Extremo norte del edificio este, 3ª planta.","loc":[{"h":"Reserve","l":["En distintos puntos de la sala de reuniones de la tercera planta del airspace control center marcado con el white king."]}],"lock":"","behind":["Un cajón","Intelligence folder sobre el escritorio","Varios spawns de objetos de valor sobre el escritorio"]},"Health_Resort_office_key_with_a_blue_tape":{"usage":"Primera planta, habitación 110 del East Wing del Health Resort de Shoreline.","loc":[{"h":"","l":["En Sanitar"]}],"lock":"","behind":["1x PC","1x maleta de plástico","Botín suelto (suministros médicos, objetos de valor)","Varios spawns de LEDX en el baño","Posible spawn de GPU en el lado izquierdo del escritorio"]},"Health_Resort_west_wing_office_room_112_key":{"usage":"Primera planta del West Wing del Health Resort, en el mapa Shoreline.","loc":[{"h":"Shoreline","l":["En un asiento de un autobús de la bus depot.","Sobre un escritorio de la West Wing room 105 del Health Resort.","En un armario de llaves de la West Wing room 202 del Health Resort.","En el suelo, bajo el armario de llaves del cuarto de servicio junto a la West Wing room 227 del Health Resort.","En el suelo del pasillo delante de la East Wing room 112 del Health Resort.","En el armario de llaves junto a las escaleras centrales de la segunda planta del East Wing del Health Resort.","En el suelo, bajo un armario de llaves junto a las escaleras centrales de la tercera planta del East Wing del Health Resort."]}],"lock":"","behind":["Spawn de tarjeta amarilla","Spawn de tarjeta azul","Botín suelto (provisiones) sobre la mesa a la izquierda de la puerta","Dos bolsas de deporte"]},"RB-ORB3_key":{"usage":"East barracks de Reserve. Extremo norte del edificio este, 2ª planta. (Resaltado en verde)","loc":[{"h":"Customs","l":["Asiento del copiloto del vehículo Tigr más cercano al puente."]},{"h":"Reserve","l":["En distintos puntos de la sala principal de la primera planta del barracks marcado con el white pawn."]}],"lock":"","behind":["3 armeros (AK-74N, AKS-74U, AKS-74N, AKS-74UB, AKS-74UN)","Botín suelto (mods de armas, munición)","Dos cajones"]},"RB-ORB2_key":{"usage":"Zona de los barracks del este de Reserve. Extremo este del edificio sur (white pawn), 2ª planta. (Resaltado en verde)","loc":[{"h":"","l":["En el Common fund stash (caja de Shturman)"]},{"h":"Woods","l":["Cerca del tanque de la extracción \"RUAF Gate\", sobre un trozo de muro de hormigón con la inscripción \"HELP\"."]},{"h":"Reserve","l":["Dentro de una taquilla situada en un vestuario del túnel que conecta la radar station con los barracks del white pawn.","En distintos puntos de la sala principal de la segunda planta del barracks marcado con el white pawn."]}],"lock":"","behind":["Botín suelto (mods de armas, munición)","Un cajón","Una caja de armas (4x4)","Una caja de armas (6x2)"]},"Car_dealership_closed_section_key":{"usage":"Puerta de reja de la segunda planta del concesionario LexOs, en Streets of Tarkov.","loc":[{"h":"Streets of Tarkov","l":["En Kaban"]}],"lock":"","behind":["1x caja de suministros técnicos","1x caja de madera","2x caja de armas (6x2)","1x caja de armas (6x6)","1x caja de armas (6x4)","1x PC block","Botín suelto (mods de armas, materiales domésticos, otros objetos)","Spawn de la Car dealership director's office room key"]},"Iron_gate_key":{"usage":"Puertas de reja de las celdas nº 1, 2 y 4 de la tercera planta del edificio de apartamentos Chekannaya 15, en Streets of Tarkov. Solo se accede por la escalera oeste.","loc":[],"lock":"","behind":["2x Scav muerto (ambos en la celda 1)","Botín suelto (objetos de valor, provisiones, estimulantes, electrónica, paquetes de munición, otros objetos)"]},"RB-ORB1_key":{"usage":"South barracks de Reserve. Extremo este del edificio sur, 4ª planta. (Resaltado en verde)","loc":[{"h":"Reserve","l":["En el fondo del túnel, en la sala de duchas, en un llavero de pared junto a la puerta."]}],"lock":"","behind":["3 armeros (AK-74N, AKS-74U, AKS-74N, AKS-74UB, AKS-74UN)","Botín suelto (mods de armas, munición)","Dos cajones","Spawn de Intelligence folder en el suelo"]},"Car_dealership_director's_office_room_key":{"usage":"Oficina de la sección cerrada de la segunda planta del concesionario LexOs, en Streets of Tarkov. Hace falta la Car dealership closed section key para entrar.","loc":[],"lock":"","behind":["2x cajón","1x PC block","Botín suelto (objetos de valor)"]},"Radar_station_commandant_room_key":{"usage":"El despacho del comandante está en la primera planta de la radar station, en el territorio de la lighthouse peninsula de Lighthouse. Nota: el puente que lleva a la península está vigilado por Zryachiy y lleno de Claymores. Para cruzarlo con seguridad hace falta el Digital secure DSP radio transmitter codificado.","loc":[],"lock":"","behind":["Botín suelto (objetos de valor, mods de armas)","Chaqueta","Caja de armas (4x4)","PC block"]},"Concordia_security_room_key":{"usage":"Puerta en el parking del sótano del edificio Concordia, en Streets of Tarkov.","loc":[],"lock":"","behind":["Botín suelto (armas, mods de armas, paquetes de munición)","2x PC block","1x caja fuerte"]},"TerraGroup_Labs_keycard_(Black)":{"usage":"The Lab","loc":[{"h":"","l":["En Cultists","En The Goons","En cajas de objetos de valor raros"]},{"h":"Factory","l":["En Tagilla"]},{"h":"Customs","l":["En Partisan","En los Dorms de tres plantas, en la \"marked room\"","En el \"giving tree\" detrás de la \"Old Gas Station\""]},{"h":"Woods","l":["En Shturman","En Partisan"]},{"h":"Shoreline","l":["En Partisan"]},{"h":"Interchange","l":["En Killa","En Tagilla"]}],"lock":"","behind":["Zona del laboratory experiment:","1x Medcase","Estimulantes","Spawns de LEDX Skin Transilluminator","Despacho de Kruglov:","1x PC block","Objetos de valor","Objetos de información"]},"Kiba_Arms_inner_grate_door_key":{"usage":"Situada en la primera planta del ULTRA shopping mall de Interchange, cerca del centro del mall.","loc":[],"lock":"","behind":["Botín suelto (mods de armas, placas de armadura, paquetes de munición)","2x caja de armas (4x4)","1x caja de armas (6x6)","2x caja registradora (cerrada)","Posible en el mostrador de caja frente a la gran pared de armas:","Fusil SIG MCX-SPEAR 6.8x51 (variante CQB)","Posible en el armero:","Subfusil TDI KRISS Vector Gen.2 .45 ACP"]},"Kiba_Arms_outer_door_key":{"usage":"Situada en la primera planta del ULTRA shopping mall de Interchange, cerca del centro del mall.","loc":[{"h":"Interchange","l":["En la oficina de la power station, sobre una caja de la estantería metálica junto al armario.","En el campsite de la tienda Goshan, detrás de las dos tiendas de campaña."]}],"lock":"","behind":[]},"TerraGroup_meeting_room_key":{"usage":"Sala de reuniones de la primera planta del edificio TerraGroup security post, en Streets of Tarkov.","loc":[],"lock":"","behind":["2x spawn de Intelligence folder","1x cajón"]},"Object_11SR_keycard":{"usage":"Detrás de un urinario del baño de hombres del restaurante \"Burger spot\", en la segunda planta del mall de Interchange. El teclado aparece al tirar de la cadena del urinario.","loc":[{"h":"","l":["En Cultists","En The Goons","En cajas de objetos de valor raros"]},{"h":"Factory","l":["En Tagilla"]},{"h":"Customs","l":["En Partisan","En los Dorms de tres plantas, en la \"marked room\"","En el \"giving tree\" detrás de la \"Old Gas Station\""]},{"h":"Woods","l":["En Shturman","En Partisan"]},{"h":"Shoreline","l":["En Partisan"]},{"h":"Interchange","l":["En Killa","En Tagilla"]}],"lock":"","behind":["Varios spawns de mods de armas","M4A1 modificados","1x caja de armas (4x4)","1x caja de armas (6x4)","1x caja de armas (6x6)","Spawns de objetos raros","Una palanca que abre el contenedor verde TerraGroup Object-14, que también puede contener armas y mods de armas"]},"TerraGroup_Labs_weapon_testing_area_key":{"usage":"Laboratory weapon testing area (O11), en el primer nivel de The Lab.","loc":[{"h":"The Lab","l":["En el primer nivel, en la room R15 (Gym), sobre un taburete.","En el segundo nivel, en la room B21 (encima de la Server Room - B12), sobre la encimera de la cocina.","En la parte baja de una estantería a la izquierda de la entrada de la room R23."]}],"lock":"","behind":["Una caja de armas (4x4)","Una caja de armas (6x6)","Posibles spawns de armas","Botín suelto (mods de armas y munición)"]},"Rusted_bloody_key":{"usage":"Puerta de la cuarta planta del edificio Klimova 16A, en Streets of Tarkov.","loc":[],"lock":"","behind":["Llaves","Objetos de valor","Suministros médicos","Objetos de información","Herramientas","Materiales inflamables","Objetos médicos","Estimulantes"]},"Backup_hideout_key":{"usage":"Hideout bajo las escaleras del cine, en Streets of Tarkov.","loc":[],"lock":"","behind":["1x caja de madera","1x bolsa de deporte","1x caja de herramientas","Botín suelto (electrónica, objetos de valor)"]},"\"Negotiation\"_room_key":{"usage":"Puerta de la negotiation room dentro del edificio Zmeisky 6, en Streets of Tarkov.","loc":[],"lock":"","behind":["Botín suelto (objetos de valor, bebidas, materiales de construcción, electrónica)","Medbag","PC block","Spawn de la Relaxation room key sobre la mesa metálica"]},"Relaxation_room_key":{"usage":"Puerta del salón de cachimbas \"Hive\" en el edificio de Malevicha street nº 5, en Streets of Tarkov.","loc":[],"lock":"","behind":["Botín suelto (objetos de valor, bebidas)","Varias bolsas de deporte","Posible LBT-6094A Slick Plate Carrier (Black) en el maniquí","Posible LBT-6094A Slick Plate Carrier (Olive Drab) en el maniquí","Posible LBT-6094A Slick Plate Carrier (Coyote Tan) en el maniquí","Posible chaleco HighCom Trooper TFO (MultiCam) en el maniquí","Posible chaleco BNTI Zhuk (EMR) en el maniquí","Posible chaleco Interceptor OTV (UCP) en el maniquí"]},"Company_director's_room_key":{"usage":"Puerta del despacho del director en la segunda planta del boiler building de Customs.","loc":[{"h":"Customs","l":["En el suelo, junto a unas bolsas de basura frente a la escalera de la tercera planta de los Dorms de tres plantas.","En la parte trasera de la furgoneta blanca a la izquierda de la entrada de la New Gas Station.","En el suelo, junto al agujero parcial en la pared entre el crane yard y la New Gas Station."]}],"lock":"","behind":["2x caja de armas (6x6)","1x bolsa de deporte","2x cajón","2x caja fuerte","Spawn de Intelligence folder"]},"Knossos_LLC_facility_key":{"usage":"En el sótano del West Wing del Health Resort de Shoreline.","loc":[],"lock":"","behind":[]},"X-ray_room_key":{"usage":"Puerta de la sala de control de rayos X, en la segunda planta de la children's polyclinic nº 69, en Streets of Tarkov.","loc":[{"h":"Streets of Tarkov","l":["En distintos puntos de la vet clinic.","En distintos puntos de la polyclinic."]}],"lock":"","behind":["1x cajón","Botín suelto (suministros médicos)"]},"Real_estate_agency_office_room_key":{"usage":"Oficina de la segunda planta de la real estate agency, en Streets of Tarkov.","loc":[],"lock":"","behind":["Botín suelto (objetos de valor, electrónica, elementos de energía)"]}};
+function keyPage(it){ const m = /\/wiki\/([^?#]+)/.exec(it.wiki || ''); if (!m) return ''; let p = m[1]; try { p = decodeURIComponent(p); } catch (e) {} return p.replace(/ /g, '_'); }
+async function keyWiki(it){
+  const page = keyPage(it); if (!page) return null;
+  if (S.lang === 'es' && KEYWIKI_ES[page]) return KEYWIKI_ES[page];
+  if (WK[page] !== undefined) return WK[page];
+  let c = {}; try { c = JSON.parse(localStorage.getItem('tkv_wiki_v1') || '{}'); } catch (e) { c = {}; }
+  if (c[page] && Date.now() - c[page].ts < 7 * 864e5) return (WK[page] = c[page].d);
+  try {
+    const r = await fetch('https://escapefromtarkov.fandom.com/api.php?action=parse&format=json&prop=wikitext&redirects=1&origin=*&page=' + encodeURIComponent(page));
+    const j = await r.json(), w = j.parse && j.parse.wikitext && j.parse.wikitext['*']; if (!w) throw new Error('vacío');
+    const d = parseKeyWiki(w); WK[page] = d; c[page] = { ts: Date.now(), d }; try { localStorage.setItem('tkv_wiki_v1', JSON.stringify(c)); } catch (e) {} return d;
+  } catch (e) { return (WK[page] = null); }
+}
+async function loadKeyWiki(id){
+  const it = D.items[id], d = await keyWiki(it); if (S.kdet !== id) return; const L = $('#kwLoc'), K = $('#kwLock'); if (!L || !K) return;
+  if (!d) { const t = tx('No se pudo cargar el texto de la wiki (hace falta conexión). Puedes abrirla con el botón «Wiki».', 'Could not load the wiki text (needs a connection). You can open it with the “Wiki” button.'); L.textContent = t; K.textContent = t; return; }
+  L.classList.remove('m'); K.classList.remove('m');
+  L.innerHTML = d.loc.length ? d.loc.map(g => `<div class="wg">${g.h ? `<b>${esc(g.h)}</b>` : ''}<ul>${g.l.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('') : `<span class="m">${tx('La wiki no indica sitios concretos para esta llave (solo cajones, chaquetas o bolsillos de enemigos).', 'The wiki gives no specific places for this key (only drawers, jackets or enemy pockets).')}</span>`;
+  const lk = d.lock || d.usage;
+  K.innerHTML = (lk ? `<p style="margin:6px 0">${esc(lk)}</p>` : '') + (d.behind.length ? `<div class="m" style="margin-top:4px">${tx('Dentro', 'Inside')}:</div><ul>${d.behind.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '') || `<span class="m">—</span>`;
+}
+/* ── Hideout (tablero de estaciones) ── */
+function lvlItemsHtml(l){
+  const rows = l.items.map(r => { const it = D.items[r.itemId]; if (!it) return ''; const have = S.icol[it.id] || 0, ok = have >= r.count;
+    return `<div class="hneed"><span class="ic sm">${itemImg(it)}</span><span>${r.count}× ${itemLink(it)}${r.fir ? ` <span class="bd r">🎯 ${tx('en incursión', 'found in raid')}</span>` : ''}</span><span class="g ${ok ? 'cheap' : 'm'}">${Math.min(have, r.count)}/${r.count}</span></div>`; }).join('');
+  return (rows || `<div class="m" style="font-size:12.5px">${tx('Sin objetos', 'No items')}</div>`) + levelReqHtml(l);
+}
+function stationInfo(){
+  return orderedStations().map((s, i) => { const next = s.levels.find(l => !S.hideout[l.id]);
+    const ready = !!next && next.items.every(r => { const it = D.items[r.itemId]; return !it || (S.icol[it.id] || 0) >= r.count; });
+    return { s, i, next, ready, built: s.levels.filter(l => S.hideout[l.id]).length }; });
+}
+function renderHideoutBoard(){
+  const q = norm(S.q), info = stationInfo(), tot = info.reduce((a, x) => a + x.s.levels.length, 0), bt = info.reduce((a, x) => a + x.built, 0);
+  $('#sum').innerHTML = kpiHtml([[tx('Estaciones sin terminar', 'Unfinished stations'), info.filter(x => x.next).length], [tx('Niveles construidos', 'Levels built'), `${bt} / ${tot}`], [tx('Listas para construir', 'Ready to build'), info.filter(x => x.ready).length], [tx('Items por conseguir (Hideout)', 'Items to get (Hideout)'), itemNeeds().filter(a => a.hide.length && !a.done).length]]);
+  const rows = info.filter(x => (!S.hideBuilt || x.next) && (!S.hready || x.ready) && (!q || x.s.sq.includes(q) || x.s.levels.some(l => l.items.some(r => D.items[r.itemId] && D.items[r.itemId].sq.includes(q)))));
+  $('#list').innerHTML = rows.length ? `<div class="hgrid">` + rows.map(({ s, i, next, ready, built }) => {
+    const showAll = !S.hnext || S.hopen[s.id], wiki = WIKI + encodeURIComponent((s.en || s.name).replace(/ /g, '_'));
+    return `<div class="hcard ${ready ? 'rdy' : ''} ${next ? '' : 'fin'}"><h4><span class="m">${i + 1}.</span> <a href="${wiki}" target="_blank" rel="noopener">${esc(s.name)}</a> <span class="m hlv">${next ? tx('nivel', 'level') + ' ' + (next.level - 1) + '→' + next.level : tx('completada', 'completed')}</span><span class="sp"></span>${ready ? `<span class="rd">✔ ${tx('Listo', 'Ready')}</span>` : ''}
+      <button class="btn sm" data-act="up" data-id="${esc(s.id)}" title="${tx('Subir prioridad', 'Raise priority')}">▲</button><button class="btn sm" data-act="down" data-id="${esc(s.id)}" title="${tx('Bajar prioridad', 'Lower priority')}">▼</button></h4>
+      <div class="pips">${s.levels.map(l => `<i class="${S.hideout[l.id] ? 'd' : l === next ? 'n' : ''}"></i>`).join('')}</div>
+      ${showAll ? s.levels.filter(l => !(S.hideBuilt && S.hideout[l.id]) || !S.hnext).map(l => `<div class="lvl2 ${S.hideout[l.id] ? 'done' : ''}"><label class="chk"><input type="checkbox" data-act="hlvl" data-id="${esc(l.id)}" ${S.hideout[l.id] ? 'checked' : ''}><b>${tx('Nivel', 'Level')} ${l.level}</b></label>${lvlItemsHtml(l)}</div>`).join('') : (next ? lvlItemsHtml(next) : '')}
+      <div class="hact">${next ? `<button class="btn" data-act="hbuild" data-id="${esc(next.id)}">✓ ${tx('Marcar nivel', 'Mark level')} ${next.level} ${tx('construido', 'as built')}</button>` : ''}${S.hnext ? `<button class="btn" data-act="hopen" data-id="${esc(s.id)}">${S.hopen[s.id] ? tx('Ver solo el siguiente', 'Show next only') : tx('Ver todos los niveles', 'Show all levels')}</button>` : ''}</div></div>`; }).join('') + `</div>`
+    : `<div class="msg">${tx('No hay estaciones con este filtro.', 'No stations match this filter.')}</div>`;
+}
+function renderBoth(){ if (S.iview === 'keys') renderKeys(); else if (S.iview === 'hideout') renderHideoutBoard(); else renderItemsList(); }
 
 /* ───────── Estructura de cada pestaña ───────── */
 function renderView(){
@@ -1381,17 +1562,17 @@ function renderView(){
       <label><input type="checkbox" id="hideDone" ${S.hideDone ? 'checked' : ''}> ${tx('Ocultar completadas', 'Hide completed')}</label>`;
   } else {
     app.classList.add('wide');
-    ctl = `<input type="search" id="q" placeholder="${tx('Buscar un objeto o una estación (se filtran las dos listas a la vez)…', 'Search an item or a station (both lists are filtered at once)…')}" value="${esc(S.q)}">
-      <label>Hideout <select id="hview"><option value="summary">${tx('Lista de objetos por prioridad', 'Item list by priority')}</option><option value="stations">${tx('Por estación (cambiar prioridad)', 'By station (change priority)')}</option></select></label>
-      <label><input type="checkbox" id="hideBuilt" ${S.hideBuilt ? 'checked' : ''}> ${tx('Ocultar niveles construidos', 'Hide built levels')}</label>
-      <label>${tx('Misiones', 'Quests')} <select id="itemFilter"><option value="pending">${tx('Pendientes', 'Pending')}</option><option value="all">${tx('Todos', 'All')}</option><option value="done">${tx('Conseguidos', 'Collected')}</option><option value="keys">${tx('Solo llaves', 'Keys only')}</option><option value="items">${tx('Solo objetos (sin llaves)', 'Items only (no keys)')}</option></select></label>`;
+    const iv = S.iview, cnt = [itemNeeds().filter(a => !a.done).length, keyList().length, stationInfo().filter(x => x.next).length];
+    const seg = `<div class="iseg">${[['items', 'Items'], ['keys', tx('Llaves', 'Keys')], ['hideout', 'Hideout']].map((x, i) => `<button class="${iv === x[0] ? 'on' : ''}" data-act="iview" data-id="${x[0]}">${x[1]}<b>${cnt[i]}</b></button>`).join('')}</div>`;
+    const srch = ph => `<input type="search" id="q" placeholder="${ph}" value="${esc(S.q)}">`;
+    const ch = (k, label, on, v) => `<button class="ich ${on ? 'on' : ''}" data-act="ichip" data-k="${k}"${v !== undefined ? ` data-v="${v}"` : ''}>${label}</button>`;
+    if (iv === 'keys' && S.kdet) ctl = seg;
+    else if (iv === 'keys') { const ms = [...new Set(keyList().flatMap(a => a.maps))].sort((x, y) => mapName(x).localeCompare(mapName(y), LOC()));
+      ctl = seg + srch(tx('Buscar una llave…', 'Search a key…')) + ch('ihide', tx('Ocultar las que tengo', 'Hide owned'), S.ihide) + ch('kmap', tx('Todos los mapas', 'All maps'), S.kmap === 'all', 'all') + ms.map(m => ch('kmap', esc(mapName(m)), S.kmap === m, m)).join(''); }
+    else if (iv === 'hideout') ctl = seg + srch(tx('Buscar una estación o un item…', 'Search a station or an item…')) + ch('hnext', tx('Solo el siguiente nivel', 'Next level only'), S.hnext) + ch('hideBuilt', tx('Ocultar terminadas', 'Hide finished'), S.hideBuilt) + ch('hready', tx('Listas para construir', 'Ready to build'), S.hready);
+    else ctl = seg + srch(tx('Buscar un item…', 'Search an item…')) + ch('ihide', tx('Ocultar conseguidos', 'Hide collected'), S.ihide) + ch('isrc', tx('Todos', 'All'), S.isrc === 'all', 'all') + ch('isrc', tx('Solo Hideout', 'Hideout only'), S.isrc === 'h', 'h') + ch('isrc', tx('Solo misiones', 'Quests only'), S.isrc === 'q', 'q') + ch('isrc', '🎯 ' + tx('En incursión', 'Found in raid'), S.isrc === 'fir', 'fir');
   }
-  app.innerHTML = (S.view === 'quests' || S.view === 'gun' || S.view === 'plan' || S.view === 'trade')
-    ? `<div class="controls">${ctl}</div><div class="sum" id="sum"></div><div id="list"></div>`
-    : `<div class="controls">${ctl}</div><div class="split">
-        <section class="pane" id="paneH"><h2 class="ph2">Hideout <small>${tx('objetos que necesitas para construir', 'items you need to build')}</small></h2><div class="sum" id="sumH"></div><div id="listH"></div></section>
-        <section class="pane" id="paneI"><h2 class="ph2">${tx('Objetos y llaves de misiones', 'Quest items and keys')} <small>${tx('lo que piden las misiones sin completar', 'what the uncompleted quests ask for')}</small></h2><div class="sum" id="sumI"></div><div id="listI"></div>
-          <p class="note">${tx('«Mejor precio de trader» no tiene en cuenta si ya tienes el nivel de lealtad necesario para ese comerciante. Los objetos «en incursión» deben encontrarse en raid: no sirven los comprados.', '“Best trader price” does not check whether you already have the loyalty level needed for that trader. “Found in raid” items must be found in a raid: bought ones do not count.')}</p></section></div>`;
+  app.innerHTML = `<div class="controls">${ctl}</div><div class="sum" id="sum"></div><div id="list"></div>`;
   if ($('#trader')) $('#trader').value = S.trader;
   if ($('#itemFilter')) $('#itemFilter').value = S.itemFilter;
   if ($('#hview')) $('#hview').value = S.hview;
@@ -1516,11 +1697,6 @@ function renderTrade(){
         ${tu ? `<div class="tflag">${tx('Requiere la misión', 'Requires the quest')}: ${esc(tu.name)}</div>` : ''}${r.fir ? `<div class="tflag">🎯 ${tx('Alguno hay que entregarlo encontrado en incursión.', 'Some items must be handed in found in raid.')}</div>` : ''}</div>
       <div class="tnum"><div class="tp ${r.profit >= 0 ? 'pos' : 'neg'}">${r.profit >= 0 ? '+' : '−'}${money(Math.abs(r.profit))}</div>${tx('Coste', 'Cost')}: ${money(r.cost)}<br>${tx('Valor', 'Value')}: ${money(r.value)}${r.cost ? ` · ${r.pct >= 0 ? '+' : ''}${Math.round(r.pct * 100)}%` : ''}${r.est ? `<br><span class="tflag">${tx('Precio estimado (sin dato de mercado)', 'Estimated price (no market data)')}</span>` : ''}${b.lim ? `<br>${tx('Límite', 'Limit')}: ${b.lim}` : ''}</div></div>`; }).join('') || `<div class="msg">${tx('No hay tradeos con ese filtro.', 'No barters match that filter.')}</div>`;
 }
-function renderBoth(){
-  OUT = { sum: '#sumH', list: '#listH' }; renderHideout();
-  OUT = { sum: '#sumI', list: '#listI' }; renderItems();
-  fitPanes();
-}
 /* ───────── Mi plan: resumen + mapa ───────── */
 const geoCache = {}, svgCache = {};
 let PV = { key: null, z: 1, x: 0, y: 0 };
@@ -1569,7 +1745,7 @@ function renderPlan(){
 const CURR = { '5449016a4bdc2d6f028b456f': '₽', '5696686a4bdc2d3d298b4569': '$', '569668774bdc2da2298b4568': '€' };
 function extInfoHtml(k, ei){
   const e = D.ext && D.ext[k] && D.ext[k][ei]; if (!e) return '';
-  const nm = S.lang === 'en' ? e[1] : e[0];
+  const nm = e[1] || e[0];
   let h = `<b>${tx('Extracción PMC', 'PMC extract')}: ${esc(nm)}</b>${e[5] ? ` <small>${tx('(también para Scav)', '(also for Scavs)')}</small>` : ''}`;
   if (!e[7]) return `<div>${h}<div class="w">${tx('No necesita ningún objeto.', 'Needs no item.')}</div></div>`;
   const it = D.items[e[7]], n = e[8] || 1; if (!it) return `<div>${h}</div>`;
@@ -1601,7 +1777,7 @@ function planHtml(){
     const k = S.pmap, g = mapGeo(k), dots = [];
     act.forEach(t => live(t).filter(p => p[0] === k).forEach(p => { const [u, v] = g.uv(p[1], p[2]); const o = t.obj[p[4]]; const dim = S.pfocus && S.pfocus !== t.id;
       dots.push(`<i class="pdot ${p[5] ? 'loc' : ''} ${dim ? 'dim' : ''} ${S.pfocus === t.id ? 'foc' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="ppt" data-txt="${esc(t.name + (o && o.x ? ' — ' + o.x : '') + (p[5] ? tx(' (posible ubicación del objeto)', ' (possible item location)') : ''))}"></i>`); }));
-    const exs = S.extShow && D.ext && D.ext[k] ? D.ext[k].map((e, ei) => { const [u, v] = g.uv(e[2], e[3]); const nm = S.lang === 'en' ? e[1] : e[0];
+    const exs = S.extShow && D.ext && D.ext[k] ? D.ext[k].map((e, ei) => { const [u, v] = g.uv(e[2], e[3]); const nm = e[1] || e[0];
       return `<i class="pex ${e[5] ? 'shared' : ''} ${e[7] ? 'req' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="pex" data-ex="${k}|${ei}"><s></s><b>${esc(nm)}${e[7] ? ' 🔑' : ''}</b></i>`; }).join('') : '';
     mapHtml = `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="pmap" data-id="${x}">${esc(mapName(x))} <b>${cnt[x]}</b></button>`).join('')}</div>
       <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (verde; amarillo = también Scav)', 'Show PMC extracts (green; yellow = also Scav)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label></div>
@@ -1670,7 +1846,16 @@ document.addEventListener('click', e => {
   else if (a === 'chip') { S.adding = false; S.trader = id; S.chapter = null; S.sel = null; saveState(); renderView(); }
   else if (a === 'node') { S.sel = id; renderList(); }
   else if (a === 'closeDrawer') { S.sel = null; S.adding = false; renderList(); }
-  else if (a === 'toggledone') { if (S.done[id]) delete S.done[id]; else S.done[id] = true; saveState(); renderList(); }
+  else if (a === 'toggledone') { setDone(id, !S.done[id]); saveState(); renderList(); }
+  else if (a === 'iview') { S.iview = id; S.kdet = null; S.q = ''; saveState(); renderView(); }
+  else if (a === 'ichip') { const k = t.dataset.k, v = t.dataset.v; if (v !== undefined) S[k] = v; else S[k] = !S[k]; saveState(); renderView(); }
+  else if (a === 'qdd') { QO[id] = !QO[id]; renderList(); }
+  else if (a === 'kopen') { S.kdet = id; KMAP = null; PV.key = null; saveState(); renderView(); window.scrollTo(0, 0); }
+  else if (a === 'kback') { S.kdet = null; saveState(); renderView(); }
+  else if (a === 'kmap2') { KMAP = id; PV.key = null; renderList(); }
+  else if (a === 'kown') { S.icol[id] = (S.icol[id] || 0) >= 1 ? 0 : 1; saveState(); renderList(); }
+  else if (a === 'hopen') { S.hopen[id] = !S.hopen[id]; saveState(); renderList(); }
+  else if (a === 'hbuild') { const l = D.hideout.flatMap(s => s.levels).find(x => x.id === id); if (l) { S.hideout[id] = true; consumeLevel(l); saveState(); renderList(); } }
   else if (a === 'markprev') {
     const pend = [...ancestors(id)].filter(x => !S.done[x]);
     if (confirm(tx('¿Marcar como completadas esta misión y sus ' + pend.length + ' misiones previas?', 'Mark this quest and its ' + pend.length + ' previous quests as completed?'))) { pend.forEach(x => S.done[x] = true); S.done[id] = true; saveState(); renderList(); }
@@ -1688,10 +1873,10 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('change', e => {
   const t = e.target, a = t.dataset && t.dataset.act;
-  if (a === 'task') { if (t.checked) S.done[t.dataset.id] = true; else delete S.done[t.dataset.id]; saveState(); renderList(); }
+  if (a === 'task') { setDone(t.dataset.id, t.checked); saveState(); renderList(); }
   else if (a === 'obj') { if (t.checked) S.obj[t.dataset.id] = true; else delete S.obj[t.dataset.id]; saveState(); renderList(); }
   else if (a === 'sobj') { const k = t.dataset.c + ':' + t.dataset.s + ':' + t.dataset.o; if (t.checked) S.sobj[k] = true; else delete S.sobj[k]; saveState(); renderList(); }
-  else if (a === 'hlvl') { if (t.checked) S.hideout[t.dataset.id] = true; else delete S.hideout[t.dataset.id]; saveState(); renderList(); }
+  else if (a === 'hlvl') { if (t.checked) { S.hideout[t.dataset.id] = true; const l = D.hideout.flatMap(s => s.levels).find(x => x.id === t.dataset.id); if (l) consumeLevel(l); } else delete S.hideout[t.dataset.id]; saveState(); renderList(); }
   else if (a === 'set') { S[t.dataset.store][t.dataset.id] = Math.max(0, parseInt(t.value, 10) || 0); saveState(); renderList(); }
   else if (t.id === 'lang') { S.lang = t.value === 'en' ? 'en' : 'es'; saveState(); applyStatic(); if (D) { computeOrder(D); statusReady(); renderView(); } }
   else if (t.id === 'mode') { S.mode = t.value; saveState(); D = null; P = null; $('#app').innerHTML = ''; boot(false); }
@@ -1763,7 +1948,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 16 · Tema pizarra', 'version 16 · Slate theme');
+  $('#ver').textContent = tx('versión 18 · Nombres originales en inglés', 'version 18 · Original English names');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
@@ -1771,7 +1956,7 @@ function applyStatic(){
   set('[data-act=reload]', tx('Actualizar datos', 'Refresh data')); set('[data-act=prices]', tx('Actualizar precios', 'Refresh prices'));
   set('[data-act=export]', tx('Guardar copia', 'Save backup')); set('[data-act=import]', tx('Cargar copia', 'Load backup'));
   set('#tabs [data-view=quests]', tx('Misiones', 'Quests')); updTabs(); set('#tabs [data-view=gun]', 'Gunsmith');
-  set('#tabs [data-view=both]', tx('Hideout y objetos de misiones', 'Hideout and quest items')); set('#tabs [data-view=trade]', tx('Tradeos', 'Barters'));
+  set('#tabs [data-view=both]', tx('Items, llaves y Hideout', 'Items, keys & Hideout')); set('#tabs [data-view=trade]', tx('Tradeos', 'Barters'));
   $('#drawer').setAttribute('aria-label', tx('Detalle de la misión', 'Quest details'));
   $('#foot').innerHTML = tx('Datos y precios', 'Data and prices') + ': <a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a> · ' + tx('Enlaces', 'Links') + ': <a href="https://escapefromtarkov.fandom.com/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener">Tarkov Wiki</a>. ' + tx('Tu progreso se guarda solo en este navegador.', 'Your progress is saved only in this browser.');
 }
