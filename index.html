@@ -69,6 +69,16 @@ ul.list{list-style:none;margin:0;padding:0 12px 10px}
 .b.warn{color:var(--warn);border-color:#8a4f25}
 .b.fir{color:#e08a8a;border-color:#8a3a3a}
 .ltw{overflow-x:auto}.ltab{width:100%;border-collapse:collapse}.ltab th,.ltab td{padding:9px 8px;border-top:1px solid var(--line);text-align:left;font-size:13.5px;vertical-align:middle}.ltab th{color:var(--mute);font-weight:500;font-size:12px;border-top:0}.ltab.sm td{padding:5px 4px;font-size:13px}.ltr{cursor:pointer}.ltr:hover{background:var(--p2)}.ltr.own{opacity:.6}.pn{display:inline-block;padding:2px 8px;border-radius:6px;font-weight:700;font-size:12.5px}.pn.p{background:#1f3a2c;color:var(--ok)}.pn.n{background:#40231f;color:var(--bad)}
+.fwrap{display:flex;flex-direction:column;gap:14px}.ftop{display:grid;grid-template-columns:1fr 1fr;gap:14px}.fcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}.fcard h4{margin:0 0 6px;font-size:15px;color:var(--acc2)}.fcard p{margin:0 0 10px;font-size:13px;line-height:1.5}
+.fl{display:block;color:var(--mute);font-size:12.5px;margin:6px 0}.fl input,.fcard textarea{display:block;width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font:inherit}.fcard textarea{resize:vertical;font-family:ui-monospace,monospace;font-size:12px;margin:6px 0}
+.frb{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.btn.pri{background:#26394b;border-color:var(--acc);color:var(--txt)}.btn.bad{color:var(--bad)}
+.fbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}.fbar select{margin-left:6px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.fcol{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;border-top:3px solid var(--ok)}.fcol.theirs{border-top-color:var(--acc)}
+.fch{display:flex;align-items:center;gap:10px;margin-bottom:6px}.fch h3{margin:0;font-size:15px;flex:1}.fpill{background:var(--p2);border:1px solid var(--line);border-radius:999px;padding:2px 11px;font-weight:700;color:var(--acc2)}
+.fg{margin-top:12px}.fgt{display:flex;align-items:center;gap:8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);margin-bottom:4px}.fgt i{width:9px;height:9px;border-radius:50%;display:inline-block}.fgt small{margin-left:auto;color:var(--mute)}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--p2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}.frn b{font-weight:600}.frn small{display:block;color:var(--mute);font-size:12px;margin-top:1px}.kp{color:#c9b27a}
+.fempty,.fhint{color:var(--mute);padding:18px;text-align:center;border:1px dashed var(--line);border-radius:12px;font-size:13.5px}
+@media(max-width:900px){.ftop,.fgrid{grid-template-columns:1fr}}
 .b.key{color:#b79be8;border-color:#5d4a8a}
 .item{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .item.done{opacity:.55}
@@ -351,6 +361,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
       <button class="btn" data-act="export"></button>
       <button class="btn" data-act="import"></button>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <input type="file" id="friendFile" accept="application/json,.json,.txt" hidden>
     </div>
   </div>
   <nav id="tabs">
@@ -359,6 +370,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
     <button data-view="gun">Gunsmith</button>
     <button data-view="both"></button>
     <button data-view="trade"></button>
+    <button data-view="friends"></button>
   </nav>
   <div id="status"></div>
 </header>
@@ -1653,6 +1665,8 @@ function renderView(){
     app.classList.add('wide');
     ctl = `<input type="search" id="q" placeholder="${tx('Buscar un tradeo (por lo que da o lo que pide)…', 'Search a barter (by what it gives or asks for)…')}" value="${esc(S.q)}">
       <label>${tx('Mostrar', 'Show')} <select id="tfilter"><option value="imp">${tx('Solo lo importante (cajas, bitcoin, valiosos)', 'Only the important ones (cases, bitcoin, valuables)')}</option><option value="case">${tx('Solo cajas y contenedores', 'Only cases and containers')}</option><option value="val">${tx('Solo bitcoin y objetos valiosos', 'Only bitcoin and valuables')}</option><option value="all">${tx('Todos los tradeos', 'All barters')}</option></select></label>`;
+  } else if (S.view === 'friends') {
+    app.classList.add('wide'); ctl = '';
   } else if (S.view === 'plan') {
     app.classList.add('wide');
     ctl = `<span style="color:var(--mute);font-size:13px">${tx('Las misiones se añaden con el botón ⚑ de la pestaña Misiones. Al marcar un objetivo como hecho, su punto desaparece del mapa.', 'Quests are added with the ⚑ button in the Quests tab. When you tick an objective as done, its point disappears from the map.')}</span>
@@ -1674,7 +1688,7 @@ function renderView(){
     else if (iv === 'hideout') ctl = seg + srch(tx('Buscar una estación o un item…', 'Search a station or an item…')) + ch('hnext', tx('Solo el siguiente nivel', 'Next level only'), S.hnext) + ch('hideBuilt', tx('Ocultar terminadas', 'Hide finished'), S.hideBuilt) + ch('hready', tx('Listas para construir', 'Ready to build'), S.hready);
     else ctl = seg + srch(tx('Buscar un item…', 'Search an item…')) + ch('ihide', tx('Ocultar conseguidos', 'Hide collected'), S.ihide) + ch('isrc', tx('Todos', 'All'), S.isrc === 'all', 'all') + ch('isrc', tx('Solo Hideout', 'Hideout only'), S.isrc === 'h', 'h') + ch('isrc', tx('Solo misiones', 'Quests only'), S.isrc === 'q', 'q') + ch('isrc', '🎯 ' + tx('En incursión', 'Found in raid'), S.isrc === 'fir', 'fir');
   }
-  app.innerHTML = `<div class="controls">${ctl}</div><div class="sum" id="sum"></div><div id="list"></div>`;
+  app.innerHTML = `${ctl ? `<div class="controls">${ctl}</div>` : ''}<div class="sum" id="sum"></div><div id="list"></div>`;
   if ($('#trader')) $('#trader').value = S.trader;
   if ($('#itemFilter')) $('#itemFilter').value = S.itemFilter;
   if ($('#hview')) $('#hview').value = S.hview;
@@ -1777,6 +1791,83 @@ function renderGunDetail(t, sum, list){
 const T_CASE = /(^|-)case$|secure-container|-container$/, T_VAL = /bitcoin|graphics-card|ledx|red-rebel|keycard|vpx|tetriz|rfid|virtex|ssd|ultralink|gold|roler|rolex/;
 function itemValue(id){ const it = D.items[id], p = P && P.byId[id]; if (p && p.flea != null) return [p.flea, 'flea']; if (p && p.avg != null) return [p.avg, 'avg']; return [it ? it.bp : 0, 'base']; }
 function itemCost(id){ const c = cheapest(id), it = D.items[id]; return c != null ? [c, 'real'] : [it ? it.bp : 0, 'base']; }
+/* ───────── Vista: Amigos (comparar misiones hechas) ───────── */
+const FR_P = 8;
+const b64e = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64d = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
+function frMine(){ return D.tasks.filter(t => !t.custom && S.done[t.id]).map(t => t.id.slice(0, FR_P)); }
+function frPayload(){ return { tkv: 1, n: (S.myname || '').trim() || tx('Yo', 'Me'), m: S.mode, ts: Date.now(), d: frMine() }; }
+function frCode(){ return 'TKV1.' + b64e(JSON.stringify(frPayload())); }
+function frParse(txt){
+  txt = (txt || '').trim(); if (!txt) throw new Error('vacío');
+  let o; if (txt[0] === '{') o = JSON.parse(txt); else { const m = /TKV1\.([A-Za-z0-9_-]+)/.exec(txt); if (!m) throw new Error('formato'); o = JSON.parse(b64d(m[1])); }
+  if (!o || !Array.isArray(o.d)) throw new Error('formato');
+  return { n: String(o.n || '').slice(0, 30), m: o.m === 'regular' ? 'regular' : 'pve', ts: o.ts || Date.now(), d: o.d.filter(x => typeof x === 'string').slice(0, 2000) };
+}
+function frSave(name, f){
+  name = (name || f.n || tx('Amigo', 'Friend')).trim().slice(0, 30); S.friends = S.friends || {}; S.friends[name] = { m: f.m, ts: f.ts, d: f.d }; S.fsel = name; saveState(); return name;
+}
+function frCompare(){
+  const f = S.friends && S.friends[S.fsel]; if (!f) return null;
+  const set = new Set(f.d), real = D.tasks.filter(t => !t.custom);
+  const mine = real.filter(t => S.done[t.id] && !set.has(t.id.slice(0, FR_P))), theirs = real.filter(t => !S.done[t.id] && set.has(t.id.slice(0, FR_P)));
+  const both = real.filter(t => S.done[t.id] && set.has(t.id.slice(0, FR_P))).length;
+  return { f, mine, theirs, both, myN: real.filter(t => S.done[t.id]).length, frN: real.filter(t => set.has(t.id.slice(0, FR_P))).length, total: real.length };
+}
+function frCol(list, kind, fname){
+  const by = new Map(); list.forEach(t => { if (S.ftr && S.ftr !== 'all' && t.trader.key !== S.ftr) return; if (!by.has(t.trader.key)) by.set(t.trader.key, []); by.get(t.trader.key).push(t); });
+  const groups = D.groups.filter(g => by.has(g.key)), n = groups.reduce((s, g) => s + by.get(g.key).length, 0);
+  const head = kind === 'mine' ? tx('Tú las tienes y ' + fname + ' no', 'You have them, ' + fname + ' does not') : tx(fname + ' las tiene y tú no', fname + ' has them, you do not');
+  return `<section class="fcol ${kind}"><div class="fch"><h3>${esc(head)}</h3><span class="fpill">${n}</span><button class="btn sm" data-act="fcopylist" data-id="${kind}" title="${tx('Copiar esta lista para pegarla en Discord', 'Copy this list to paste it in Discord')}">${tx('Copiar lista', 'Copy list')}</button></div>`
+    + (n ? groups.map(g => `<div class="fg"><div class="fgt"><i style="background:${trColor(g.key)}"></i>${esc(g.name)}<small>${by.get(g.key).length}</small></div>`
+      + by.get(g.key).sort((a, b) => a.lvl - b.lvl || a.name.localeCompare(b.name, LOC())).map(t => `<div class="frow"><div class="frn"><b>${esc(t.name)}</b>${t.kappa ? ' <span class="kp" title="Kappa">★</span>' : ''}<small>${t.map ? esc(t.map) + ' · ' : ''}${tx('nv.', 'lvl')} ${t.lvl}</small></div><button class="btn sm" data-act="frgo" data-id="${esc(t.id)}">${tx('Ver', 'View')}</button></div>`).join('') + `</div>`).join('')
+      : `<div class="fempty">${kind === 'mine' ? tx('No tienes misiones que ' + fname + ' no haya hecho. ¡Estáis al día!', 'You have no quests that ' + fname + ' has not done.') : tx(fname + ' no tiene misiones que tú no hayas hecho.', fname + ' has no quests you have not done.')}</div>`) + `</section>`;
+}
+function renderFriends(){
+  const fr = S.friends || {}, names = Object.keys(fr);
+  if (names.length && !fr[S.fsel]) S.fsel = names[0];
+  const c = frCompare(), fname = c ? S.fsel : '';
+  $('#sum').innerHTML = '';
+  const mineCard = `<div class="fcard"><h4>${tx('1 · Guarda tu progreso', '1 · Save your progress')}</h4>
+    <p class="m">${tx('Genera un archivo o un código con las misiones que has completado y mándaselo a tus amigos (por Discord, WhatsApp…). Solo contiene los nombres internos de tus misiones hechas, nada más.', 'Create a file or a code with the quests you have completed and send it to your friends. It only holds the internal ids of your completed quests.')}</p>
+    <label class="fl">${tx('Tu nombre (para que tus amigos sepan de quién es)', 'Your name (so your friends know whose it is)')}<input type="text" id="fmy" maxlength="30" value="${esc(S.myname || '')}" placeholder="${tx('Ej.: Bull', 'E.g.: Bull')}"></label>
+    <div class="frb"><button class="btn" data-act="fsave">⬇ ${tx('Guardar archivo', 'Save file')}</button><button class="btn" data-act="fcopy">⧉ ${tx('Copiar código', 'Copy code')}</button></div>
+    <p class="m" style="margin:8px 0 0;font-size:12.5px">${tx('Misiones completadas incluidas', 'Completed quests included')}: <b>${frMine().length}</b> · ${tx('Modo', 'Mode')}: ${S.mode.toUpperCase()}</p></div>`;
+  const loadCard = `<div class="fcard"><h4>${tx('2 · Carga el progreso de un amigo', '2 · Load a friend\'s progress')}</h4>
+    <p class="m">${tx('Pega aquí el código que te pase tu amigo o sube su archivo. Se queda guardado en tu navegador, así que no hace falta repetirlo cada vez; cuando él avance, cárgalo otra vez con el mismo nombre y se actualiza.', 'Paste the code your friend sent or upload their file. It stays saved in your browser; when they progress, load it again with the same name to update it.')}</p>
+    <label class="fl">${tx('Nombre del amigo (opcional si el código ya lo trae)', 'Friend name (optional if the code has it)')}<input type="text" id="ffn" maxlength="30" placeholder="${tx('Ej.: Gimenawer', 'E.g.: Gimenawer')}"></label>
+    <textarea id="fcode" rows="3" placeholder="TKV1.…"></textarea>
+    <div class="frb"><button class="btn pri" data-act="fload">${tx('Cargar código', 'Load code')}</button><button class="btn" data-act="ffile">${tx('Subir archivo…', 'Upload file…')}</button></div><div id="fmsg" class="m" style="margin-top:8px;font-size:12.5px"></div></div>`;
+  let cmp = '';
+  if (c) {
+    const diffMode = c.f.m !== S.mode;
+    const kpis = [[tx('Tus misiones hechas', 'Your completed quests'), c.myN + ' / ' + c.total], [esc(fname), c.frN + ' / ' + c.total], [tx('Tú vas por delante en', 'You are ahead on'), c.mine.length], [esc(fname) + ' ' + tx('va por delante en', 'is ahead on'), c.theirs.length]];
+    cmp = `<div class="fbar"><label>${tx('Comparar con', 'Compare with')} <select id="fsel">${names.map(n => `<option value="${esc(n)}" ${n === S.fsel ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
+      <label>${tx('Vendedor', 'Trader')} <select id="ftr"><option value="all">${tx('Todos', 'All')}</option>${D.groups.map(g => `<option value="${esc(g.key)}" ${S.ftr === g.key ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>
+      <span class="m" style="font-size:12.5px">${tx('Datos de', 'Data from')} ${new Date(c.f.ts).toLocaleDateString(S.lang === 'en' ? 'en-GB' : 'es-ES')}</span>
+      <button class="btn sm bad" data-act="fdel" style="margin-left:auto">${tx('Quitar a', 'Remove')} ${esc(fname)}</button></div>`
+      + (diffMode ? `<div class="msg">${tx('Ojo: este progreso es del modo ' + c.f.m.toUpperCase() + ' y tú estás en ' + S.mode.toUpperCase() + '. Las comparaciones pueden no ser correctas.', 'Careful: this progress is from ' + c.f.m.toUpperCase() + ' mode and you are in ' + S.mode.toUpperCase() + '.')}</div>` : '')
+      + kpiHtml(kpis) + `<div class="fgrid">${frCol(c.mine, 'mine', fname)}${frCol(c.theirs, 'theirs', fname)}</div>`;
+  } else cmp = `<div class="fhint">${tx('Aún no has cargado a ningún amigo. Cuando lo hagas, aquí verás en dos listas qué misiones has hecho tú y no ellos, y al revés.', 'You have not loaded any friend yet. Once you do, two lists will show the quests you did and they did not, and the other way round.')}</div>`;
+  $('#list').innerHTML = `<div class="fwrap"><div class="ftop">${mineCard}${loadCard}</div>${cmp}</div>`;
+}
+async function frCopy(txt){ try { await navigator.clipboard.writeText(txt); return true; } catch (e) { try { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; } catch (e2) { return false; } } }
+function frDownload(){
+  const blob = new Blob([JSON.stringify(frPayload())], { type: 'application/json' }), u = URL.createObjectURL(blob), l = document.createElement('a');
+  l.href = u; l.download = 'tarkov-misiones-' + ((S.myname || 'yo').trim().replace(/[^\w-]+/g, '_') || 'yo') + '.json'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+}
+function frAct(a, id, t){
+  const msg = (x, bad) => { const m = $('#fmsg'); if (m) { m.textContent = x; m.style.color = bad ? 'var(--bad)' : 'var(--ok)'; } else setStatus(x, bad ? 'warn' : ''); };
+  if (a === 'fsave') { const v = $('#fmy'); if (v) { S.myname = v.value; saveState(); } frDownload(); }
+  else if (a === 'fcopy') { const v = $('#fmy'); if (v) { S.myname = v.value; saveState(); } frCopy(frCode()).then(ok => setStatus(ok ? tx('Código copiado. Pégalo en el chat de tu amigo.', 'Code copied. Paste it into your friend\'s chat.') : tx('No se pudo copiar. Usa «Guardar archivo».', 'Could not copy. Use “Save file”.'), ok ? '' : 'warn')); }
+  else if (a === 'ffile') { $('#friendFile').click(); }
+  else if (a === 'fload') { try { const f = frParse($('#fcode').value), nm = frSave($('#ffn').value, f); renderFriends(); const m = $('#fmsg'); if (m) { m.textContent = tx('Cargado: ', 'Loaded: ') + nm + ' (' + f.d.length + ' ' + tx('misiones hechas', 'completed quests') + ')'; m.style.color = 'var(--ok)'; } } catch (e) { msg(tx('Ese código no es válido. Pídele a tu amigo que lo copie otra vez entero, o que te mande el archivo.', 'That code is not valid. Ask your friend to copy it again in full, or send the file.'), true); } }
+  else if (a === 'fdel') { if (S.friends && S.friends[S.fsel]) { delete S.friends[S.fsel]; S.fsel = ''; saveState(); renderFriends(); } }
+  else if (a === 'frgo') { S.view = 'quests'; S.trader = 'all'; S.sel = id; S.q = ''; saveState(); renderView(); setTimeout(() => { try { centerOn(id); } catch (e) {} }, 60); }
+  else if (a === 'fcopylist') { const c = frCompare(); if (!c) return; const list = id === 'mine' ? c.mine : c.theirs; const head = id === 'mine' ? tx('Misiones que yo tengo y ' + S.fsel + ' no:', 'Quests I have and ' + S.fsel + ' does not:') : tx('Misiones que ' + S.fsel + ' tiene y yo no:', 'Quests ' + S.fsel + ' has and I do not:');
+    const lines = list.filter(x => !S.ftr || S.ftr === 'all' || x.trader.key === S.ftr).sort((x, y) => x.trader.name.localeCompare(y.trader.name, LOC()) || x.lvl - y.lvl).map(x => '- ' + x.name + ' (' + x.trader.name + ', ' + tx('nv.', 'lvl') + ' ' + x.lvl + ')');
+    frCopy(head + '\n' + lines.join('\n')).then(ok => setStatus(ok ? tx('Lista copiada.', 'List copied.') : tx('No se pudo copiar.', 'Could not copy.'), ok ? '' : 'warn')); }
+}
 function renderTrade(){
   const q = norm(S.q), f = S.tfilter, tr = D.traders || {};
   const trImg = id => { const x = Object.values(tr).find(t => t.id === id); return x ? x.img : ''; };
@@ -1909,7 +2000,7 @@ function fitPanes(){
 function renderList(){
   if (!D) return; const y = window.scrollY;
   updTabs();
-  if (S.view === 'quests') renderQuests(); else if (S.view === 'plan') renderPlan(); else if (S.view === 'trade') renderTrade(); else if (S.view === 'gun') renderGun(); else renderBoth();
+  if (S.view === 'quests') renderQuests(); else if (S.view === 'plan') renderPlan(); else if (S.view === 'trade') renderTrade(); else if (S.view === 'friends') renderFriends(); else if (S.view === 'gun') renderGun(); else renderBoth();
   renderDrawer(); window.scrollTo(0, y);
 }
 
@@ -1920,6 +2011,7 @@ document.addEventListener('click', e => {
   const a = t.dataset.act, id = t.dataset.id, store = t.dataset.store;
   if (a === 'reload') { boot(true); }
   else if (a === 'prices') { loadPrices(true).then(() => { statusReady(); renderList(); }); }
+  else if (/^(fsave|fcopy|ffile|fload|fdel|frgo|fcopylist)$/.test(a)) { frAct(a, id, t); }
   else if (a === 'export') {
     const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' }); const u = URL.createObjectURL(blob);
     const l = document.createElement('a'); l.href = u; l.download = 'tarkov-progreso.json'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
@@ -1985,6 +2077,9 @@ document.addEventListener('change', e => {
   else if (t.id === 'trader') { S.trader = t.value; saveState(); renderList(); }
   else if (a === 'gown') { const k = t.dataset.k; if (t.checked) S.gown[k] = true; else delete S.gown[k]; saveState(); renderList(); }
   else if (t.id === 'kappaOnly') { S.kappaOnly = t.checked; saveState(); renderList(); }
+  else if (t.id === 'fsel') { S.fsel = t.value; saveState(); renderFriends(); }
+  else if (t.id === 'ftr') { S.ftr = t.value; saveState(); renderFriends(); }
+  else if (t.id === 'friendFile' && t.files[0]) { const rd = new FileReader(); rd.onload = () => { try { const f = frParse(rd.result), nm = frSave($('#ffn') ? $('#ffn').value : '', f); renderFriends(); const m = $('#fmsg'); if (m) { m.textContent = tx('Cargado: ', 'Loaded: ') + nm + ' (' + f.d.length + ' ' + tx('misiones hechas', 'completed quests') + ')'; m.style.color = 'var(--ok)'; } } catch (err) { const m = $('#fmsg'); if (m) { m.textContent = tx('Ese archivo no es válido.', 'That file is not valid.'); m.style.color = 'var(--bad)'; } } }; rd.readAsText(t.files[0]); t.value = ''; }
   else if (t.id === 'tfilter') { S.tfilter = t.value; saveState(); renderList(); }
   else if (t.id === 'extShow') { S.extShow = t.checked; saveState(); renderList(); }
   else if (t.id === 'extNames') { S.extNames = t.checked; saveState(); renderList(); }
@@ -2045,12 +2140,12 @@ async function boot(force){
     diagnose().then(t => { const p = $('#diag'); if (p) p.textContent = t; });
   }
 }
-function updTabs(){ const n = D ? D.tasks.filter(t => S.plan[t.id]).length : Object.keys(S.plan || {}).length; const e = $('#tabs [data-view=plan]'); if (e) e.textContent = '⚑ ' + tx('Mi plan', 'My plan') + ' (' + n + ')'; }
+function updTabs(){ const fe = $('#tabs [data-view=friends]'); if (fe) fe.textContent = '👥 ' + tx('Amigos', 'Friends'); const n = D ? D.tasks.filter(t => S.plan[t.id]).length : Object.keys(S.plan || {}).length; const e = $('#tabs [data-view=plan]'); if (e) e.textContent = '⚑ ' + tx('Mi plan', 'My plan') + ' (' + n + ')'; }
 function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 20 · Llaves de botín', 'version 20 · Loot keys');
+  $('#ver').textContent = tx('versión 21 · Amigos', 'version 21 · Friends');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
