@@ -79,6 +79,10 @@ ul.list{list-style:none;margin:0;padding:0 12px 10px}
 .frow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--p2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}.frn b{font-weight:600}.frn small{display:block;color:var(--mute);font-size:12px;margin-top:1px}.kp{color:#c9b27a}
 .fempty,.fhint{color:var(--mute);padding:18px;text-align:center;border:1px dashed var(--line);border-radius:12px;font-size:13.5px}
 @media(max-width:900px){.ftop,.fgrid{grid-template-columns:1fr}}
+.nfl{position:absolute;right:38px;bottom:4px;background:#0007;border:1px solid #48535e;color:#8896a6;border-radius:6px;font-size:12px;line-height:1;padding:3px 7px;cursor:pointer;z-index:2}.nfl:hover{border-color:var(--bad);color:var(--txt)}.nfl.on{background:#5a2b27;color:#ffd9d4;border-color:var(--bad)}
+.node.failed{border-color:#7b3f3a!important;background:linear-gradient(180deg,#2a1f20,#1a1516)!important}.node.failed .av{border-color:var(--bad)!important}.node.failed .nt{text-decoration:line-through;color:#b58a86!important}
+.lg.fail{border-color:var(--bad);background:#2a1f20}.b.bad{color:var(--bad);border-color:#7b3f3a}
+.prow .pst{display:flex;gap:6px;margin-top:6px}.prow.failed{opacity:.6;border-color:#7b3f3a}.btn.sm.bad.on{background:#5a2b27;border-color:var(--bad);color:#ffd9d4}
 .b.key{color:#b79be8;border-color:#5d4a8a}
 .item{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .item.done{opacity:.55}
@@ -256,7 +260,7 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 #pmap.drag{cursor:grabbing}
 #pin{position:absolute;left:0;top:0;transform-origin:0 0;background:#0f1216}
 #pin img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
-.pdot{position:absolute;width:13px;height:13px;border-radius:50%;background:#e5271b;border:2px solid #fff;box-shadow:0 0 0 2px #0008,0 0 8px #e5271bcc;transform:translate(-50%,-50%) scale(calc(1 / var(--z,1)));cursor:pointer}
+.pdot{position:absolute;width:13px;height:13px;border-radius:50%;background:var(--pc,#e5271b);border:2px solid #fff;box-shadow:0 0 0 2px #0008,0 0 8px var(--pc,#e5271b);transform:translate(-50%,-50%) scale(calc(1 / var(--z,1)));cursor:pointer}
 .pdot.loc{width:9px;height:9px;opacity:.8;border-width:1.5px}
 .pdot.dim{opacity:.18}
 .pdot.foc{box-shadow:0 0 0 3px #ffd34d,0 0 12px #ffd34d}
@@ -274,7 +278,7 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 .pchk{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--mute);margin:0 0 8px}.pchk label{display:flex;gap:5px;align-items:center;cursor:pointer}
 .pnote{font-size:12px;color:var(--mute);margin:6px 0 0;min-height:16px}
 #plabel{font-size:12.5px;color:var(--txt);margin-top:6px;min-height:18px}
-.prow{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:#13171b;cursor:pointer}
+.prow{border:1px solid var(--line);border-left:5px solid var(--pc,var(--line));border-radius:8px;padding:8px 10px;margin-bottom:8px;background:#13171b;background:color-mix(in srgb,var(--pc,#13171b) 13%,#13171b);cursor:pointer}.prow .pcd{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pc);vertical-align:middle;margin-right:4px}
 .prow.foc{border-color:#ffd34d}
 .prow.done{opacity:.5}
 .prow .pt{display:flex;gap:8px;align-items:flex-start;font-weight:700;font-size:13.5px}
@@ -831,7 +835,7 @@ const stn = id => { const x = D && D.stn && D.stn[id]; return x ? (S.lang === 'e
 const searchLink = name => WIKI + 'Special:Search?query=' + encodeURIComponent(name);
 
 /* ───────── Estado (progreso del usuario) ───────── */
-let S = { mode:'pve', done:{}, story:{}, hideout:{}, collected:{}, hcol:{}, icol:{}, iview:'items', isrc:'all', ihide:true, kmap:'all', kdet:null, hnext:true, hready:false, hopen:{}, order:[], level:0, view:'quests',
+let S = { mode:'pve', done:{}, fail:{}, story:{}, hideout:{}, collected:{}, hcol:{}, icol:{}, iview:'items', isrc:'all', ihide:true, kmap:'all', kdet:null, hnext:true, hready:false, hopen:{}, order:[], level:0, view:'quests',
           lang:null, plan:{}, pmap:null, pfocus:null, planOpen:true, tfilter:'imp', extShow:true, extNames:true, hideDone:false, hideLocked:false, hideBuilt:true, q:'', trader:'prapor', obj:{}, sobj:{}, chapter:null, sel:null, zoom:1, itemFilter:'pending', hview:'summary', open:{}, custom:[], adding:false, gsel:null, gown:{} };
 function loadState(){ try { const r = localStorage.getItem(LS_STATE); if (r) S = Object.assign(S, JSON.parse(r)); } catch(e){} if (S.view === 'hideout' || S.view === 'items') S.view = 'both';
   if (!S.icol) S.icol = {}; if (!S.hopen) S.hopen = {};
@@ -1123,7 +1127,8 @@ function counter(store, id, need){
 const NW = 300, NH = 88, GX = 70, GY = 14;
 let treeKey = '';
 const ancestors = (id, acc = new Set()) => { const t = D.byId[id]; if (t) t.req.forEach(r => { if (!acc.has(r) && D.byId[r]) { acc.add(r); ancestors(r, acc); } }); return acc; };
-const stateOf = t => S.done[t.id] ? 'done' : (t.req.every(r => S.done[r] || !D.byId[r]) ? 'avail' : 'lock');
+const isDone = id => !!(S.done[id] || (S.fail && S.fail[id]));
+const stateOf = t => isDone(t.id) ? 'done' : (t.req.every(r => isDone(r) || !D.byId[r]) ? 'avail' : 'lock');
 
 const TCOL = ['#d89a4a','#4fb3b5','#9a7be0','#5a9be6','#e0cd55','#e0679a','#7ccb62','#e07a5a','#6ad0a8','#b0b0b0'];
 let lastL = null;
@@ -1181,8 +1186,8 @@ function chipsHtml(){
     return `<button class="chip ${S.trader === key ? 'on' : ''}" data-act="chip" data-id="${esc(key)}" ${col ? `style="--tc:${col}"` : ''}>${img ? `<img src="${esc(img)}" alt="">` : '<span class="av0"></span>'}<span class="cn">${esc(name)}</span><span class="cc">${done}/${total}</span><i style="width:${pct}%"></i></button>`;
   };
   const sp = storyProgress();
-  return '<div class="chips">' + chip('all', tx('Todos', 'All'), '', D.tasks.filter(t => S.done[t.id]).length, D.tasks.length).replace('<span class="av0"></span>', '<span class="av0 story">✦</span>')
-    + D.groups.map(g => chip(g.key, g.name, (tr[g.key] || {}).img, g.tasks.filter(t => S.done[t.id]).length, g.tasks.length, trColor(g.key))).join('')
+  return '<div class="chips">' + chip('all', tx('Todos', 'All'), '', D.tasks.filter(t => isDone(t.id)).length, D.tasks.length).replace('<span class="av0"></span>', '<span class="av0 story">✦</span>')
+    + D.groups.map(g => chip(g.key, g.name, (tr[g.key] || {}).img, g.tasks.filter(t => isDone(t.id)).length, g.tasks.length, trColor(g.key))).join('')
     + chip('story', tx('Historia', 'Story'), '', sp.d, sp.tot).replace('<span class="av0"></span>', '<span class="av0 story">H</span>') + '</div>';
 }
 
@@ -1233,32 +1238,33 @@ function renderQuests(){
     renderDrawer(); return;
   }
   const q = norm(S.q), z = S.zoom || 1, focus = S.trader !== 'all' ? S.trader : null;
-  const vis = D.tasks.filter(t => !(S.hideDone && S.done[t.id]) && !(S.hideLocked && !S.done[t.id] && (stateOf(t) === 'lock' || (S.level && t.lvl > S.level))));
+  const vis = D.tasks.filter(t => !(S.hideDone && isDone(t.id)) && !(S.hideLocked && !isDone(t.id) && (stateOf(t) === 'lock' || (S.level && t.lvl > S.level))));
   const L = layoutAll(vis); lastL = L;
   const mine = focus ? D.tasks.filter(t => t.trader.key === focus) : D.tasks;
-  const done = mine.filter(t => S.done[t.id]).length, avail = mine.filter(t => stateOf(t) === 'avail').length;
+  const done = mine.filter(t => isDone(t.id)).length, avail = mine.filter(t => stateOf(t) === 'avail').length;
   const gname = focus ? (D.groups.find(g => g.key === focus) || {}).name : tx('Todos los comerciantes', 'All traders');
   $('#sum').innerHTML = `${esc(gname)}: ` + tx(`<b>${done}</b> de <b>${mine.length}</b> completadas · <b>${avail}</b> disponibles ahora. Pulsa una misión para ver todo lo que hay que hacer.`, `<b>${done}</b> of <b>${mine.length}</b> completed · <b>${avail}</b> available now. Click a quest to see everything you have to do.`);
   const byId = D.byId;
   const paths = L.edges.map(([a, b]) => {
     const A = L.pos.get(a), B = L.pos.get(b), x1 = A.x + NW, y1 = A.y + NH / 2, x2 = B.x, y2 = B.y + NH / 2, dx = Math.max(30, Math.min(160, (x2 - x1) / 2));
-    const cls = (S.done[a] ? (S.done[b] ? 'done' : 'go') : '') + (S.sel && (a === S.sel || b === S.sel) ? ' hl' : '') + (focus && byId[a].trader.key !== focus && byId[b].trader.key !== focus ? ' faded' : '');
+    const cls = (isDone(a) ? (isDone(b) ? 'done' : 'go') : '') + (S.sel && (a === S.sel || b === S.sel) ? ' hl' : '') + (focus && byId[a].trader.key !== focus && byId[b].trader.key !== focus ? ' faded' : '');
     return `<path class="${cls}" style="--c:${trColor(byId[a].trader.key)}" d="M${x1} ${y1} C${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}"/>`;
   }).join('');
   const nodes = vis.map(t => {
     const p = L.pos.get(t.id), st = stateOf(t), low = S.level && t.lvl > S.level, tr = (D.traders || {})[t.trader.key] || {};
     const meta = [esc(t.trader.name), t.lvl ? `<span class="${low ? 'warnTxt' : ''}">${tx('Nv.', 'Lv.')} ${t.lvl}</span>` : '', t.kappa ? '<span class="kap">Kappa</span>' : '', t.map ? esc(t.map) : ''].filter(Boolean).join(' · ');
     const off = (q && !matchQ(t, q)) ? 'dim' : (focus && t.trader.key !== focus ? 'dim2' : (S.kappaOnly && !t.kappa ? 'dim2' : ''));
-    return `<div class="node st-${st} ${t.kappa ? 'kappa' : ''} ${S.sel === t.id ? 'sel' : ''} ${off}" style="left:${p.x}px;top:${p.y}px;--tc:${trColor(t.trader.key)}" data-act="node" data-id="${esc(t.id)}" title="${esc(t.name)}">
+    return `<div class="node st-${st} ${S.fail[t.id] ? 'failed' : ''} ${t.kappa ? 'kappa' : ''} ${S.sel === t.id ? 'sel' : ''} ${off}" style="left:${p.x}px;top:${p.y}px;--tc:${trColor(t.trader.key)}" data-act="node" data-id="${esc(t.id)}" title="${esc(t.name)}">
       ${tr.img ? `<img class="av" src="${esc(tr.img)}" alt="" loading="lazy">` : '<span class="av"></span>'}
       <div class="nb"><div class="nt">${esc(t.name)}</div><div class="nm">${meta}</div></div>
       <label class="nchk" data-act="noop" title="${tx('Marcar como completada', 'Mark as completed')}"><input type="checkbox" data-act="task" data-id="${esc(t.id)}" ${S.done[t.id] ? 'checked' : ''}></label>
+      <button class="nfl ${S.fail[t.id] ? 'on' : ''}" data-act="togglefail" data-id="${esc(t.id)}" title="${S.fail[t.id] ? tx('Quitar el marcador de fallada', 'Remove the failed mark') : tx('Marcar como fallada', 'Mark as failed')}">✗</button>
       <button class="npl ${S.plan[t.id] ? 'on' : ''}" data-act="plan" data-id="${esc(t.id)}" title="${S.plan[t.id] ? tx('Quitar de mi plan', 'Remove from my plan') : tx('Añadir a mi plan', 'Add to my plan')}">⚑</button></div>`;
   }).join('');
   const old = $('#treewrap'); const sl = old ? old.scrollLeft : 0, stp = old ? old.scrollTop : 0;
   const key = S.mode + ':' + S.trader;
   const mainHtml = chips + (vis.length
-    ? `<div class="legend"><span><i class="lg kap"></i> ${tx('Necesaria para el Kappa', 'Required for Kappa')}</span><span><i class="lg avail"></i> ${tx('Disponible', 'Available')}</span><span><i class="lg lock"></i> ${tx('Bloqueada', 'Locked')}</span><span><i class="lg done"></i> ${tx('Completada', 'Completed')}</span><span>${tx('Cada línea sale de la misión previa y llega a la que desbloquea (el color es el del comerciante de la previa). Arrastra el fondo para moverte; Ctrl + rueda = zoom.', 'Each line goes from the previous quest to the one it unlocks (the colour is the previous quest’s trader). Drag the background to move around; Ctrl + wheel = zoom.')}</span></div>
+    ? `<div class="legend"><span><i class="lg kap"></i> ${tx('Necesaria para el Kappa', 'Required for Kappa')}</span><span><i class="lg avail"></i> ${tx('Disponible', 'Available')}</span><span><i class="lg lock"></i> ${tx('Bloqueada', 'Locked')}</span><span><i class="lg done"></i> ${tx('Completada', 'Completed')}</span><span><i class="lg fail"></i> ${tx('Fallada', 'Failed')}</span><span>${tx('Cada línea sale de la misión previa y llega a la que desbloquea (el color es el del comerciante de la previa). Arrastra el fondo para moverte; Ctrl + rueda = zoom.', 'Each line goes from the previous quest to the one it unlocks (the colour is the previous quest’s trader). Drag the background to move around; Ctrl + wheel = zoom.')}</span></div>
        <div class="tree-wrap" id="treewrap"><div class="tree-sizer" style="width:${L.W * z}px;height:${L.H * z}px"><div class="tree" style="width:${L.W}px;height:${L.H}px;transform:scale(${z})"><svg class="edges" width="${L.W}" height="${L.H}">${paths}</svg>${nodes}</div></div></div>`
     : `<div class="msg">${tx('No quedan misiones por mostrar con este filtro.', 'No quests left to show with this filter.')}</div>`);
   $('#list').innerHTML = mainHtml;
@@ -1301,17 +1307,18 @@ function renderDrawer(){
   if (S.adding && S.view === 'quests' && S.trader !== 'story') { el.innerHTML = addFormHtml(); el.classList.add('open'); sc.classList.add('open'); return; }
   const t = S.sel && D && D.byId[S.sel];
   if (!t || S.view !== 'quests' || S.trader === 'story') { el.classList.remove('open'); sc.classList.remove('open'); return; }
-  const tr = (D.traders || {})[t.trader.key] || {}, done = !!S.done[t.id];
+  const tr = (D.traders || {})[t.trader.key] || {}, failed = !!S.fail[t.id], done = !!S.done[t.id] || failed;
   const prev = t.req.map(r => D.byId[r]).filter(Boolean), next = D.tasks.filter(x => x.req.includes(t.id));
-  const lk = x => `<button class="lk ${S.done[x.id] ? 'ok' : ''}" data-act="node" data-id="${esc(x.id)}">${S.done[x.id] ? '✓ ' : ''}${esc(x.name)}</button><small> ${x.trader.key !== t.trader.key ? '(' + esc(x.trader.name) + ')' : ''}</small>`;
+  const lk = x => `<button class="lk ${isDone(x.id) ? 'ok' : ''}" data-act="node" data-id="${esc(x.id)}">${S.fail[x.id] ? '✗ ' : (S.done[x.id] ? '✓ ' : '')}${esc(x.name)}</button><small> ${x.trader.key !== t.trader.key ? '(' + esc(x.trader.name) + ')' : ''}</small>`;
   const objs = (t.obj || []).map(o => `<label class="obj ${(S.obj[o.id] || done) ? 'on' : ''}"><input type="checkbox" data-act="obj" data-id="${esc(o.id)}" ${(S.obj[o.id] || done) ? 'checked' : ''} ${done ? 'disabled' : ''}><span>${esc(o.x || tx('Objetivo sin texto', 'Objective without text'))}${o.op ? ` <span class="b">${tx('opcional', 'optional')}</span>` : ''}</span></label>`).join('');
   const reqs = (D.reqs[t.id] || []).map(r => { const it = D.items[r.itemId]; if (!it) return '';
     return `<li>${r.type === 'access' ? tx('Llave necesaria (no se gasta): ', 'Key required (not consumed): ') : r.count + '× '}${itemLink(it)} ${it.key ? `<span class="b key">${tx('Llave', 'Key')}</span>` : ''} ${r.fir && r.type !== 'access' ? `<span class="b fir">${tx('En incursión', 'Found in raid')}</span>` : ''}</li>`; }).join('');
-  const many = ancestors(t.id); const pendingPrev = [...many].filter(id => !S.done[id]).length;
+  const many = ancestors(t.id); const pendingPrev = [...many].filter(id => !isDone(id)).length;
   el.innerHTML = `<div class="dh">${tr.img ? `<img src="${esc(tr.img)}" alt="">` : ''}<div><div class="dtr">${esc(t.trader.name)}</div><h2>${esc(t.name)}</h2>
-      <div class="dmeta">${t.lvl ? `<span class="b">${tx('Nv.', 'Lv.')} ${t.lvl}</span>` : ''} ${t.kappa ? '<span class="b kappa">Kappa</span>' : ''} ${t.map ? `<span class="b">${esc(t.map)}</span>` : ''} <span class="b ${done ? 'ok' : (stateOf(t) === 'avail' ? 'ok' : 'warn')}">${done ? tx('Completada', 'Completed') : (stateOf(t) === 'avail' ? tx('Disponible', 'Available') : tx('Bloqueada', 'Locked'))}</span></div></div>
+      <div class="dmeta">${t.lvl ? `<span class="b">${tx('Nv.', 'Lv.')} ${t.lvl}</span>` : ''} ${t.kappa ? '<span class="b kappa">Kappa</span>' : ''} ${t.map ? `<span class="b">${esc(t.map)}</span>` : ''} <span class="b ${failed ? 'bad' : (done ? 'ok' : (stateOf(t) === 'avail' ? 'ok' : 'warn'))}">${failed ? tx('Fallada', 'Failed') : done ? tx('Completada', 'Completed') : (stateOf(t) === 'avail' ? tx('Disponible', 'Available') : tx('Bloqueada', 'Locked'))}</span></div></div>
       <button class="x" data-act="closeDrawer" aria-label="${tx('Cerrar', 'Close')}">×</button></div>
-    <div class="dbtns"><button class="btn big ${done ? '' : 'prim'}" data-act="toggledone" data-id="${esc(t.id)}">${done ? tx('Marcar como pendiente', 'Mark as pending') : tx('Marcar como completada', 'Mark as completed')}</button>
+    <div class="dbtns"><button class="btn big ${done ? '' : 'prim'}" data-act="${S.fail[t.id] ? 'togglefail' : 'toggledone'}" data-id="${esc(t.id)}">${done ? tx('Marcar como pendiente', 'Mark as pending') : tx('Marcar como completada', 'Mark as completed')}</button>
+      ${S.fail[t.id] ? '' : `<button class="btn" data-act="togglefail" data-id="${esc(t.id)}" title="${tx('Para las misiones que hay que fallar a propósito para desbloquear otras', 'For quests you must fail on purpose to unlock others')}">✗ ${tx('Marcar como fallada', 'Mark as failed')}</button>`}
       ${!done && pendingPrev ? `<button class="btn" data-act="markprev" data-id="${esc(t.id)}">${tx(`Marcar también sus ${pendingPrev} previas`, `Also mark its ${pendingPrev} previous quests`)}</button>` : ''}
       <button class="btn ${S.plan[t.id] ? 'prim' : ''}" data-act="plan" data-id="${esc(t.id)}">⚑ ${S.plan[t.id] ? tx('Quitar de mi plan', 'Remove from my plan') : tx('Añadir a mi plan', 'Add to my plan')}</button>
       <a class="btn" href="${esc(t.wiki || searchLink(t.en || t.name))}" target="_blank" rel="noopener">${tx('Ver en la Tarkov Wiki ↗', 'View on the Tarkov Wiki ↗')}</a></div>
@@ -1372,14 +1379,15 @@ let KMAP = null;        // mapa que se ve en la ficha de la llave
 const WK = {};          // textos de la wiki ya descargados
 function consumeLevel(l){ l.items.forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special) return; S.icol[it.id] = Math.max(0, (S.icol[it.id] || 0) - r.count); }); }
 function consumeQuest(id){ (D.reqs[id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special || r.type === 'access') return; S.icol[it.id] = Math.max(0, (S.icol[it.id] || 0) - r.count); }); }
-function setDone(id, on){ if (on && !S.done[id]) { S.done[id] = true; consumeQuest(id); } else if (!on) delete S.done[id]; }
+function setDone(id, on){ if (on) delete S.fail[id]; if (on && !S.done[id]) { S.done[id] = true; consumeQuest(id); } else if (!on) delete S.done[id]; }
+function setFail(id, on){ if (on) { delete S.done[id]; S.fail[id] = true; } else delete S.fail[id]; }
 /* Lo que falta por conseguir: solo cuentan los niveles de Hideout sin construir y las misiones sin completar. */
 function itemNeeds(){
   const m = new Map();
   const ent = id => { let a = m.get(id); if (!a) { a = { id, item: D.items[id], hide: [], q: [], need: 0, fir: 0, nq: 0 }; m.set(id, a); } return a; };
   orderedStations().forEach(s => s.levels.forEach(l => { if (S.hideout[l.id]) return;
     l.items.forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special) return; const a = ent(r.itemId); a.hide.push({ s, l, n: r.count, fir: r.fir }); a.need += r.count; if (r.fir) a.fir += r.count; }); }));
-  D.tasks.forEach(t => { if (S.done[t.id]) return;
+  D.tasks.forEach(t => { if (isDone(t.id)) return;
     (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || it.key || it.special || r.type === 'access') return; const a = ent(r.itemId); a.q.push({ t, n: r.count, fir: r.fir, type: r.type }); a.need += r.count; a.nq += r.count; if (r.fir) a.fir += r.count; }); });
   const out = [...m.values()];
   out.forEach(a => { a.have = S.icol[a.id] || 0; a.left = Math.max(0, a.need - a.have); a.done = a.have >= a.need; });
@@ -1398,7 +1406,7 @@ function priceLine(id, left, firN){
 }
 function questRows(a){
   return [...a.q].sort((x, y) => x.t.lvl - y.t.lvl).map(u => { const t = u.t;
-    const prev = (t.req || []).map(i => D.byId[i]).filter(Boolean), miss = prev.filter(p => !S.done[p.id]);
+    const prev = (t.req || []).map(i => D.byId[i]).filter(Boolean), miss = prev.filter(p => !isDone(p.id));
     const unlock = `${tx('Nivel', 'Level')} ${t.lvl}${prev.length ? ' · ' + tx('requiere', 'requires') + ' ' + prev.slice(0, 2).map(p => esc(p.name)).join(', ') + (prev.length > 2 ? '…' : '') : ''}`;
     const cond = (u.fir ? `<span class="bd r">🎯 ${tx('En incursión', 'Found in raid')}</span>` : `<span class="bd g">${tx('Vale comprado', 'Bought is fine')}</span>`)
       + (miss.length ? ` <span class="bd w">${tx('Bloqueada', 'Locked')}</span> <span class="m">${tx(`faltan ${miss.length} previas`, `${miss.length} previous missing`)}</span>` : (S.level && t.lvl > S.level ? ` <span class="bd w">${tx('Nivel', 'Level')} ${t.lvl}</span>` : ''));
@@ -1524,7 +1532,7 @@ function lootBoxesHtml(id){
 function keyList(){
   const m = new Map();
   D.tasks.forEach(t => { (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || !it.key) return; let a = m.get(it.id); if (!a) { a = { id: it.id, it, q: [] }; m.set(it.id, a); } if (!a.q.includes(t)) a.q.push(t); }); });
-  return [...m.values()].map(a => { a.maps = [...new Set(((D.klock && D.klock[a.id]) || []).map(x => x[0]))]; a.own = (S.icol[a.id] || 0) >= 1; a.allDone = a.q.every(t => S.done[t.id]); return a; });
+  return [...m.values()].map(a => { a.maps = [...new Set(((D.klock && D.klock[a.id]) || []).map(x => x[0]))]; a.own = (S.icol[a.id] || 0) >= 1; a.allDone = a.q.every(t => isDone(t.id)); return a; });
 }
 function keyWhere(id){
   if (!P) return { t: tx('Precios cargando…', 'Loading prices…'), buy: null, raid: false };
@@ -1575,7 +1583,7 @@ function keyDetailHtml(id){
       <div class="ikpis" style="margin:12px 0 10px">${[[tx('Valor de venta', 'Sell value'), p.sell ? fmt(p.sell.p) : fmt(it.bp)], [tx('Peso', 'Weight'), (it.wt || 0).toLocaleString(S.lang === 'en' ? 'en-US' : 'es-ES') + ' kg'], [tx('Estado', 'Status'), own ? `<span style="color:var(--ok);font-size:16px">${tx('La tienes', 'Owned')}</span>` : `<span style="color:var(--warn);font-size:16px">${tx('No la tienes', 'Not owned')}</span>`]].map(k => `<div class="ikpi"><small>${k[0]}</small><b style="font-size:16px">${k[1]}</b></div>`).join('')}</div>
       <button class="btn" data-act="kown" data-id="${esc(id)}">${own ? tx('✓ La tengo (quitar)', '✓ I have it (remove)') : tx('Marcar que la tengo', 'Mark as owned')}</button> ${it.wiki ? `<a class="btn" href="${esc(it.wiki)}" target="_blank" rel="noopener">${tx('Wiki ↗', 'Wiki ↗')}</a>` : ''}</div>
     <div class="kbox"><h6>${tx('Qué abre', 'What it opens')}</h6><div class="kln"><span>${tx('Cerraduras en tarkov.dev', 'Locks on tarkov.dev')}</span><span>${nLocks}</span></div><div id="kwLock" class="kw m">${tx('Cargando información de la wiki…', 'Loading wiki information…')}</div></div>
-    <div class="kbox"><h6>${tx('Misiones que la piden', 'Quests that ask for it')}</h6>${tasks.map(t => `<div class="kln"><span><b>${esc(t.name)}</b> <span class="m">· ${esc(t.trader.name)}</span> ${S.done[t.id] ? `<span class="bd g">${tx('hecha', 'done')}</span>` : ''}</span><span class="m">${tx('nv.', 'lvl')} ${t.lvl}</span></div>`).join('') || `<span class="m">—</span>`}</div>
+    <div class="kbox"><h6>${tx('Misiones que la piden', 'Quests that ask for it')}</h6>${tasks.map(t => `<div class="kln"><span><b>${esc(t.name)}</b> <span class="m">· ${esc(t.trader.name)}</span> ${isDone(t.id) ? `<span class="bd g">${S.fail[t.id] ? tx('fallada', 'failed') : tx('hecha', 'done')}</span>` : ''}</span><span class="m">${tx('nv.', 'lvl')} ${t.lvl}</span></div>`).join('') || `<span class="m">—</span>`}</div>
     <div class="kbox"><h6>${tx('Dónde conseguirla', 'Where to get it')}</h6>${buyLn}${flLn}<div class="kln"><span class="${w.raid ? 'pr' : ''}">${tx('Encontrarla en incursión', 'Find it in a raid')}</span><span class="m">${w.raid ? tx('Única opción', 'Only option') : tx('También posible', 'Also possible')}</span></div></div>
     ${S.iview === 'loot' ? lootBoxesHtml(id) : ''}
   </div><div class="kcol">
@@ -1746,7 +1754,7 @@ function renderGun(){
   const sum = $('#sum'), list = $('#list');
   if (!D.gun || !Object.keys(D.gun).length) { sum.textContent = ''; list.innerHTML = `<div class="msg">${tx('No hay datos de Gunsmith todavía. Pulsa «Actualizar datos» (arriba a la derecha) y espera a que cargue.', 'There is no Gunsmith data yet. Click “Refresh data” (top right) and wait for it to load.')}</div>`; return; }
   if (S.gsel && D.byId[S.gsel] && D.gun[S.gsel]) return renderGunDetail(D.byId[S.gsel], sum, list);
-  const q = norm(S.q), all = gunTasks(), done = all.filter(t => S.done[t.id]).length;
+  const q = norm(S.q), all = gunTasks(), done = all.filter(t => isDone(t.id)).length;
   sum.innerHTML = tx(`Misiones de Gunsmith completadas: <b>${done}</b> de <b>${all.length}</b>. Pulsa una para ver el arma y todas las piezas que necesitas.`, `Gunsmith quests completed: <b>${done}</b> of <b>${all.length}</b>. Click one to see the weapon and all the parts you need.`);
   const card = t => {
     const g = D.gun[t.id], b = g.builds[0], w = D.items[b.w], st = stateOf(t), keys = gunKeys(t), have = keys.filter(k => S.gown[k]).length;
@@ -1757,13 +1765,13 @@ function renderGun(){
         <div class="gm">${t.lvl ? `${tx('Nv.', 'Lv.')} ${t.lvl} · ` : ''}${(() => { const wk = wikiGun(t); const n = wk ? wk.v.reduce((a, v) => a + v.p.length, 0) : 0; return n ? tx(`${n} accesorios en el montaje de ejemplo`, `${n} attachments in the example build`) : (keys.length ? tx(`${keys.length} piezas obligatorias`, `${keys.length} required parts`) : tx('Solo valores mínimos', 'Minimum stats only')); })()}${b.cats.length ? ' · ' + b.cats.length + tx(' tipo(s) de pieza', ' part type(s)') : ''}</div></div>
       <span class="gst">${stTxt}</span></button>`;
   };
-  const rows = all.filter(t => !(S.hideDone && S.done[t.id]) && (!q || norm(t.name).includes(q) || norm(t.nameEs || '').includes(q) || norm(t.en || '').includes(q) || D.gun[t.id].builds.some(b => D.items[b.w] && D.items[b.w].sq.includes(q))));
+  const rows = all.filter(t => !(S.hideDone && isDone(t.id)) && (!q || norm(t.name).includes(q) || norm(t.nameEs || '').includes(q) || norm(t.en || '').includes(q) || D.gun[t.id].builds.some(b => D.items[b.w] && D.items[b.w].sq.includes(q))));
   const grp = (title, arr) => arr.length ? `<h3 class="gh">${title}</h3><div class="ggrid">${arr.map(card).join('')}</div>` : '';
   list.innerHTML = grp(tx('Armero', 'Gunsmith'), rows.filter(t => !D.gun[t.id].master)) + grp(tx('Armero Maestro', 'Gunsmith Master'), rows.filter(t => D.gun[t.id].master));
   if (!rows.length) list.innerHTML = `<div class="msg">${tx('No hay misiones con ese filtro.', 'No quests match that filter.')}</div>`;
 }
 function renderGunDetail(t, sum, list){
-  const g = D.gun[t.id], st = stateOf(t), done = !!S.done[t.id];
+  const g = D.gun[t.id], st = stateOf(t), done = isDone(t.id);
   const wiki = t.wiki || searchLink(t.name);
   sum.textContent = '';
   const builds = g.builds.map((b, bi) => {
@@ -1784,7 +1792,8 @@ function renderGunDetail(t, sum, list){
   list.innerHTML = `<div class="chhead"><button class="btn" data-act="gback">${tx('← Todas las misiones de Gunsmith', '← All Gunsmith quests')}</button></div>
     <div class="gtop"><div><div class="dtr">${g.master ? tx('Armero Maestro', 'Gunsmith Master') : tx('Armero', 'Gunsmith')} · ${tx('Mecánico', 'Mechanic')}</div><h2>${esc(t.name)}</h2>
       <div class="dmeta">${t.lvl ? `<span class="b">${tx('Nv.', 'Lv.')} ${t.lvl}</span>` : ''} <span class="b ${done || st === 'avail' ? 'ok' : 'warn'}">${done ? tx('Completada', 'Completed') : st === 'avail' ? tx('Disponible', 'Available') : tx('Bloqueada (falta una misión previa)', 'Locked (a previous quest is missing)')}</span></div></div>
-      <div class="dbtns"><button class="btn big ${done ? '' : 'prim'}" data-act="toggledone" data-id="${esc(t.id)}">${done ? tx('Marcar como pendiente', 'Mark as pending') : tx('Marcar como completada', 'Mark as completed')}</button>
+      <div class="dbtns"><button class="btn big ${done ? '' : 'prim'}" data-act="${S.fail[t.id] ? 'togglefail' : 'toggledone'}" data-id="${esc(t.id)}">${done ? tx('Marcar como pendiente', 'Mark as pending') : tx('Marcar como completada', 'Mark as completed')}</button>
+      ${S.fail[t.id] ? '' : `<button class="btn" data-act="togglefail" data-id="${esc(t.id)}" title="${tx('Para las misiones que hay que fallar a propósito para desbloquear otras', 'For quests you must fail on purpose to unlock others')}">✗ ${tx('Marcar como fallada', 'Mark as failed')}</button>`}
       <a class="btn" href="${esc(wiki)}" target="_blank" rel="noopener">${tx('Ver en la Tarkov Wiki ↗', 'View on the Tarkov Wiki ↗')}</a></div></div>${wikiBuildHtml(t)}${builds}`;
 }
 /* ───────── Vista: Tradeos (barters) ───────── */
@@ -1958,7 +1967,10 @@ function planHtml(){
   const all = D.tasks.filter(t => S.plan[t.id]);
   const head = '';
   if (!all.length) return `<div class="pempty"><h2>⚑ ${tx('Mi plan', 'My plan')}</h2><p class="hint">${tx('Aquí aparecerá el resumen de las misiones que vayas a hacer.<br><br>1. Pulsa el botón <b>⚑</b> de una misión (abajo a la derecha de su recuadro, o dentro de su detalle).<br>2. Aquí verás todo lo que hay que hacer, las llaves y los objetos que necesitas, y un mapa con <b style="color:#ff6b5e">puntos rojos</b> en los sitios donde tienes que ir.', 'The summary of the quests you are going to do will appear here.<br><br>1. Click the <b>⚑</b> button on a quest (bottom right of its box, or inside its details).<br>2. You will see everything you have to do, the keys and items you need, and a map with <b style="color:#ff6b5e">red dots</b> where you have to go.')}</p></div>`;
-  const act = all.filter(t => !S.done[t.id]);
+  const act = all.filter(t => !isDone(t.id));
+  // un color por misión: menos puntos = primeros colores (el rojo es para la de menos puntos)
+  const PCOL = ['#e5271b', '#3b9cff', '#ff9f1c', '#b072ff', '#22d3c5', '#ff5fb0', '#c98b5a', '#9fb3c8', '#7dd3fc', '#f0abfc'];
+  const pcol = {}; all.filter(t => t.pts.length).map((t, i) => ({ t, i })).sort((a, b) => a.t.pts.length - b.t.pts.length || a.i - b.i).forEach((x, i) => { pcol[x.t.id] = PCOL[i % PCOL.length]; });
   // mapa
   const live = t => t.pts.filter(p => !(t.obj[p[4]] && S.obj[t.obj[p[4]].id]));
   const cnt = {}; act.forEach(t => live(t).forEach(p => { cnt[p[0]] = (cnt[p[0]] || 0) + 1; }));
@@ -1969,21 +1981,22 @@ function planHtml(){
   else {
     const k = S.pmap, g = mapGeo(k), dots = [];
     act.forEach(t => live(t).filter(p => p[0] === k).forEach(p => { const [u, v] = g.uv(p[1], p[2]); const o = t.obj[p[4]]; const dim = S.pfocus && S.pfocus !== t.id;
-      dots.push(`<i class="pdot ${p[5] ? 'loc' : ''} ${dim ? 'dim' : ''} ${S.pfocus === t.id ? 'foc' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="ppt" data-txt="${esc(t.name + (o && o.x ? ' — ' + o.x : '') + (p[5] ? tx(' (posible ubicación del objeto)', ' (possible item location)') : ''))}"></i>`); }));
+      dots.push(`<i class="pdot ${p[5] ? 'loc' : ''} ${dim ? 'dim' : ''} ${S.pfocus === t.id ? 'foc' : ''}" style="--pc:${pcol[t.id] || '#e5271b'};left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="ppt" data-txt="${esc(t.name + (o && o.x ? ' — ' + o.x : '') + (p[5] ? tx(' (posible ubicación del objeto)', ' (possible item location)') : ''))}"></i>`); }));
     const exs = S.extShow && D.ext && D.ext[k] ? D.ext[k].map((e, ei) => { const [u, v] = g.uv(e[2], e[3]); const nm = e[1] || e[0];
       return `<i class="pex ${e[5] ? 'shared' : ''} ${e[7] ? 'req' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="pex" data-ex="${k}|${ei}"><s></s><b>${esc(nm)}${e[7] ? ' 🔑' : ''}</b></i>`; }).join('') : '';
     mapHtml = `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="pmap" data-id="${x}">${esc(mapName(x))} <b>${cnt[x]}</b></button>`).join('')}</div>
       <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (verde; amarillo = también Scav)', 'Show PMC extracts (green; yellow = also Scav)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label></div>
       <div class="pmapbox"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}"><div id="pin"><img id="pimg" alt="" src="${svgCache[k] || ''}">${exs}${dots.join('')}</div></div>
         <div class="pzoom"><button data-act="pzoom" data-d="in" title="Zoom +">+</button><button data-act="pzoom" data-d="out" title="Zoom −">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button></div></div>
-      <div id="plabel">${tx('Pulsa un punto rojo (misión) o un rombo verde (extracción) para ver qué es. Rueda del ratón = zoom; arrastra para moverte.', 'Click a red dot (quest) or a green diamond (extract) to see what it is. Mouse wheel = zoom; drag to move around.')}</div><div class="pnote" id="pnote"></div>`;
+      <div id="plabel">${tx('Pulsa un punto de color (cada misión tiene el suyo) o un rombo verde (extracción) para ver qué es. Rueda del ratón = zoom; arrastra para moverte.', 'Click a coloured dot (each quest has its own colour) or a green diamond (extract) to see what it is. Mouse wheel = zoom; drag to move around.')}</div><div class="pnote" id="pnote"></div>`;
   }
   // misiones
-  const rows = all.map(t => { const done = !!S.done[t.id], hasPts = t.pts.length > 0;
+  const rows = all.map(t => { const failed = !!S.fail[t.id], done = isDone(t.id), hasPts = t.pts.length > 0;
     const objs = (t.obj || []).map(o => `<label class="obj ${(S.obj[o.id] || done) ? 'on' : ''}" data-act="noop"><input type="checkbox" data-act="obj" data-id="${esc(o.id)}" ${(S.obj[o.id] || done) ? 'checked' : ''} ${done ? 'disabled' : ''}><span>${esc(o.x || tx('Objetivo sin texto', 'Objective without text'))}${o.op ? ` <span class="b">${tx('opcional', 'optional')}</span>` : ''}</span></label>`).join('');
     const maps = [...new Set(t.pts.map(p => p[0]).concat(t.mps || []))].map(mapName).join(', ') || t.map || tx('cualquier mapa', 'any map');
-    return `<div class="prow ${done ? 'done' : ''} ${S.pfocus === t.id ? 'foc' : ''}" data-act="pfocus" data-id="${esc(t.id)}"><div class="pt"><span class="pn">${esc(t.name)}</span><button class="rm" data-act="plan" data-id="${esc(t.id)}" title="${tx('Quitar de mi plan', 'Remove from my plan')}">×</button></div>
-      <div class="pm">${esc(t.trader.name)} · ${esc(maps)}${hasPts ? '' : ' · ' + tx('sin puntos en el mapa', 'no map points')}${done ? ' · ' + tx('completada', 'completed') : ''}</div>${objs}</div>`; }).join('');
+    return `<div class="prow ${done ? 'done' : ''} ${failed ? 'failed' : ''} ${S.pfocus === t.id ? 'foc' : ''}" ${pcol[t.id] ? `style="--pc:${pcol[t.id]}"` : ''} data-act="pfocus" data-id="${esc(t.id)}"><div class="pt"><span class="pn">${esc(t.name)}</span><button class="rm" data-act="plan" data-id="${esc(t.id)}" title="${tx('Quitar de mi plan', 'Remove from my plan')}">×</button></div>
+      <div class="pm">${hasPts ? `<span class="pcd"></span>${t.pts.length} ${tx(t.pts.length === 1 ? 'punto' : 'puntos', t.pts.length === 1 ? 'point' : 'points')} · ` : ''}${esc(t.trader.name)} · ${esc(maps)}${hasPts ? '' : ' · ' + tx('sin puntos en el mapa', 'no map points')}${failed ? ' · ' + tx('fallada', 'failed') : done ? ' · ' + tx('completada', 'completed') : ''}</div>${objs}
+      <div class="pst"><button class="btn sm ${S.done[t.id] ? 'prim' : ''}" data-act="toggledone" data-id="${esc(t.id)}">✓ ${S.done[t.id] ? tx('Completada', 'Completed') : tx('Marcar completada', 'Mark completed')}</button><button class="btn sm ${failed ? 'bad on' : ''}" data-act="togglefail" data-id="${esc(t.id)}">✗ ${failed ? tx('Fallada', 'Failed') : tx('Marcar fallada', 'Mark failed')}</button></div></div>`; }).join('');
   // llaves y objetos
   const keys = new Map(), items = new Map();
   act.forEach(t => (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it) return;
@@ -2028,7 +2041,7 @@ document.addEventListener('click', e => {
   else if (a === 'gback') { S.gsel = null; saveState(); renderList(); }
   else if (a === 'addq') { S.adding = true; S.sel = null; renderList(); }
   else if (a === 'savecustom') { saveCustom(); }
-  else if (a === 'delcustom') { if (confirm(tx('¿Eliminar esta misión añadida?', 'Delete this added quest?'))) { S.custom = S.custom.filter(c => c.id !== id); delete S.done[id]; delete S.plan[id]; S.sel = null; saveState(); computeOrder(D); renderList(); } }
+  else if (a === 'delcustom') { if (confirm(tx('¿Eliminar esta misión añadida?', 'Delete this added quest?'))) { S.custom = S.custom.filter(c => c.id !== id); delete S.done[id]; delete S.fail[id]; delete S.plan[id]; S.sel = null; saveState(); computeOrder(D); renderList(); } }
   else if (a === 'plan') { if (S.plan[id]) delete S.plan[id]; else S.plan[id] = true; if (!S.plan[id] && S.pfocus === id) S.pfocus = null; saveState(); renderList(); }
   else if (a === 'planclear') { if (confirm(tx('¿Vaciar el plan?', 'Clear the plan?'))) { S.plan = {}; S.pfocus = null; saveState(); renderList(); } }
   else if (a === 'pmap') { S.pmap = id; saveState(); renderList(); }
@@ -2041,6 +2054,7 @@ document.addEventListener('click', e => {
   else if (a === 'node') { S.sel = id; renderList(); }
   else if (a === 'closeDrawer') { S.sel = null; S.adding = false; renderList(); }
   else if (a === 'toggledone') { setDone(id, !S.done[id]); saveState(); renderList(); }
+  else if (a === 'togglefail') { setFail(id, !S.fail[id]); saveState(); renderList(); }
   else if (a === 'iview') { S.iview = id; S.kdet = null; S.q = ''; saveState(); renderView(); }
   else if (a === 'ichip') { const k = t.dataset.k, v = t.dataset.v; if (v !== undefined) S[k] = v; else S[k] = !S[k]; saveState(); renderView(); }
   else if (a === 'qdd') { QO[id] = !QO[id]; renderList(); }
@@ -2051,8 +2065,8 @@ document.addEventListener('click', e => {
   else if (a === 'hopen') { S.hopen[id] = !S.hopen[id]; saveState(); renderList(); }
   else if (a === 'hbuild') { const l = D.hideout.flatMap(s => s.levels).find(x => x.id === id); if (l) { S.hideout[id] = true; consumeLevel(l); saveState(); renderList(); } }
   else if (a === 'markprev') {
-    const pend = [...ancestors(id)].filter(x => !S.done[x]);
-    if (confirm(tx('¿Marcar como completadas esta misión y sus ' + pend.length + ' misiones previas?', 'Mark this quest and its ' + pend.length + ' previous quests as completed?'))) { pend.forEach(x => S.done[x] = true); S.done[id] = true; saveState(); renderList(); }
+    const pend = [...ancestors(id)].filter(x => !isDone(x));
+    if (confirm(tx('¿Marcar como completadas esta misión y sus ' + pend.length + ' misiones previas?', 'Mark this quest and its ' + pend.length + ' previous quests as completed?'))) { pend.forEach(x => { S.done[x] = true; delete S.fail[x]; }); S.done[id] = true; delete S.fail[id]; saveState(); renderList(); }
   }
   else if (a === 'chapter') { S.chapter = id; saveState(); renderList(); window.scrollTo(0, 0); }
   else if (a === 'back') { S.chapter = null; saveState(); renderList(); }
@@ -2145,7 +2159,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 21 · Amigos', 'version 21 · Friends');
+  $('#ver').textContent = tx('versión 22 · Falladas y colores del plan', 'version 22 · Failed quests & plan colours');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
