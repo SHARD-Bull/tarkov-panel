@@ -68,6 +68,7 @@ ul.list{list-style:none;margin:0;padding:0 12px 10px}
 .b.ok{color:var(--ok);border-color:#364d64}
 .b.warn{color:var(--warn);border-color:#8a4f25}
 .b.fir{color:#e08a8a;border-color:#8a3a3a}
+.ltw{overflow-x:auto}.ltab{width:100%;border-collapse:collapse}.ltab th,.ltab td{padding:9px 8px;border-top:1px solid var(--line);text-align:left;font-size:13.5px;vertical-align:middle}.ltab th{color:var(--mute);font-weight:500;font-size:12px;border-top:0}.ltab.sm td{padding:5px 4px;font-size:13px}.ltr{cursor:pointer}.ltr:hover{background:var(--p2)}.ltr.own{opacity:.6}.pn{display:inline-block;padding:2px 8px;border-radius:6px;font-weight:700;font-size:12.5px}.pn.p{background:#1f3a2c;color:var(--ok)}.pn.n{background:#40231f;color:var(--bad)}
 .b.key{color:#b79be8;border-color:#5d4a8a}
 .item{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .item.done{opacity:.55}
@@ -372,7 +373,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
 
 /* ───────── Constantes ───────── */
 const WIKI = 'https://escapefromtarkov.fandom.com/wiki/';
-const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v11', LS_PRICES = 'tkv_prices_v2';
+const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v12', LS_PRICES = 'tkv_prices_v2';
 const DATA_MAX = 24 * 3600e3, PRICE_MAX = 3600e3;
 
 // Cada paso: ['Título', 'objetivo', 'objetivo opcional*', ...]  (el asterisco final marca un objetivo opcional)
@@ -823,7 +824,7 @@ let S = { mode:'pve', done:{}, story:{}, hideout:{}, collected:{}, hcol:{}, icol
 function loadState(){ try { const r = localStorage.getItem(LS_STATE); if (r) S = Object.assign(S, JSON.parse(r)); } catch(e){} if (S.view === 'hideout' || S.view === 'items') S.view = 'both';
   if (!S.icol) S.icol = {}; if (!S.hopen) S.hopen = {};
   if (!S.mig17) { S.mig17 = 1; const o = Object.assign({}, S.hcol || {}); Object.entries(S.collected || {}).forEach(([k, v]) => { o[k] = Math.max(o[k] || 0, v); }); S.icol = Object.assign(o, S.icol); }
-  if (!['items', 'keys', 'hideout'].includes(S.iview)) S.iview = 'items';
+  if (!['items', 'keys', 'loot', 'hideout'].includes(S.iview)) S.iview = 'items';
   if (S.lang !== 'es' && S.lang !== 'en') S.lang = /^es/i.test(navigator.language || '') ? 'es' : 'en';
   if (!S.v4) { S.v4 = 1; S.trader = 'all'; S.zoom = 0.6; }
   if (!S.seed5) { S.seed5 = 1; S.custom = S.custom || []; S.custom.push({ id: 'c_hidden_route', name: 'Hidden Route', en: 'Hidden Route', trader: 'therapist', traderName: 'Therapist', lvl: 0, map: 'Factory', req: [], obj: ['Localiza el tránsito a The Lab en Factory'], objEn: ['Locate the transit to The Lab on Factory'] }); } }
@@ -978,18 +979,21 @@ async function fetchStatic(){
   Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
     (m.extracts || []).forEach(x => { if (!x.position || (x.faction !== 'pmc' && x.faction !== 'shared')) return; const list = ext[k] = ext[k] || []; if (list.some(e => e[6] === x.name)) return;
       list.push([mapsEs[x.name] || mapsEn[x.name] || x.name, mapsEn[x.name] || mapsEs[x.name] || x.name, r1(x.position.x), r1(x.position.z), r1(x.position.y || 0), x.faction === 'shared' ? 1 : 0, x.name, ...(() => { const ti = x.transferItem, it = ti && regItem(ti.item); return it ? [it.id, ti.count || 1] : []; })()]); }); });
+  Object.values(allItems).forEach(a => { if (a && (a.types || []).includes('keys')) regItem(a.id); });
+  const lootKeys = Object.values(items).filter(it => it.key && !it.special).map(it => it.id);
+  const pm = []; Object.values(allItems).forEach(a => { const nm = ien[a.id + ' Name'], pr = a.avg24hPrice || a.basePrice || 0; if (nm && pr >= 3000 && nm.length >= 4 && !(a.types || []).includes('keys')) pm.push([nm.toLowerCase(), pr]); }); pm.sort((x, y) => y[0].length - x[0].length);
   const keyRaw = {}; Object.values(items).forEach(it => { if (it.key && !it.special) keyRaw[it.rawId] = it.id; });
   const klock = {}, kloose = {}, kseen = new Set();
   Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
     (m.locks || []).forEach(l => { const id = keyRaw[l.key]; if (!id || !l.position) return; const sk = 'L|' + id + '|' + k + '|' + Math.round(l.position.x) + '|' + Math.round(l.position.z); if (kseen.has(sk)) return; kseen.add(sk);
       (klock[id] = klock[id] || []).push([k, r1(l.position.x), r1(l.position.z), r1(l.position.y || 0), l.lockType === 'trunk' ? 1 : 0, l.needsPower ? 1 : 0]); });
     (m.lootLoose || []).forEach(sp => { if (!sp.position) return; (sp.items || []).forEach(iid => { const id = keyRaw[iid]; if (!id) return; const sk = 'S|' + id + '|' + k + '|' + Math.round(sp.position.x) + '|' + Math.round(sp.position.z); if (kseen.has(sk)) return; kseen.add(sk);
-      (kloose[id] = kloose[id] || []).push([k, r1(sp.position.x), r1(sp.position.z), r1(sp.position.y || 0)]); }); }); });
+      if (((kloose[id] = kloose[id] || []).length) < 40) kloose[id].push([k, r1(sp.position.x), r1(sp.position.z), r1(sp.position.y || 0)]); }); }); });
   const pl = []; Object.keys(mapsEs).forEach(k => { const es = mapsEs[k], en = mapsEn[k];
     if (typeof es !== 'string' || typeof en !== 'string' || es === en || /^[0-9a-f]{24}/.test(k) || /_(DESC|COND)$/.test(k) || /^(QuestCondition|FAC_)/.test(k)) return;
     if (es.length < 4 || es.length > 50 || !/^[A-ZÁÉÍÓÚÑ0-9]/.test(es)) return; pl.push([es, en]); });
   Object.values(items).forEach(it => { if (it.key && !it.special && it.nameEs && it.nameEn && it.nameEs !== it.nameEn) pl.push([it.nameEs, it.nameEn]); });
-  return { ts: Date.now(), tasks, reqs, items, hideout, gun, trn: trnames, stn, mapn, ext, barters, traders, klock, kloose, pl, warnings, prices: buildPrices(allItems, items) };
+  return { ts: Date.now(), tasks, reqs, items, hideout, gun, trn: trnames, stn, mapn, ext, barters, traders, klock, kloose, pl, lootKeys, pm, warnings, prices: buildPrices(allItems, items) };
 }
 
 /* Elige los textos según el idioma (los dos idiomas se guardan siempre). */
@@ -1052,7 +1056,7 @@ async function loadData(force){
   try {
     setStatus(tx('Descargando misiones, Hideout y precios (', 'Downloading quests, Hideout and prices (') + S.mode.toUpperCase() + tx(') desde tarkov.dev… puede tardar unos segundos', ') from tarkov.dev… this may take a few seconds'));
     const fresh = await fetchStatic(); P = fresh.prices; delete fresh.prices; D = fresh; computeOrder(D);
-    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, klock:D.klock, kloose:D.kloose, pl:D.pl, barters:D.barters, traders:D.traders, warnings:D.warnings })); } catch(e){}
+    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, klock:D.klock, kloose:D.kloose, pl:D.pl, lootKeys:D.lootKeys, pm:D.pm, barters:D.barters, traders:D.traders, warnings:D.warnings })); } catch(e){}
     try { localStorage.setItem(LS_PRICES + S.mode, JSON.stringify(P)); } catch(e){}
   } catch(e) {
     if (cached) { D = cached; computeOrder(D); setStatus(tx('No se pudo actualizar (', 'Could not update (') + e.message + tx('). Usando datos guardados de hace ', '). Using saved data from ') + Math.round((Date.now()-cached.ts)/3600e3) + tx(' h.', ' h ago.'), 'warn'); return; }
@@ -1410,10 +1414,105 @@ function renderItemsList(){
   $('#list').innerHTML = (rows.length ? rows.map(itemRowHtml).join('') : `<div class="msg">${tx('No hay items que coincidan.', 'No items match.')}</div>`) + note;
 }
 /* ── Llaves ── */
+/* ── Llaves de botín: valor estimado de lo que hay dentro ── */
+const LS_KL = 'tkv_kloot_v1';
+let KL = null; const KLS = { on: false, done: 0, total: 0, fail: false };
+const LOOT_WB = { '6x6': 110000, '6x5': 95000, '6x4': 75000, '6x3': 55000, '6x2': 32000, '5x5': 70000, '4x4': 45000, '4x3': 35000, '3x3': 25000, '2x2': 12000 };
+const LOOT_CAT = { valuables: 40000, currency: 20000, money: 20000, meds: 9000, 'medical supplies': 9000, 'medical items': 9000, ammunition: 15000, 'ammo packs': 14000, 'weapon mods': 25000, electronics: 25000, 'computer parts': 25000, provisions: 5000, 'building materials': 6000, 'household materials': 6000, stimulants: 15000, 'info items': 8000, tools: 8000, 'flammable materials': 6000, others: 6000, 'other items': 6000, drinks: 4000, weapons: 60000, keys: 30000, 'armor plates': 30000, containers: 30000, keycards: 40000, 'energy elements': 20000, 'gp coins': 8000, roubles: 15000 };
+const LOOT_NUM = { one: 1, two: 2, three: 3, four: 4, multiple: 2, several: 2 };
+const LOOT_TR = [[/The contents? of( the)?/gi, 'El contenido de'], [/Loose loot/gi, 'Botín suelto'], [/Weapon box(es)?/gi, 'Caja de armas'], [/Weapon (cabinet|locker|rack)s?|Gun cabinets?/gi, 'Armero'], [/Technical supply crate/gi, 'Caja de suministros técnicos'], [/Wooden crate/gi, 'Caja de madera'], [/Grenade box(es)?/gi, 'Caja de granadas'], [/Plastic suitcase/gi, 'Maleta de plástico'], [/Sports? bags?/gi, 'Bolsa de deporte'], [/\bSafes?\b/gi, 'Caja fuerte'], [/Drawers?/gi, 'Cajón'], [/Jackets?/gi, 'Chaqueta'], [/Toolbox/gi, 'Caja de herramientas'], [/Cash registers?/gi, 'Caja registradora'], [/Dead Scavs?/gi, 'Scav muerto'], [/\bPossible\b/gi, 'Posible'], [/\bRare spawn\b/gi, 'Spawn raro'], [/\bspawns?\b/gi, 'spawn'], [/\bone\b/gi, 'Una'], [/\btwo\b/gi, 'Dos'], [/\bMultiple\b/gi, 'Varios'], [/Valuables/gi, 'objetos de valor'], [/Currency|Money/gi, 'dinero'], [/Medical supplies/gi, 'suministros médicos'], [/\bMeds\b/gi, 'medicinas'], [/Ammunition/gi, 'munición'], [/Ammo packs/gi, 'paquetes de munición'], [/Weapon mods/gi, 'mods de armas'], [/Electronics/gi, 'electrónica'], [/Provisions/gi, 'provisiones'], [/Building materials/gi, 'materiales de construcción'], [/Household materials/gi, 'materiales domésticos'], [/Stimulants/gi, 'estimulantes'], [/Info items/gi, 'objetos de información'], [/Flammable materials/gi, 'materiales inflamables'], [/\bOthers\b/gi, 'otros'], [/\bin the\b/gi, 'en el']];
+function lootTr(s){ if (S.lang !== 'es') return s; let r = s; LOOT_TR.forEach(([re, to]) => { r = r.replace(re, to); }); return r; }
+function lootEval(bul, mk, pm){
+  const look = n => { const k = n.toLowerCase(); const f = pm.find(p => p[0] === k); return f ? f[1] : 0; };
+  const CONT = [[/weapon (?:box|crate)/, null], [/\bsafe\b/, 55000], [/medcase/, 40000], [/medbag/, 14000], [/\bpc blocks?\b/, () => look('PC block') || 12000], [/jackets?/, 12000], [/drawers?/, 9000], [/sports? bags?/, 22000], [/toolbox/, 14000], [/wooden crate/, 18000], [/technical supply crate/, 40000], [/grenade box/, 25000], [/ammo box/, 15000], [/weapon (?:cabinet|locker|rack)s?|gun cabinets?/, 55000], [/cash register/, 3500], [/plastic suitcase/, 22000], [/duffle bag/, 20000], [/dead scav|pmc body|dead pmc/, 12000]];
+  let tot = 0; const rows = [];
+  bul.forEach(b0 => {
+    const b = b0.toLowerCase(); let n = 1, counted = false; const m = /^(\d+)\s*[x×]\s*/.exec(b);
+    if (m) { n = +m[1]; counted = true; } else { const w = /^(one|two|three|four|multiple|several)\b/.exec(b); if (w) { n = LOOT_NUM[w[1]]; counted = true; } }
+    let v = 0;
+    if (/no key for it/.test(b)) { rows.push([b0, 0]); return; }
+    if (/^loose loot/.test(b)) { const inn = (/\((.*)\)/.exec(b) || [0, ''])[1]; const cats = inn.split(/,|\band\b/).map(s => s.trim()).filter(Boolean);
+      cats.slice(0, 5).forEach(c => { const k = Object.keys(LOOT_CAT).find(x => c.includes(x)); v += k ? LOOT_CAT[k] : 5000; }); if (!cats.length) v = 8000; rows.push([b0, v]); tot += v; return; }
+    let hit = false;
+    for (const [re, val] of CONT) { if (re.test(b)) { hit = true; if (val === null) { const sz = /\((\d)x(\d)\)/.exec(b); v = sz ? (LOOT_WB[sz[1] + 'x' + sz[2]] || (+sz[1]) * (+sz[2]) * 2500) : 40000; } else v = typeof val === 'function' ? val() : val; v *= n; break; } }
+    if (!hit) { const pr = /possible|rare/.test(b) ? 0.2 : (/spawn/.test(b) ? 0.4 : 0.7); const f = pm.find(p => b.includes(p[0]));
+      if (f) v = f[1] * pr * (counted ? n : 1); else if (/rare/.test(b)) v = 70000;
+      if (/key|keycard/.test(b) && /spawn/.test(b)) v = Math.min(v, 8000); }
+    v = Math.round(v / 100) * 100; rows.push([b0, v]); tot += v; });
+  if (mk) { rows.push(['Marked room (multiple very rare items)', 250000]); tot += 250000; }
+  return { tot, rows };
+}
+function klLoad(){ if (KL) return; try { KL = JSON.parse(localStorage.getItem(LS_KL) || '{}'); } catch (e) { KL = {}; } }
+async function klFetch(){
+  klLoad(); if (KLS.on) return; const ids = (D.lootKeys || []).map(id => D.items[id]).filter(Boolean);
+  const need = [...new Set(ids.map(keyPage).filter(p => p && !(KL[p] && Date.now() - KL[p].ts < 14 * 864e5)))];
+  if (!need.length) return; KLS.on = true; KLS.done = 0; KLS.total = need.length; KLS.fail = false;
+  for (let i = 0; i < need.length; i += 40) {
+    const ch = need.slice(i, i + 40);
+    try {
+      const r = await fetch('https://escapefromtarkov.fandom.com/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&format=json&redirects=1&origin=*&titles=' + encodeURIComponent(ch.join('|').replace(/_/g, ' ')));
+      const j = await r.json(), q = j.query || {}, norm = {}, red = {}; (q.normalized || []).forEach(x => { norm[x.to] = x.from; }); (q.redirects || []).forEach(x => { red[x.to] = x.from; });
+      Object.values(q.pages || {}).forEach(p => { const w = p.revisions && p.revisions[0] && p.revisions[0].slots.main['*']; if (!w) return; let from = red[p.title] || p.title; from = (norm[from] || from).replace(/ /g, '_');
+        const sec = wikiSec(w, 'Behind the Lock|Behind the lock');
+        const b = wikiClean(sec).split('\n').map(x => /^\*+\s*(.+)$/.exec(x.trim())).filter(Boolean).map(x => x[1].trim()).filter(x => x.length > 2).slice(0, 14);
+        KL[from] = { ts: Date.now(), b }; });
+      ch.forEach(p => { if (!KL[p]) KL[p] = { ts: Date.now(), b: [] }; });
+    } catch (e) { KLS.fail = true; }
+    KLS.done = Math.min(need.length, i + 40);
+    try { localStorage.setItem(LS_KL, JSON.stringify(KL)); } catch (e) {}
+    if (S.view === 'both' && S.iview === 'loot') renderBoth();
+  }
+  KLS.on = false; if (S.view === 'both' && S.iview === 'loot') { renderView(); }
+}
+const LOOT_LAB = /(terragroup labs|labrys|compartment).*keycard|terragroup labs.*keycard/i;
+function lootInfo(id){
+  const it = D.items[id]; if (!it) return null; klLoad(); const pg = keyPage(it), w = KL[pg], pm = D.pm || [];
+  const mk = /marked/i.test(it.nameEn || ''), lab = LOOT_LAB.test(it.nameEn || '');
+  const ev = w && w.b.length ? lootEval(w.b, mk, pm) : (mk ? lootEval([], true, pm) : { tot: 0, rows: [] });
+  const wh = keyWhere(id), us = Math.max(1, it.us || 1), cost = wh.buy != null ? wh.buy / us : null;
+  return { id, it, val: lab ? null : ev.tot, rows: ev.rows, mk, lab, wh, us, cost, profit: lab ? null : (cost == null ? ev.tot : ev.tot - cost), known: !!w };
+}
+function lootList(){
+  const qk = new Set(); Object.values(D.reqs || {}).forEach(l => l.forEach(r => { if (r.type === 'access') qk.add(r.itemId); }));
+  const out = []; (D.lootKeys || []).forEach(id => { const a = lootInfo(id); if (!a) return; a.q = qk.has(id); a.maps = [...new Set(((D.klock && D.klock[id]) || []).map(x => x[0]))]; a.own = (S.icol[id] || 0) >= 1;
+    const keep = a.lab || a.mk || (a.q ? a.val >= 150000 : a.val > 0); if (keep) out.push(a); });
+  return out;
+}
+function renderLoot(){
+  klFetch();
+  if (S.kdet && D.items[S.kdet]) { $('#sum').innerHTML = ''; $('#list').innerHTML = keyDetailHtml(S.kdet); drawPlanMap(); loadKeyWiki(S.kdet); return; }
+  S.kdet = null; const q = norm(S.q); const all = lootList(), mapsAll = [...new Set(all.flatMap(a => a.maps))];
+  if (S.kmap !== 'all' && !mapsAll.includes(S.kmap)) S.kmap = 'all';
+  const ok = all.filter(a => a.profit != null && a.profit > 0).length, best = all.filter(a => a.profit != null).sort((x, y) => y.profit - x.profit)[0];
+  $('#sum').innerHTML = kpiHtml([[tx('Llaves en el listado', 'Keys listed'), all.length], [tx('Dan ganancia', 'Make a profit'), ok], [tx('Mejor ganancia por uso', 'Best profit per use'), best ? fmt(best.profit) : '—'], [tx('Solo en incursión', 'Raid only'), all.filter(a => a.wh.raid).length]]);
+  const rows = all.filter(a => (!q || a.it.sq.includes(q)) && (!S.ihide || !a.own) && (!S.lmk || a.mk || a.lab) && (S.kmap === 'all' || a.maps.includes(S.kmap)))
+    .sort((x, y) => (x.lab ? 1 : 0) - (y.lab ? 1 : 0) || (S.lsort === 'value' ? (y.val || 0) - (x.val || 0) : (y.profit == null ? -1e12 : y.profit) - (x.profit == null ? -1e12 : x.profit)));
+  const st = KLS.on ? `<div class="msg">${tx('Calculando el valor de lo que hay dentro de cada llave…', 'Estimating what each key room holds…')} ${KLS.done}/${KLS.total}</div>` : (KLS.fail ? `<div class="msg">${tx('No se pudo leer toda la wiki (hace falta conexión): algunas llaves pueden faltar o salir sin valor.', 'Could not read the whole wiki (needs a connection): some keys may be missing or have no value.')}</div>` : '');
+  const note = `<p class="m" style="font-size:12.5px;margin:0 0 10px">${tx('Valores estimados: se suman los precios de los objetos que cita la wiki dentro de la habitación (con una probabilidad de aparición supuesta) y un valor medio para cajas, cajas fuertes y botín suelto. Sirve para comparar llaves entre sí, no como cifra exacta. Ganancia por uso = valor dentro − (precio de la llave ÷ usos).', 'Estimated values: the prices of the items the wiki lists inside the room (with an assumed spawn chance) plus an average value for crates, safes and loose loot. Use it to compare keys, not as an exact figure. Profit per use = value inside − (key price ÷ uses).')}</p>`;
+  $('#list').innerHTML = st + note + (rows.length ? `<div class="ltw"><table class="ltab"><thead><tr><th>${tx('Llave', 'Key')}</th><th>${tx('Mapa', 'Map')}</th><th>${tx('Valor dentro', 'Value inside')}</th><th>${tx('Coste por uso', 'Cost per use')}</th><th>${tx('Ganancia por uso', 'Profit per use')}</th><th>${tx('Conseguirla', 'Get it')}</th></tr></thead><tbody>`
+    + rows.map(a => `<tr class="ltr ${a.own ? 'own' : ''}" data-act="kopen" data-id="${esc(a.id)}"><td><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="ic sm">${itemImg(a.it)}</span><b>${esc(a.it.name)}</b>${a.mk ? ` <span class="bd k">Marked</span>` : ''}${a.lab ? ` <span class="bd k">${tx('Tarjeta del Lab', 'Lab keycard')}</span>` : ''}${a.q ? ` <span class="bd q">${tx('Misión', 'Quest')}</span>` : ''}${a.own ? ` <span class="bd g">${tx('La tienes', 'Owned')}</span>` : ''}</div></td>`
+      + `<td>${a.maps.length ? esc(a.maps.map(mapName).join(', ')) : '—'}</td><td class="g">${a.lab ? '—' : (a.known || a.mk ? '≈ ' + fmt(a.val) : tx('Sin datos', 'No data'))}</td><td>${a.cost == null ? '—' : fmt(a.cost)}</td>`
+      + `<td>${a.lab ? `<span class="m">${tx('Se compara aparte', 'Compared apart')}</span>` : `<span class="pn ${a.profit >= 0 ? 'p' : 'n'}">${a.profit >= 0 ? '+' : '−'}${fmt(Math.abs(a.profit))}</span>`}</td><td class="${a.wh.raid ? 'm' : 'pr'}">${a.wh.t}</td></tr>`).join('') + `</tbody></table></div>` : `<div class="msg">${tx('No hay llaves que coincidan.', 'No keys match.')}</div>`);
+}
+function lootBoxesHtml(id){
+  const a = lootInfo(id); if (!a) return '';
+  const rows = a.rows.filter(r => r[1] > 0).sort((x, y) => y[1] - x[1]), others = a.rows.filter(r => !(r[1] > 0));
+  const inside = `<div class="kbox"><h6>${tx('Qué hay dentro', 'What is inside')} <small class="m" style="text-transform:none;letter-spacing:0">${tx('(estimación, ordenado por valor)', '(estimate, sorted by value)')}</small></h6>`
+    + (rows.length ? `<table class="ltab sm"><tbody>${rows.map(r => `<tr><td>${esc(lootTr(r[0]))}</td><td class="g" style="text-align:right">≈ ${fmt(r[1])}</td></tr>`).join('')}</tbody></table>` : `<span class="m">${tx('Sin datos de la wiki para esta llave.', 'No wiki data for this key.')}</span>`)
+    + (others.length ? `<div class="m" style="font-size:12px;margin-top:6px">${tx('Sin valor calculado', 'No value computed')}: ${others.map(r => esc(lootTr(r[0]))).join(' · ')}</div>` : '') + `</div>`;
+  if (a.lab) return inside;
+  const pay = `<div class="kbox"><h6>${tx('Cuánto compensa', 'Is it worth it')}</h6>
+    <div class="kln"><span>${tx('Valor medio por incursión', 'Average value per raid')}</span><span class="g">≈ ${fmt(a.val)}</span></div>
+    <div class="kln"><span>${tx('Precio de la llave', 'Key price')}</span><span>${a.wh.buy != null ? fmt(a.wh.buy) : tx('Solo en incursión', 'Raid only')}</span></div>
+    <div class="kln"><span>${tx('Usos', 'Uses')}</span><span>${a.it.us || '—'}</span></div>
+    <div class="kln"><span>${tx('Coste por uso', 'Cost per use')}</span><span>${a.cost == null ? '—' : fmt(a.cost)}</span></div>
+    <div class="kln"><b>${tx('Ganancia por uso', 'Profit per use')}</b><b class="${a.profit >= 0 ? 'cheap' : 'bad'}">${a.profit >= 0 ? '+' : '−'}${fmt(Math.abs(a.profit))}</b></div></div>`;
+  return pay + inside;
+}
 function keyList(){
   const m = new Map();
-  D.tasks.forEach(t => { if (S.done[t.id]) return; (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || !it.key) return; let a = m.get(it.id); if (!a) { a = { id: it.id, it, q: [] }; m.set(it.id, a); } if (!a.q.includes(t)) a.q.push(t); }); });
-  return [...m.values()].map(a => { a.maps = [...new Set(((D.klock && D.klock[a.id]) || []).map(x => x[0]))]; a.own = (S.icol[a.id] || 0) >= 1; return a; });
+  D.tasks.forEach(t => { (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it || !it.key) return; let a = m.get(it.id); if (!a) { a = { id: it.id, it, q: [] }; m.set(it.id, a); } if (!a.q.includes(t)) a.q.push(t); }); });
+  return [...m.values()].map(a => { a.maps = [...new Set(((D.klock && D.klock[a.id]) || []).map(x => x[0]))]; a.own = (S.icol[a.id] || 0) >= 1; a.allDone = a.q.every(t => S.done[t.id]); return a; });
 }
 function keyWhere(id){
   if (!P) return { t: tx('Precios cargando…', 'Loading prices…'), buy: null, raid: false };
@@ -1430,10 +1529,10 @@ function renderKeys(){
   if (S.kmap !== 'all' && !mapsAll.includes(S.kmap)) S.kmap = 'all';
   const w = all.map(a => ({ a, w: keyWhere(a.id) }));
   $('#sum').innerHTML = kpiHtml([[tx('Llaves que piden tus misiones', 'Keys your quests ask for'), all.length], [tx('Ya las tienes', 'You have them'), all.filter(a => a.own).length], [tx('Solo en incursión', 'Raid only'), w.filter(x => x.w.raid).length], [tx('Se pueden comprar', 'Can be bought'), w.filter(x => x.w.buy != null).length]]);
-  const rows = w.filter(x => (!q || x.a.it.sq.includes(q)) && (!S.ihide || !x.a.own) && (S.kmap === 'all' || x.a.maps.includes(S.kmap)))
+  const rows = w.filter(x => (!q || x.a.it.sq.includes(q)) && (!S.ihide || !x.a.own) && (!S.khd || !x.a.allDone) && (S.kmap === 'all' || x.a.maps.includes(S.kmap)))
     .sort((x, y) => x.a.own - y.a.own || (x.a.maps[0] ? mapName(x.a.maps[0]) : 'zz').localeCompare(y.a.maps[0] ? mapName(y.a.maps[0]) : 'zz', LOC()) || x.a.it.name.localeCompare(y.a.it.name, LOC()));
   $('#list').innerHTML = rows.length ? `<div class="kgrid">` + rows.map(({ a, w }) => `<div class="kc ${a.own ? 'own' : ''}" data-act="kopen" data-id="${esc(a.id)}"><div class="kt"><div class="ic">${itemImg(a.it)}</div><div><h5>${esc(a.it.name)}</h5><div class="m">${a.maps.length ? esc(a.maps.map(mapName).join(', ')) : tx('Mapa sin datos', 'No map data')}</div></div></div>
-    <div class="ktags"><span class="bd k">${tx('Llave', 'Key')}</span><span class="bd q">${a.q.length} ${tx(a.q.length > 1 ? 'misiones' : 'misión', a.q.length > 1 ? 'quests' : 'quest')}</span>${a.own ? `<span class="bd g">${tx('La tienes', 'Owned')}</span>` : ''}</div>
+    <div class="ktags"><span class="bd k">${tx('Llave', 'Key')}</span><span class="bd q">${a.q.length} ${tx(a.q.length > 1 ? 'misiones' : 'misión', a.q.length > 1 ? 'quests' : 'quest')}</span>${a.own ? `<span class="bd g">${tx('La tienes', 'Owned')}</span>` : ''}${a.allDone ? `<span class="bd g">${tx('Misiones hechas', 'Quests done')}</span>` : ''}</div>
     <div class="krow"><span class="m">${tx('Conseguirla', 'Get it')}</span><span class="${w.raid ? 'm' : 'pr'}">${w.t}</span></div><div class="krow"><span class="m">${tx('Usos', 'Uses')}</span><span>${a.it.us ? a.it.us : '—'}</span></div>
     <div class="krow"><button class="btn sm" data-act="kown" data-id="${esc(a.id)}">${a.own ? tx('✓ La tengo', '✓ I have it') : tx('Marcar que la tengo', 'Mark as owned')}</button></div></div>`).join('') + `</div>` : `<div class="msg">${tx('No hay llaves que coincidan.', 'No keys match.')}</div>`;
 }
@@ -1466,6 +1565,7 @@ function keyDetailHtml(id){
     <div class="kbox"><h6>${tx('Qué abre', 'What it opens')}</h6><div class="kln"><span>${tx('Cerraduras en tarkov.dev', 'Locks on tarkov.dev')}</span><span>${nLocks}</span></div><div id="kwLock" class="kw m">${tx('Cargando información de la wiki…', 'Loading wiki information…')}</div></div>
     <div class="kbox"><h6>${tx('Misiones que la piden', 'Quests that ask for it')}</h6>${tasks.map(t => `<div class="kln"><span><b>${esc(t.name)}</b> <span class="m">· ${esc(t.trader.name)}</span> ${S.done[t.id] ? `<span class="bd g">${tx('hecha', 'done')}</span>` : ''}</span><span class="m">${tx('nv.', 'lvl')} ${t.lvl}</span></div>`).join('') || `<span class="m">—</span>`}</div>
     <div class="kbox"><h6>${tx('Dónde conseguirla', 'Where to get it')}</h6>${buyLn}${flLn}<div class="kln"><span class="${w.raid ? 'pr' : ''}">${tx('Encontrarla en incursión', 'Find it in a raid')}</span><span class="m">${w.raid ? tx('Única opción', 'Only option') : tx('También posible', 'Also possible')}</span></div></div>
+    ${S.iview === 'loot' ? lootBoxesHtml(id) : ''}
   </div><div class="kcol">
     <div class="kbox" style="padding:10px">${keyMapHtml(id)}</div>
     <div class="kbox"><h6>${tx('Dónde suele aparecer', 'Where it usually spawns')} <small class="m" style="text-transform:none;letter-spacing:0">${(S.lang === 'es' && KEYWIKI_ES[keyPage(it)]) ? tx('(traducido de la wiki)', '') : tx('(texto de la wiki, en inglés)', '(wiki text)')}</small></h6><div id="kwLoc" class="kw m">${tx('Cargando información de la wiki…', 'Loading wiki information…')}</div>
@@ -1532,7 +1632,7 @@ function renderHideoutBoard(){
       <div class="hact">${next ? `<button class="btn" data-act="hbuild" data-id="${esc(next.id)}">✓ ${tx('Marcar nivel', 'Mark level')} ${next.level} ${tx('construido', 'as built')}</button>` : ''}${S.hnext ? `<button class="btn" data-act="hopen" data-id="${esc(s.id)}">${S.hopen[s.id] ? tx('Ver solo el siguiente', 'Show next only') : tx('Ver todos los niveles', 'Show all levels')}</button>` : ''}</div></div>`; }).join('') + `</div>`
     : `<div class="msg">${tx('No hay estaciones con este filtro.', 'No stations match this filter.')}</div>`;
 }
-function renderBoth(){ if (S.iview === 'keys') renderKeys(); else if (S.iview === 'hideout') renderHideoutBoard(); else renderItemsList(); }
+function renderBoth(){ if (S.iview === 'keys') renderKeys(); else if (S.iview === 'loot') renderLoot(); else if (S.iview === 'hideout') renderHideoutBoard(); else renderItemsList(); }
 
 /* ───────── Estructura de cada pestaña ───────── */
 function renderView(){
@@ -1562,13 +1662,15 @@ function renderView(){
       <label><input type="checkbox" id="hideDone" ${S.hideDone ? 'checked' : ''}> ${tx('Ocultar completadas', 'Hide completed')}</label>`;
   } else {
     app.classList.add('wide');
-    const iv = S.iview, cnt = [itemNeeds().filter(a => !a.done).length, keyList().length, stationInfo().filter(x => x.next).length];
-    const seg = `<div class="iseg">${[['items', 'Items'], ['keys', tx('Llaves', 'Keys')], ['hideout', 'Hideout']].map((x, i) => `<button class="${iv === x[0] ? 'on' : ''}" data-act="iview" data-id="${x[0]}">${x[1]}<b>${cnt[i]}</b></button>`).join('')}</div>`;
+    const iv = S.iview, cnt = [itemNeeds().filter(a => !a.done).length, keyList().length, (D.lootKeys && KL !== null && !KLS.on) ? lootList().length : '…', stationInfo().filter(x => x.next).length];
+    const seg = `<div class="iseg">${[['items', 'Items'], ['keys', tx('Llaves', 'Keys')], ['loot', tx('Llaves de botín', 'Loot keys')], ['hideout', 'Hideout']].map((x, i) => `<button class="${iv === x[0] ? 'on' : ''}" data-act="iview" data-id="${x[0]}">${x[1]}<b>${cnt[i]}</b></button>`).join('')}</div>`;
     const srch = ph => `<input type="search" id="q" placeholder="${ph}" value="${esc(S.q)}">`;
     const ch = (k, label, on, v) => `<button class="ich ${on ? 'on' : ''}" data-act="ichip" data-k="${k}"${v !== undefined ? ` data-v="${v}"` : ''}>${label}</button>`;
-    if (iv === 'keys' && S.kdet) ctl = seg;
+    if ((iv === 'keys' || iv === 'loot') && S.kdet) ctl = seg;
+    else if (iv === 'loot') { const ms = [...new Set(lootList().flatMap(a => a.maps))].sort((x, y) => mapName(x).localeCompare(mapName(y), LOC()));
+      ctl = seg + srch(tx('Buscar una llave…', 'Search a key…')) + ch('lsort', tx('Ordenar: ganancia por uso', 'Sort: profit per use'), S.lsort !== 'value', 'profit') + ch('lsort', tx('Ordenar: valor dentro', 'Sort: value inside'), S.lsort === 'value', 'value') + ch('lmk', '★ Marked / Lab', S.lmk) + ch('ihide', tx('Ocultar las que tengo', 'Hide owned'), S.ihide) + ch('kmap', tx('Todos los mapas', 'All maps'), S.kmap === 'all', 'all') + ms.map(m => ch('kmap', esc(mapName(m)), S.kmap === m, m)).join(''); }
     else if (iv === 'keys') { const ms = [...new Set(keyList().flatMap(a => a.maps))].sort((x, y) => mapName(x).localeCompare(mapName(y), LOC()));
-      ctl = seg + srch(tx('Buscar una llave…', 'Search a key…')) + ch('ihide', tx('Ocultar las que tengo', 'Hide owned'), S.ihide) + ch('kmap', tx('Todos los mapas', 'All maps'), S.kmap === 'all', 'all') + ms.map(m => ch('kmap', esc(mapName(m)), S.kmap === m, m)).join(''); }
+      ctl = seg + srch(tx('Buscar una llave…', 'Search a key…')) + ch('ihide', tx('Ocultar las que tengo', 'Hide owned'), S.ihide) + ch('khd', tx('Ocultar de misiones hechas', 'Hide done quests'), S.khd) + ch('kmap', tx('Todos los mapas', 'All maps'), S.kmap === 'all', 'all') + ms.map(m => ch('kmap', esc(mapName(m)), S.kmap === m, m)).join(''); }
     else if (iv === 'hideout') ctl = seg + srch(tx('Buscar una estación o un item…', 'Search a station or an item…')) + ch('hnext', tx('Solo el siguiente nivel', 'Next level only'), S.hnext) + ch('hideBuilt', tx('Ocultar terminadas', 'Hide finished'), S.hideBuilt) + ch('hready', tx('Listas para construir', 'Ready to build'), S.hready);
     else ctl = seg + srch(tx('Buscar un item…', 'Search an item…')) + ch('ihide', tx('Ocultar conseguidos', 'Hide collected'), S.ihide) + ch('isrc', tx('Todos', 'All'), S.isrc === 'all', 'all') + ch('isrc', tx('Solo Hideout', 'Hideout only'), S.isrc === 'h', 'h') + ch('isrc', tx('Solo misiones', 'Quests only'), S.isrc === 'q', 'q') + ch('isrc', '🎯 ' + tx('En incursión', 'Found in raid'), S.isrc === 'fir', 'fir');
   }
@@ -1948,7 +2050,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 18 · Nombres originales en inglés', 'version 18 · Original English names');
+  $('#ver').textContent = tx('versión 20 · Llaves de botín', 'version 20 · Loot keys');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
