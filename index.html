@@ -83,6 +83,23 @@ ul.list{list-style:none;margin:0;padding:0 12px 10px}
 .node.failed{border-color:#7b3f3a!important;background:linear-gradient(180deg,#2a1f20,#1a1516)!important}.node.failed .av{border-color:var(--bad)!important}.node.failed .nt{text-decoration:line-through;color:#b58a86!important}
 .lg.fail{border-color:var(--bad);background:#2a1f20}.b.bad{color:var(--bad);border-color:#7b3f3a}
 .prow .pst{display:flex;gap:6px;margin-top:6px}.prow.failed{opacity:.6;border-color:#7b3f3a}.btn.sm.bad.on{background:#5a2b27;border-color:var(--bad);color:#ffd9d4}
+.bkbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:10px 16px 0;padding:10px 14px;background:#1c2530;border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;font-size:13px}.bkbar b{display:block;margin-bottom:2px}.bkbar span{color:var(--mute)}.bkb{display:flex;gap:8px;flex-wrap:wrap}
+.gmems{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.gm{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.gm.me{border-color:var(--acc)}.gmt{display:flex;justify-content:space-between;gap:8px;font-size:13px}.gmt span{color:var(--mute)}.gbar{height:6px;border-radius:4px;background:#0c1014;margin-top:7px;overflow:hidden}.gbar i{display:block;height:100%;background:linear-gradient(90deg,#5d7f9f,var(--ok))}
+.gfl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.gfl select{background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.fcol.grp{border-top-color:var(--acc)}.grow{align-items:flex-start}.gchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.gch{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}.gch.y{background:#1f3a2c;color:var(--ok);border-color:#2f5a44}.gch.me{font-weight:700}
+@media (max-width:700px){
+ header{position:static;padding:8px 10px}h1{font-size:15px}h1 small{display:block;margin-top:2px}
+ .tools{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:4px}.tools>*{flex:none}
+ nav{flex-wrap:nowrap;overflow-x:auto;gap:4px;padding-bottom:4px}nav button{flex:none;white-space:nowrap;padding:7px 11px;font-size:13px}
+ #app{padding-left:8px;padding-right:8px}.bkbar{margin:8px 8px 0}
+ .iseg{display:flex;max-width:100%;overflow-x:auto}.iseg button{flex:none;white-space:nowrap;padding:6px 10px}
+ .controls{gap:8px}.controls select,.controls input[type=search],.controls input[type=text]{max-width:100%;min-width:0}.controls input[type=search]{width:100%}
+ input,select,textarea{font-size:16px}
+ .gcard{padding-top:28px}#pmap{height:340px}.node{touch-action:manipulation}
+ .btn{padding:8px 11px}.fbar{gap:8px}.fbar select{max-width:100%}
+ .kgrid{grid-template-columns:1fr}.hgrid{grid-template-columns:1fr}
+ .ikpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 .b.key{color:#b79be8;border-color:#5d4a8a}
 .item{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .item.done{opacity:.55}
@@ -378,6 +395,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
   </nav>
   <div id="status"></div>
 </header>
+<div id="bkbar"></div>
 <main id="app"></main>
 <div id="scrim" data-act="closeDrawer"></div>
 <aside id="drawer"></aside>
@@ -1701,7 +1719,7 @@ function renderView(){
   if ($('#itemFilter')) $('#itemFilter').value = S.itemFilter;
   if ($('#hview')) $('#hview').value = S.hview;
   if ($('#tfilter')) $('#tfilter').value = S.tfilter;
-  renderList();
+  renderList(); updBackup();
 }
 
 /* ───────── Vista: Gunsmith ───────── */
@@ -1832,6 +1850,38 @@ function frCol(list, kind, fname){
       + by.get(g.key).sort((a, b) => a.lvl - b.lvl || a.name.localeCompare(b.name, LOC())).map(t => `<div class="frow"><div class="frn"><b>${esc(t.name)}</b>${t.kappa ? ' <span class="kp" title="Kappa">★</span>' : ''}<small>${t.map ? esc(t.map) + ' · ' : ''}${tx('nv.', 'lvl')} ${t.lvl}</small></div><button class="btn sm" data-act="frgo" data-id="${esc(t.id)}">${tx('Ver', 'View')}</button></div>`).join('') + `</div>`).join('')
       : `<div class="fempty">${kind === 'mine' ? tx('No tienes misiones que ' + fname + ' no haya hecho. ¡Estáis al día!', 'You have no quests that ' + fname + ' has not done.') : tx(fname + ' no tiene misiones que tú no hayas hecho.', fname + ' has no quests you have not done.')}</div>`) + `</section>`;
 }
+function frGroupData(){
+  const real = D.tasks.filter(t => !t.custom), fr = S.friends || {}, names = Object.keys(fr);
+  const myn = (S.myname || '').trim() || tx('Yo', 'Me');
+  const mem = [{ n: myn, me: true, set: new Set(real.filter(t => S.done[t.id]).map(t => t.id.slice(0, FR_P))) }].concat(names.map(n => ({ n: names.includes(myn) ? n : n, me: false, set: new Set(fr[n].d) })));
+  const flt = S.gflt || 'diff', wi = Math.max(1, mem.findIndex(m => m.n === S.gwho));
+  let rows = real.map(t => { const k = t.id.slice(0, FR_P), has = mem.map(m => m.set.has(k)); return { t, has, n: has.filter(Boolean).length }; });
+  rows = rows.filter(r => {
+    if (S.ftr && S.ftr !== 'all' && r.t.trader.key !== S.ftr) return false;
+    if (flt === 'diff') return r.n > 0 && r.n < mem.length;
+    if (flt === 'miss') return !r.has[0] && r.n > 0;
+    if (flt === 'mine') return r.has[0] && r.n < mem.length;
+    if (flt === 'none') return r.n === 0 && stateOf(r.t) === 'avail';
+    if (flt === 'who') return !r.has[wi] && r.n > 0;
+    return true; });
+  return { mem, rows, real, wi };
+}
+function frGroupHtml(){
+  const g = frGroupData(), flt = S.gflt || 'diff', tot = g.real.length;
+  const chip = (k, label) => `<button class="ich ${flt === k ? 'on' : ''}" data-act="fchip" data-id="${k}">${label}</button>`;
+  const members = `<div class="gmems">${g.mem.map(m => `<div class="gm ${m.me ? 'me' : ''}"><div class="gmt"><b>${esc(m.n)}</b><span>${m.set.size}/${tot}</span></div><div class="gbar"><i style="width:${Math.round(100 * m.set.size / Math.max(1, tot))}%"></i></div></div>`).join('')}</div>`;
+  const filters = `<div class="gfl">${chip('diff', tx('Con diferencias', 'With differences'))}${chip('miss', tx('Me faltan y alguien las tiene', 'I lack, someone has'))}${chip('mine', tx('Yo la tengo y a alguien le falta', 'I have, someone lacks'))}${chip('none', tx('Nadie la ha hecho (disponibles para mí)', 'Nobody did it (available to me)'))}${chip('who', tx('A un amigo le falta…', 'A friend lacks…'))}
+    ${flt === 'who' ? `<select id="gwho">${g.mem.map(m => `<option value="${esc(m.n)}" ${m.n === g.mem[g.wi].n ? 'selected' : ''}>${esc(m.n)}</option>`).join('')}</select>` : ''}
+    <select id="ftr"><option value="all">${tx('Todos los vendedores', 'All traders')}</option>${D.groups.map(x => `<option value="${esc(x.key)}" ${S.ftr === x.key ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
+    <button class="btn sm" data-act="fcopyg" style="margin-left:auto">${tx('Copiar lista', 'Copy list')}</button></div>`;
+  const by = new Map(); g.rows.forEach(r => { if (!by.has(r.t.trader.key)) by.set(r.t.trader.key, []); by.get(r.t.trader.key).push(r); });
+  const groups = D.groups.filter(x => by.has(x.key));
+  const body = groups.length ? groups.map(x => `<div class="fg"><div class="fgt"><i style="background:${trColor(x.key)}"></i>${esc(x.name)}<small>${by.get(x.key).length}</small></div>`
+    + by.get(x.key).sort((a, b) => a.t.lvl - b.t.lvl || a.t.name.localeCompare(b.t.name, LOC())).map(r => `<div class="frow grow"><div class="frn"><b>${esc(r.t.name)}</b>${r.t.kappa ? ' <span class="kp">★</span>' : ''}<small>${r.t.map ? esc(r.t.map) + ' · ' : ''}${tx('nv.', 'lvl')} ${r.t.lvl}</small>
+      <div class="gchips">${g.mem.map((m, i) => `<span class="gch ${r.has[i] ? 'y' : 'n'} ${m.me ? 'me' : ''}">${r.has[i] ? '✓' : '–'} ${esc(m.n)}</span>`).join('')}</div></div><button class="btn sm" data-act="frgo" data-id="${esc(r.t.id)}">${tx('Ver', 'View')}</button></div>`).join('') + `</div>`).join('')
+    : `<div class="fempty">${tx('No hay misiones con este filtro.', 'No quests match this filter.')}</div>`;
+  return members + filters + `<div class="fcol grp"><div class="fch"><h3>${tx('Misiones', 'Quests')}</h3><span class="fpill">${g.rows.length}</span></div>${body}</div>`;
+}
 function renderFriends(){
   const fr = S.friends || {}, names = Object.keys(fr);
   if (names.length && !fr[S.fsel]) S.fsel = names[0];
@@ -1848,10 +1898,12 @@ function renderFriends(){
     <textarea id="fcode" rows="3" placeholder="TKV1.…"></textarea>
     <div class="frb"><button class="btn pri" data-act="fload">${tx('Cargar código', 'Load code')}</button><button class="btn" data-act="ffile">${tx('Subir archivo…', 'Upload file…')}</button></div><div id="fmsg" class="m" style="margin-top:8px;font-size:12.5px"></div></div>`;
   let cmp = '';
-  if (c) {
+  const seg = names.length ? `<div class="iseg"><button class="${S.fmode !== 'group' ? 'on' : ''}" data-act="fmode" data-id="one">${tx('Uno a uno', 'One by one')}</button><button class="${S.fmode === 'group' ? 'on' : ''}" data-act="fmode" data-id="group">${tx('Todo el grupo', 'Whole group')}</button></div>` : '';
+  if (c && S.fmode === 'group') cmp = seg + frGroupHtml();
+  else if (c) {
     const diffMode = c.f.m !== S.mode;
     const kpis = [[tx('Tus misiones hechas', 'Your completed quests'), c.myN + ' / ' + c.total], [esc(fname), c.frN + ' / ' + c.total], [tx('Tú vas por delante en', 'You are ahead on'), c.mine.length], [esc(fname) + ' ' + tx('va por delante en', 'is ahead on'), c.theirs.length]];
-    cmp = `<div class="fbar"><label>${tx('Comparar con', 'Compare with')} <select id="fsel">${names.map(n => `<option value="${esc(n)}" ${n === S.fsel ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
+    cmp = seg + `<div class="fbar"><label>${tx('Comparar con', 'Compare with')} <select id="fsel">${names.map(n => `<option value="${esc(n)}" ${n === S.fsel ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       <label>${tx('Vendedor', 'Trader')} <select id="ftr"><option value="all">${tx('Todos', 'All')}</option>${D.groups.map(g => `<option value="${esc(g.key)}" ${S.ftr === g.key ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></label>
       <span class="m" style="font-size:12.5px">${tx('Datos de', 'Data from')} ${new Date(c.f.ts).toLocaleDateString(S.lang === 'en' ? 'en-GB' : 'es-ES')}</span>
       <button class="btn sm bad" data-act="fdel" style="margin-left:auto">${tx('Quitar a', 'Remove')} ${esc(fname)}</button></div>`
@@ -1872,6 +1924,10 @@ function frAct(a, id, t){
   else if (a === 'ffile') { $('#friendFile').click(); }
   else if (a === 'fload') { try { const f = frParse($('#fcode').value), nm = frSave($('#ffn').value, f); renderFriends(); const m = $('#fmsg'); if (m) { m.textContent = tx('Cargado: ', 'Loaded: ') + nm + ' (' + f.d.length + ' ' + tx('misiones hechas', 'completed quests') + ')'; m.style.color = 'var(--ok)'; } } catch (e) { msg(tx('Ese código no es válido. Pídele a tu amigo que lo copie otra vez entero, o que te mande el archivo.', 'That code is not valid. Ask your friend to copy it again in full, or send the file.'), true); } }
   else if (a === 'fdel') { if (S.friends && S.friends[S.fsel]) { delete S.friends[S.fsel]; S.fsel = ''; saveState(); renderFriends(); } }
+  else if (a === 'fmode') { S.fmode = id; saveState(); renderFriends(); }
+  else if (a === 'fchip') { S.gflt = id; saveState(); renderFriends(); }
+  else if (a === 'fcopyg') { const g = frGroupData(); const lines = g.rows.sort((x, y) => x.t.trader.name.localeCompare(y.t.trader.name, LOC()) || x.t.lvl - y.t.lvl).map(r => '- ' + r.t.name + ' (' + r.t.trader.name + ', ' + tx('nv.', 'lvl') + ' ' + r.t.lvl + ') — ' + tx('les falta a: ', 'missing for: ') + (g.mem.filter((m, i) => !r.has[i]).map(m => m.n).join(', ') || '—'));
+    frCopy(tx('Misiones del grupo:', 'Group quests:') + '\n' + lines.join('\n')).then(ok => setStatus(ok ? tx('Lista copiada.', 'List copied.') : tx('No se pudo copiar.', 'Could not copy.'), ok ? '' : 'warn')); }
   else if (a === 'frgo') { S.view = 'quests'; S.trader = 'all'; S.sel = id; S.q = ''; saveState(); renderView(); setTimeout(() => { try { centerOn(id); } catch (e) {} }, 60); }
   else if (a === 'fcopylist') { const c = frCompare(); if (!c) return; const list = id === 'mine' ? c.mine : c.theirs; const head = id === 'mine' ? tx('Misiones que yo tengo y ' + S.fsel + ' no:', 'Quests I have and ' + S.fsel + ' does not:') : tx('Misiones que ' + S.fsel + ' tiene y yo no:', 'Quests ' + S.fsel + ' has and I do not:');
     const lines = list.filter(x => !S.ftr || S.ftr === 'all' || x.trader.key === S.ftr).sort((x, y) => x.trader.name.localeCompare(y.trader.name, LOC()) || x.lvl - y.lvl).map(x => '- ' + x.name + ' (' + x.trader.name + ', ' + tx('nv.', 'lvl') + ' ' + x.lvl + ')');
@@ -2024,8 +2080,10 @@ document.addEventListener('click', e => {
   const a = t.dataset.act, id = t.dataset.id, store = t.dataset.store;
   if (a === 'reload') { boot(true); }
   else if (a === 'prices') { loadPrices(true).then(() => { statusReady(); renderList(); }); }
-  else if (/^(fsave|fcopy|ffile|fload|fdel|frgo|fcopylist)$/.test(a)) { frAct(a, id, t); }
+  else if (/^(fsave|fcopy|ffile|fload|fdel|frgo|fcopylist|fmode|fchip|fcopyg)$/.test(a)) { frAct(a, id, t); }
+  else if (a === 'bkdismiss') { S.bkSnooze = Date.now() + 3 * 864e5; saveState(); updBackup(); }
   else if (a === 'export') {
+    S.lastBackup = Date.now(); delete S.bkSnooze; saveState(); updBackup();
     const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' }); const u = URL.createObjectURL(blob);
     const l = document.createElement('a'); l.href = u; l.download = 'tarkov-progreso.json'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
   }
@@ -2092,6 +2150,7 @@ document.addEventListener('change', e => {
   else if (a === 'gown') { const k = t.dataset.k; if (t.checked) S.gown[k] = true; else delete S.gown[k]; saveState(); renderList(); }
   else if (t.id === 'kappaOnly') { S.kappaOnly = t.checked; saveState(); renderList(); }
   else if (t.id === 'fsel') { S.fsel = t.value; saveState(); renderFriends(); }
+  else if (t.id === 'gwho') { S.gwho = t.value; saveState(); renderFriends(); }
   else if (t.id === 'ftr') { S.ftr = t.value; saveState(); renderFriends(); }
   else if (t.id === 'friendFile' && t.files[0]) { const rd = new FileReader(); rd.onload = () => { try { const f = frParse(rd.result), nm = frSave($('#ffn') ? $('#ffn').value : '', f); renderFriends(); const m = $('#fmsg'); if (m) { m.textContent = tx('Cargado: ', 'Loaded: ') + nm + ' (' + f.d.length + ' ' + tx('misiones hechas', 'completed quests') + ')'; m.style.color = 'var(--ok)'; } } catch (err) { const m = $('#fmsg'); if (m) { m.textContent = tx('Ese archivo no es válido.', 'That file is not valid.'); m.style.color = 'var(--bad)'; } } }; rd.readAsText(t.files[0]); t.value = ''; }
   else if (t.id === 'tfilter') { S.tfilter = t.value; saveState(); renderList(); }
@@ -2154,12 +2213,22 @@ async function boot(force){
     diagnose().then(t => { const p = $('#diag'); if (p) p.textContent = t; });
   }
 }
+function updBackup(){
+  const el = $('#bkbar'); if (!el) return;
+  const now = Date.now(), DAY = 864e5, n = Object.keys(S.done || {}).length + Object.keys(S.hideout || {}).length + Object.keys(S.icol || {}).length;
+  if (!S.firstUse) { S.firstUse = now; saveState(); }
+  const ref = S.lastBackup || S.firstUse, days = Math.floor((now - ref) / DAY);
+  if (n < 5 || days < 14 || now < (S.bkSnooze || 0)) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="bkbar"><div><b>💾 ${S.lastBackup ? tx('Hace ' + days + ' días que no guardas una copia de seguridad.', days + ' days since your last backup.') : tx('Todavía no has guardado ninguna copia de seguridad.', 'You have not saved a backup yet.')}</b>
+    <span>${tx('Tu progreso solo está en este navegador: si lo limpias o cambias de ordenador, se pierde. El botón descarga un archivo que luego puedes cargar con «Cargar copia».', 'Your progress only lives in this browser: if you clear it or switch computers it is lost. The button downloads a file you can later load with “Load backup”.')}</span></div>
+    <div class="bkb"><button class="btn pri" data-act="export">${tx('Guardar copia ahora', 'Save backup now')}</button><button class="btn" data-act="bkdismiss">${tx('Recordármelo en 3 días', 'Remind me in 3 days')}</button></div></div>`;
+}
 function updTabs(){ const fe = $('#tabs [data-view=friends]'); if (fe) fe.textContent = '👥 ' + tx('Amigos', 'Friends'); const n = D ? D.tasks.filter(t => S.plan[t.id]).length : Object.keys(S.plan || {}).length; const e = $('#tabs [data-view=plan]'); if (e) e.textContent = '⚑ ' + tx('Mi plan', 'My plan') + ' (' + n + ')'; }
 function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 22 · Falladas y colores del plan', 'version 22 · Failed quests & plan colours');
+  $('#ver').textContent = tx('versión 23 · Grupo, copias y móvil', 'version 23 · Group, backups & mobile');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
