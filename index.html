@@ -151,6 +151,8 @@ footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:v
 .edges path{fill:none;stroke-width:2.2}
 .edges path.done{stroke:#537599;opacity:.9}
 .edges path.go{stroke:var(--acc);opacity:1}
+.edges path.virt{stroke-dasharray:7 5}
+#pimg:not([src]),#pimg[src='']{display:none}
 .node{position:absolute;width:300px;height:88px;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;background:linear-gradient(180deg,#1f262d,#15191e);border:1px solid #35414d;border-radius:12px;cursor:pointer;box-shadow:0 3px 10px #0009;transition:border-color .15s,transform .15s,opacity .15s}
 .node:hover{border-color:var(--acc2);transform:translateY(-1px)}
 .node .av{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#090b0e;border:2px solid #38434f;flex:none}
@@ -625,7 +627,7 @@ const MAPS = {
   interchange: { ids: ['5714dbc024597771384a510d'], rot: 180, b: [[598, -442], [-433, 426]], svg: 'Interchange', layer: 'Ground_Level', es: 'Interchange', en: 'Interchange' },
   streets: { ids: ['5714dc692459777137212e12'], rot: 180, b: [[323, -295], [-280, 532]], svg: 'StreetsOfTarkov', layer: 'Ground_Level', es: 'Streets of Tarkov', en: 'Streets of Tarkov' },
   'ground-zero': { ids: ['653e6760052c01c1c805532f', '65b8d6f5cdde2479cb2a3125'], rot: 180, b: [[249, -124], [-99, 364]], svg: 'GroundZero', layer: 'Ground_Level', es: 'Ground Zero', en: 'Ground Zero' },
-  'the-lab': { ids: ['5b0fc42d86f7744a585f9105'], rot: 270, b: [[-80, -477], [-287, -193]], svg: '', layer: '', es: 'The Lab', en: 'The Lab' },
+  'the-lab': { ids: ['5b0fc42d86f7744a585f9105'], rot: 270, b: [[-80, -477], [-287, -193]], svg: 'Labs', layer: '', es: 'The Lab', en: 'The Lab' },
   labyrinth: { ids: ['6733700029c367a3d40b02af'], rot: 180, b: [[60, -60], [-60, 60]], svg: '', layer: '', es: 'The Labyrinth', en: 'The Labyrinth' },
   icebreaker: { ids: ['69af492a4819ea4ba10a69c5'], rot: 180, b: [[77, -64.5], [-65.5, 67.4]], svg: '', layer: '', es: 'Icebreaker', en: 'Icebreaker' },
 };
@@ -854,7 +856,7 @@ const searchLink = name => WIKI + 'Special:Search?query=' + encodeURIComponent(n
 
 /* ───────── Estado (progreso del usuario) ───────── */
 let S = { mode:'pve', done:{}, fail:{}, story:{}, hideout:{}, collected:{}, hcol:{}, icol:{}, iview:'items', isrc:'all', ihide:true, kmap:'all', kdet:null, hnext:true, hready:false, hopen:{}, order:[], level:0, view:'quests',
-          lang:null, plan:{}, pmap:null, pfocus:null, planOpen:true, tfilter:'imp', extShow:true, extNames:true, hideDone:false, hideLocked:false, hideBuilt:true, q:'', trader:'prapor', obj:{}, sobj:{}, chapter:null, sel:null, zoom:1, itemFilter:'pending', hview:'summary', open:{}, custom:[], adding:false, gsel:null, gown:{} };
+          lang:null, plan:{}, pmap:null, pfocus:null, planOpen:true, tfilter:'imp', extShow:true, extNames:true, hideDone:false, hideLocked:false, chain:false, hideBuilt:true, q:'', trader:'prapor', obj:{}, sobj:{}, chapter:null, sel:null, zoom:1, itemFilter:'pending', hview:'summary', open:{}, custom:[], adding:false, gsel:null, gown:{} };
 function loadState(){ try { const r = localStorage.getItem(LS_STATE); if (r) S = Object.assign(S, JSON.parse(r)); } catch(e){} if (S.view === 'hideout' || S.view === 'items') S.view = 'both';
   if (!S.icol) S.icol = {}; if (!S.hopen) S.hopen = {};
   if (!S.mig17) { S.mig17 = 1; const o = Object.assign({}, S.hcol || {}); Object.entries(S.collected || {}).forEach(([k, v]) => { o[k] = Math.max(o[k] || 0, v); }); S.icol = Object.assign(o, S.icol); }
@@ -1054,8 +1056,22 @@ function applyLang(d){
   Object.values(d.traders || {}).forEach(t => { t.name = pick(t.nameEs, t.nameEn); });
 }
 
+/* Misiones del juego que tarkov.dev aún no tiene: las ven todos. Si tarkov.dev las añade (mismo nombre), se usan las suyas y estas desaparecen solas. */
+const EXTRA_TASKS = [
+  { id: 'x_fog_of_war', es: 'La Niebla de la Guerra', en: 'Fog of War', trader: 'lightkeeper', traderName: 'Lightkeeper', map: 'Lighthouse', mk: 'lighthouse', lvl: 0,
+    obj: ['Explora la posición de los Rogues cerca del vehículo BRDM en la parte norte de la Planta de Tratamiento de Agua', 'Explora el punto de control de los Rogues con una torre de vigilancia en la parte suroeste de la Planta de Tratamiento de Agua', 'Explora el territorio de la Planta de Tratamiento de Agua desde el tejado de cualquiera de los edificios de la planta'],
+    objEn: ['Scout the Rogues position near the BRDM vehicle in the northern part of the Water Treatment Plant', 'Scout the Rogues checkpoint with a watchtower in the southwestern part of the Water Treatment Plant', 'Scout the Water Treatment Plant territory from the roof of any of the plant buildings'] },
+  { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'lightkeeper', traderName: 'Lightkeeper', map: 'The Lab', mk: 'the-lab', lvl: 0,
+    obj: ['Survive and extract from The Lab'], objEn: ['Survive and extract from The Lab'] },
+];
 function customTasks(d){
-  d.tasks = d.tasks.filter(t => !t.custom);
+  d.tasks = d.tasks.filter(t => !t.custom && !t.extra);
+  const hasReal = e => d.tasks.some(t => norm(t.en || '') === norm(e.en) || norm(t.nameEs || '') === norm(e.es));
+  EXTRA_TASKS.filter(e => !hasReal(e)).forEach(e => {
+    const tr = (d.traders || {})[e.trader] || {}, en = S.lang === 'en';
+    d.tasks.push({ id: e.id, extra: true, name: en ? e.en : e.es, nameEs: e.es, en: e.en, wiki: 'https://escapefromtarkov.fandom.com/wiki/' + encodeURIComponent(e.en.replace(/ /g, '_')), lvl: e.lvl, kappa: false, pts: [], mps: e.mk ? [e.mk] : [],
+      trader: { id: tr.id || '', name: tr.name || e.traderName, key: e.trader }, map: e.map, req: [], obj: e.obj.map((x, i) => ({ id: e.id + 'o' + i, xEs: x, xEn: e.objEn[i], x: en ? e.objEn[i] : x, op: false })) });
+  });
   (S.custom || []).forEach(c => {
     const tr = (d.traders || {})[c.trader] || {};
     d.tasks.push({ id: c.id, custom: true, name: c.name, nameEs: c.name, en: c.en || '', wiki: c.en ? 'https://escapefromtarkov.fandom.com/wiki/' + encodeURIComponent(c.en.replace(/ /g, '_')) : '', lvl: c.lvl || 0, kappa: false, pts: [], mps: [],
@@ -1153,10 +1169,33 @@ let lastL = null;
 const trColor = key => { const i = D.groups.findIndex(g => g.key === key); return TCOL[(i < 0 ? 9 : i) % TCOL.length]; };
 
 /* Esquema global: columnas = «profundidad» (cuántas misiones previas encadenadas, de cualquier comerciante). */
+/* Cadenas «Parte N»: si una misión se llama «… Parte N» y el juego no la enlaza con la «Parte N-1» (mismo comerciante), se enlaza solo en el dibujo. */
+let chainCache = null;
+function chainLinks(){
+  if (chainCache && chainCache.d === D) return chainCache.m;
+  const m = new Map(), grp = new Map();
+  D.tasks.forEach(t => {
+    const nm = String(t.en || t.name || '').toLowerCase().trim();
+    const x = /^(.*?)[\s\-–:]*(?:part|parte)\s*(\d+)\s*$/.exec(nm); if (!x || !x[1]) return;
+    const k = t.trader.key + '|' + x[1].replace(/[^a-z0-9]+/g, ' ').trim();
+    (grp.get(k) || grp.set(k, []).get(k)).push({ t, n: parseInt(x[2], 10) });
+  });
+  grp.forEach(a => {
+    a.sort((p, q) => p.n - q.n);
+    for (let i = 1; i < a.length; i++) {
+      if (a[i].n === a[i - 1].n) continue;
+      const t = a[i].t, prev = a[i - 1].t;
+      if (t.req.includes(prev.id) || ancestors(t.id).has(prev.id)) continue;
+      m.set(t.id, prev.id);
+    }
+  });
+  chainCache = { d: D, m }; return m;
+}
 function layoutAll(tasks){
   const set = new Set(tasks.map(t => t.id)), byId = new Map(tasks.map(t => [t.id, t]));
   const ti = new Map(D.groups.map((g, i) => [g.key, i]));
-  const par = t => t.req.filter(r => set.has(r));
+  const ch = S.chain ? chainLinks() : null;
+  const par = t => { const r = t.req.filter(x => set.has(x)); const v = ch && ch.get(t.id); if (v && set.has(v) && !r.includes(v)) r.push(v); return r; };
   const kids = new Map(); tasks.forEach(t => par(t).forEach(p => { (kids.get(p) || kids.set(p, []).get(p)).push(t.id); }));
   const depth = new Map();
   const dfs = (t, stack) => {
@@ -1193,7 +1232,7 @@ function layoutAll(tasks){
   }
   const minY = tasks.length ? Math.min(...y.values()) : 0; let maxY = 0;
   const pos = new Map(); tasks.forEach(t => { const yy = y.get(t.id) - minY; pos.set(t.id, { x: depth.get(t.id) * (NW + GX), y: yy }); maxY = Math.max(maxY, yy + NH); });
-  const edges = []; tasks.forEach(t => par(t).forEach(p => edges.push([p, t.id])));
+  const edges = []; tasks.forEach(t => par(t).forEach(p => edges.push([p, t.id, !t.req.includes(p)])));
   return { pos, edges, W: Math.max(NW, ncol * (NW + GX) - GX), H: Math.max(NH, maxY) };
 }
 
@@ -1263,9 +1302,9 @@ function renderQuests(){
   const gname = focus ? (D.groups.find(g => g.key === focus) || {}).name : tx('Todos los comerciantes', 'All traders');
   $('#sum').innerHTML = `${esc(gname)}: ` + tx(`<b>${done}</b> de <b>${mine.length}</b> completadas · <b>${avail}</b> disponibles ahora. Pulsa una misión para ver todo lo que hay que hacer.`, `<b>${done}</b> of <b>${mine.length}</b> completed · <b>${avail}</b> available now. Click a quest to see everything you have to do.`);
   const byId = D.byId;
-  const paths = L.edges.map(([a, b]) => {
+  const paths = L.edges.map(([a, b, virt]) => {
     const A = L.pos.get(a), B = L.pos.get(b), x1 = A.x + NW, y1 = A.y + NH / 2, x2 = B.x, y2 = B.y + NH / 2, dx = Math.max(30, Math.min(160, (x2 - x1) / 2));
-    const cls = (isDone(a) ? (isDone(b) ? 'done' : 'go') : '') + (S.sel && (a === S.sel || b === S.sel) ? ' hl' : '') + (focus && byId[a].trader.key !== focus && byId[b].trader.key !== focus ? ' faded' : '');
+    const cls = (isDone(a) ? (isDone(b) ? 'done' : 'go') : '') + (virt ? ' virt' : '') + (S.sel && (a === S.sel || b === S.sel) ? ' hl' : '') + (focus && byId[a].trader.key !== focus && byId[b].trader.key !== focus ? ' faded' : '');
     return `<path class="${cls}" style="--c:${trColor(byId[a].trader.key)}" d="M${x1} ${y1} C${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}"/>`;
   }).join('');
   const nodes = vis.map(t => {
@@ -1682,6 +1721,7 @@ function renderView(){
     ctl = `<input type="search" id="q" placeholder="${tx('Buscar misión (en español o inglés) · Enter = siguiente resultado', 'Search quest (Spanish or English) · Enter = next result')}" value="${esc(S.q)}">
       <label><input type="checkbox" id="hideDone" ${S.hideDone ? 'checked' : ''}> ${tx('Ocultar completadas', 'Hide completed')}</label>
       <label title="${tx('Oculta las misiones que aún no puedes hacer: las que exigen un nivel mayor que el tuyo (si has puesto «Mi nivel») y las que tienen misiones previas sin completar.', 'Hides the quests you cannot do yet: those that need a higher level than yours (if you set “My level”) and those whose previous quests are not completed.')}"><input type="checkbox" id="hideLocked" ${S.hideLocked ? 'checked' : ''}> ${tx('Ocultar misiones bloqueadas', 'Hide locked quests')}</label>
+      <label title="${tx('El juego encadena las misiones «Parte 1, Parte 2, Parte 3…» de una misma serie (por ejemplo Gunsmith) una detrás de otra, pero a veces los datos no lo indican y salen todas en la misma columna. Con esto se dibujan una detrás de otra (con línea punteada). Solo cambia el dibujo, no bloquea ni desbloquea nada.', 'The game chains “Part 1, Part 2, Part 3…” quests of the same series (for example Gunsmith) one after another, but the data sometimes does not say so and they all land in the same column. This draws them one after another (dashed line). It only changes the drawing; it does not lock or unlock anything.')}"><input type="checkbox" id="chain" ${S.chain ? 'checked' : ''}> ${tx('Encadenar series «Parte N»', 'Chain “Part N” series')}${D.tasks.length ? ` (${chainLinks().size})` : ''}</label>
       <label><input type="checkbox" id="kappaOnly" ${S.kappaOnly ? 'checked' : ''}> ${tx('Resaltar solo Kappa', 'Highlight Kappa only')}</label>
       <label>${tx('Mi nivel', 'My level')} <input type="number" id="lvl" min="0" max="79" value="${S.level || ''}"></label>
       <label id="zoomwrap">${tx('Tamaño', 'Size')} <input type="range" id="zoom" min="12" max="120" step="1" value="${Math.round((S.zoom || 1) * 100)}"></label>
@@ -2156,6 +2196,7 @@ document.addEventListener('change', e => {
   else if (t.id === 'tfilter') { S.tfilter = t.value; saveState(); renderList(); }
   else if (t.id === 'extShow') { S.extShow = t.checked; saveState(); renderList(); }
   else if (t.id === 'extNames') { S.extNames = t.checked; saveState(); renderList(); }
+  else if (t.id === 'chain') { S.chain = t.checked; saveState(); treeKey = ''; renderList(); }
   else if (t.id === 'hideLocked') { S.hideLocked = t.checked; saveState(); renderList(); }
   else if (t.id === 'hideDone') { S.hideDone = t.checked; saveState(); renderList(); }
   else if (t.id === 'hideBuilt') { S.hideBuilt = t.checked; saveState(); renderList(); }
@@ -2228,7 +2269,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 23 · Grupo, copias y móvil', 'version 23 · Group, backups & mobile');
+  $('#ver').textContent = tx('versión 25 · Mapa de Labs y 2 misiones nuevas', 'version 25 · Labs map & 2 new quests');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
