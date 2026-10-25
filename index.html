@@ -1058,10 +1058,10 @@ function applyLang(d){
 
 /* Misiones del juego que tarkov.dev aún no tiene: las ven todos. Si tarkov.dev las añade (mismo nombre), se usan las suyas y estas desaparecen solas. */
 const EXTRA_TASKS = [
-  { id: 'x_fog_of_war', es: 'La Niebla de la Guerra', en: 'Fog of War', trader: 'lightkeeper', traderName: 'Lightkeeper', map: 'Lighthouse', mk: 'lighthouse', lvl: 0,
+  { id: 'x_fog_of_war', es: 'La Niebla de la Guerra', en: 'Fog of War', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0,
     obj: ['Explora la posición de los Rogues cerca del vehículo BRDM en la parte norte de la Planta de Tratamiento de Agua', 'Explora el punto de control de los Rogues con una torre de vigilancia en la parte suroeste de la Planta de Tratamiento de Agua', 'Explora el territorio de la Planta de Tratamiento de Agua desde el tejado de cualquiera de los edificios de la planta'],
     objEn: ['Scout the Rogues position near the BRDM vehicle in the northern part of the Water Treatment Plant', 'Scout the Rogues checkpoint with a watchtower in the southwestern part of the Water Treatment Plant', 'Scout the Water Treatment Plant territory from the roof of any of the plant buildings'] },
-  { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'lightkeeper', traderName: 'Lightkeeper', map: 'The Lab', mk: 'the-lab', lvl: 0,
+  { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0,
     obj: ['Survive and extract from The Lab'], objEn: ['Survive and extract from The Lab'] },
 ];
 function customTasks(d){
@@ -2269,7 +2269,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 25 · Mapa de Labs y 2 misiones nuevas', 'version 25 · Labs map & 2 new quests');
+  $('#ver').textContent = tx('versión 27 · Mapa de Labs y 2 misiones nuevas', 'version 27 · Labs map & 2 new quests');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
