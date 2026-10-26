@@ -274,6 +274,13 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 .pmaps button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12.5px;cursor:pointer}
 .pmaps button.on{background:var(--acc);color:#101a24;border-color:var(--acc);font-weight:700}
 .pmaps button b{color:#ff8a7a}.pmaps button.on b{color:#7a1810}
+.plvs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}.plvs .plt{font-size:12.5px;color:var(--mute)}
+.plvs button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:3px 10px;font-size:12.5px;cursor:pointer}
+.plvs button.on{background:#5a6f86;color:#fff;border-color:#9fb3c8;font-weight:700}.plvs button b{color:#ff8a7a}
+.pph{margin-top:8px;background:#13171b;border:1px solid var(--line);border-radius:8px;padding:8px 10px}.pph a{color:var(--acc)}
+.pphh{font-size:12.5px;margin-bottom:6px}.pphg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:6px}
+.pphg a{display:block;color:var(--txt);text-decoration:none;font-size:11.5px}.pphg img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px;background:#090b0e;display:block}
+.pphg span{display:block;margin-top:2px;line-height:1.25;color:var(--mute)}
 .pmapbox{position:relative}
 #pmap{position:relative;height:520px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#090b0d;cursor:grab;touch-action:none}
 #pmap.drag{cursor:grabbing}
@@ -1064,8 +1071,17 @@ const EXTRA_TASKS = [
   { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0,
     obj: ['Survive and extract from The Lab'], objEn: ['Survive and extract from The Lab'] },
 ];
+/* Correcciones de llaves comprobadas en la wiki: misión (nombre en inglés) → llaves que faltan en tarkov.dev (nombre en inglés). */
+const KEY_FIX = { 'Wet Job - Part 5': ['Health Resort universal utility room key'] };
+function applyKeyFix(d){
+  const byName = {}; Object.values(d.items || {}).forEach(i => { if (i.key && i.nameEn) byName[norm(i.nameEn)] = i; });
+  d.tasks.forEach(t => { const fx = KEY_FIX[t.en]; if (!fx) return;
+    const l = (d.reqs[t.id] = d.reqs[t.id] || []);
+    fx.forEach(n => { const it = byName[norm(n)]; if (it && !l.some(r => r.itemId === it.id && r.type === 'access')) l.push({ itemId: it.id, count: 1, fir: false, type: 'access' }); }); });
+}
 function customTasks(d){
   d.tasks = d.tasks.filter(t => !t.custom && !t.extra);
+  applyKeyFix(d);
   const hasReal = e => d.tasks.some(t => norm(t.en || '') === norm(e.en) || norm(t.nameEs || '') === norm(e.es));
   EXTRA_TASKS.filter(e => !hasReal(e)).forEach(e => {
     const tr = (d.traders || {})[e.trader] || {}, en = S.lang === 'en';
@@ -1623,7 +1639,7 @@ function keyMapHtml(id){
   const dots = loose.filter(x => x[0] === k).map(x => `<i class="pdot loc spawn" style="${pos(x[1], x[2])}" data-act="ppt" data-txt="${esc(tx('Punto de botín suelto donde puede aparecer esta llave', 'Loose-loot point where this key can spawn'))}"></i>`).join('')
     + locks.filter(x => x[0] === k).map(x => `<i class="pdot" style="${pos(x[1], x[2])}" data-act="ppt" data-txt="${esc((x[4] ? tx('Maletero que abre', 'Trunk it opens') : tx('Puerta que abre', 'Door it opens')) + (x[5] ? tx(' (necesita electricidad)', ' (needs power)') : ''))}"></i>`).join('');
   return `${ks.length > 1 ? `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="kmap2" data-id="${x}">${esc(mapName(x))}</button>`).join('')}</div>` : ''}
-    <div class="pmapbox"><div id="pmap" data-map="${k}"><div id="pin"><img id="pimg" alt="" src="${svgCache[k] || ''}">${dots}</div></div>
+    <div class="pmapbox"><div id="pmap" data-map="${k}"><div id="pin"><img id="pimg" alt="" src="${svgCache[svgKey(k, '')] || ''}">${dots}</div></div>
     <div class="pzoom"><button data-act="pzoom" data-d="in">+</button><button data-act="pzoom" data-d="out">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button></div></div>
     <div class="kleg"><span><i class="kdl"></i>${tx('Puerta que abre', 'Door it opens')} (${nl})</span><span><i class="kds"></i>${tx('Puntos de botín donde puede aparecer', 'Loot points where it can spawn')} (${ns})</span><span class="m">${tx('Rueda = zoom · arrastra para moverte · pulsa un punto', 'Wheel = zoom · drag to move · click a dot')}</span></div>
     <div id="plabel"></div><div class="pnote" id="pnote"></div>`;
@@ -1997,7 +2013,67 @@ function renderTrade(){
       <div class="tnum"><div class="tp ${r.profit >= 0 ? 'pos' : 'neg'}">${r.profit >= 0 ? '+' : '−'}${money(Math.abs(r.profit))}</div>${tx('Coste', 'Cost')}: ${money(r.cost)}<br>${tx('Valor', 'Value')}: ${money(r.value)}${r.cost ? ` · ${r.pct >= 0 ? '+' : ''}${Math.round(r.pct * 100)}%` : ''}${r.est ? `<br><span class="tflag">${tx('Precio estimado (sin dato de mercado)', 'Estimated price (no market data)')}</span>` : ''}${b.lim ? `<br>${tx('Límite', 'Limit')}: ${b.lim}` : ''}</div></div>`; }).join('') || `<div class="msg">${tx('No hay tradeos con ese filtro.', 'No barters match that filter.')}</div>`;
 }
 /* ───────── Mi plan: resumen + mapa ───────── */
-const geoCache = {}, svgCache = {};
+const geoCache = {}, svgCache = {}, PLV = {};
+const svgKey = (k, lv) => k + '|' + (lv || '');
+/* Plantas por mapa (alturas y zonas de tarkov.dev). ex = [altura mínima, altura máxima, zona [[x1,z1],[x2,z2]] o null]. svg = grupo del dibujo (null = sin dibujo propio). */
+const BX = (...a) => a;
+const LV = {
+  customs: [
+    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[2.7,6.5,[[243,190],[165,125]]],[2.7,6.5,[[116,-83],[72,-170]]],[2.7,6.5,[[356,-30],[341,-84]]],[2.7,6.5,[[334,-52],[321,-59]]],[2.7,6.5,[[589,10],[577,-1]]],[2.7,6.5,[[580,-104],[532,-134]]],[2.7,6.5,[[625,-120],[599,-139]]],[5.7,1000,[[580,-104],[532,-134]]],[5.7,1000,[[-199,-90],[-223,-131]]],[5.7,1000,[[239,3],[169,-160]]],[5.7,1000,[[336,-56],[316,-95]]],[5.7,1000,[[584,-46],[556,-92]]],[5.7,1000,[[93,0],[65,-22]]],[14,15,[[497,-44],[450,-90]]],[3.9,7.6,[[73,57],[22,-38]]],[4.4,6.5,[[119,-57],[100,-42]]],[4.6,7.9,[[279,-79],[246,-1.4]]]] },
+    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[5.7,1000,[[243,190],[165,125]]],[7.7,11.3,[[73,-73],[22,-38]]],[6.7,11.6,[[126,-64],[88,-35]]],[8,11.1,[[279,-79],[246,-1.4]]]] },
+    { id: 'f4', svg: null, es: '4ª planta', en: '4th floor', ex: [[11.2,54.7,[[279,-79],[246,-1.4]]]] },
+    { id: 'u', svg: 'Underground_Level', es: 'Subterráneo', en: 'Underground', ex: [[-1000,0.5,[[635,-137],[620,-125]]],[-1000,0.5,[[473,-122],[458,-110]]],[-1000,0.5,[[314,-173],[308,-184]]],[-1000,0.5,[[349,-88],[323,-32]]],[-1000,0.5,[[219,-158],[193,-137]]],[-1000,0.5,[[122,-61],[88,-40]]]] },
+  ],
+  factory: [
+    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[3,6,null]] },
+    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[6,10000,null]] },
+    { id: 'u', svg: 'Basement', es: 'Túneles', en: 'Tunnels', ex: [[-10000,-1,null]] },
+  ],
+  shoreline: [
+    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[-1,2,null]] },
+    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[2,1000,null]] },
+    { id: 'u', svg: 'Underground_Level', es: 'Subterráneo', en: 'Underground', ex: [[-1000,-5,[[-137,-68],[-237,-104]]],[-1000,-5,[[-234,-134],[-268,-163]]]] },
+  ],
+  reserve: [
+    { id: 'f2', svg: null, es: '2ª planta', en: '2nd floor', ex: [[22.1,25.7,[[1,164],[-17,199]]],[-3.5,-0.64,[[-77,26],[-177,106]]],[-3.5,-0.64,[[62,59],[51,108]]],[-3.5,-0.64,[[-104,-37],[-177,5]]],[-3.9,-0.6,[[-47,-47],[-85,-18]]],[-4.3,-2.2,[[-19.91,-13],[-78,39]]],[-3.8,-1.1,[[99,-50],[-2,7]]],[-1.9,11.3,[[191,-175],[137,-120]]],[1,8,[[-109,-156],[-119,-147]]],[1,8,[[289,-92],[299,-82]]],[1,8,[[3,-210],[-7,-200]]],[1,8,[[195,-260],[185,-250]]],[1,8,[[276,17],[266,27]]],[-4.1,-1.2,[[-128,-139],[-146,-120]]]] },
+    { id: 'f3', svg: null, es: '3ª planta', en: '3rd floor', ex: [[25.7,29.3,[[1,164],[-17,199]]],[-0.64,2.23,[[-77,26],[-177,106]]],[-0.64,2.23,[[-104,-37],[-177,5]]],[-0.6,10,[[-47,-47],[-85,-18]]],[-2.2,2.14,[[-19.91,-13],[-78,39]]],[-1.1,1.6,[[99,-50],[-2,7]]]] },
+    { id: 'f4', svg: null, es: '4ª planta', en: '4th floor', ex: [[29.3,36,[[1,164],[-17,199]]],[2.23,5,[[-77,26],[-177,106]]],[2.15,6.6,[[-19.91,-13],[-78,39]]],[1.6,4.7,[[99,-50],[-2,7]]]] },
+    { id: 'f5', svg: null, es: '5ª planta', en: '5th floor', ex: [[5,9.5,[[-77,26],[-177,106]]]] },
+    { id: 'u', svg: 'Bunkers', es: 'Bunkers', en: 'Bunkers', ex: [[-10000,-7.27,[[128,-208],[18,-33]]],[-10000,-7.27,[[-46,-42],[-176,127]]],[-10000,-12,[[-40,124],[-124,189]]],[-10000,18,[[23,173],[-65,189]]],[-7.27,-3.2,[[74,-196],[19,-149]]],[-11,-4.6,[[-246,-79],[-274,-53]]],[-11,-4.6,[[238,-26],[126,45]]]] },
+  ],
+  interchange: [
+    { id: 'f2', svg: 'First_Floor', es: '2ª planta', en: '2nd floor', ex: [[25,34,[[120,218],[-222,-327]]]] },
+    { id: 'f3', svg: 'Second_Floor', es: '3ª planta', en: '3rd floor', ex: [[34,1000,[[120,218],[-222,-327]]]] },
+  ],
+  streets: [
+    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[10,15,null]] },
+    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[15,20,null]] },
+    { id: 'f4', svg: 'Fourth_Floor', es: '4ª planta', en: '4th floor', ex: [[20,25,null]] },
+    { id: 'f5', svg: 'Fifth_Floor', es: '5ª planta', en: '5th floor', ex: [[25,10000,null]] },
+    { id: 'u', svg: 'Underground_Level', es: 'Subterráneo', en: 'Underground', ex: [[-10000,-6,null]] },
+  ],
+  'ground-zero': [
+    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[28,32.3,null],[26,31,[[98,216],[91,228]]]] },
+    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[32.3,1000,null]] },
+    { id: 'u', svg: 'Underground_Level', es: 'Garage', en: 'Garage', ex: [[-1000,21,[[117,-100],[43,190]]],[-1000,21,[[143,49],[117,80]]]] },
+  ],
+  'the-lab': [
+    { id: 'f2', svg: null, es: '2ª planta', en: '2nd floor', ex: [[3,10000,[[-101,-422],[-271,-270]]]] },
+    { id: 'u', svg: null, es: 'Técnico', en: 'Technical', ex: [[-10000,-0.9,null]] },
+  ],
+};
+/* Planta a la que pertenece un punto: la de la zona más específica (altura mínima más alta); si no cae en ninguna, es la planta baja ('' ). */
+function levelOf(k, x, z, y){
+  const L = LV[k]; if (!L || y == null) return '';
+  let best = '', lo = -Infinity;
+  L.forEach(l => l.ex.forEach(([a, b, bx]) => {
+    if (y < a || y > b) return;
+    if (bx) { const x0 = Math.min(bx[0][0], bx[1][0]), x1 = Math.max(bx[0][0], bx[1][0]), z0 = Math.min(bx[0][1], bx[1][1]), z1 = Math.max(bx[0][1], bx[1][1]); if (x < x0 || x > x1 || z < z0 || z > z1) return; }
+    if (a >= lo) { lo = a; best = l.id; }
+  }));
+  return best;
+}
+const lvName = l => tx(l.es, l.en);
 let PV = { key: null, z: 1, x: 0, y: 0 };
 function mapGeo(k){
   if (geoCache[k]) return geoCache[k];
@@ -2007,17 +2083,23 @@ function mapGeo(k){
   const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
   return (geoCache[k] = { ar: (x1 - x0) / (y1 - y0), uv: (x, z) => { const q = pr(x, z); return [(q[0] - x0) / (x1 - x0), (q[1] - y0) / (y1 - y0)]; } });
 }
-async function mapSvgUrl(k){
-  const m = MAPS[k]; if (!m.svg) return null; if (svgCache[k] !== undefined) return svgCache[k];
+async function mapSvgUrl(k, lv){
+  const m = MAPS[k]; if (!m.svg) return null; const ck = svgKey(k, lv); if (svgCache[ck] !== undefined) return svgCache[ck];
+  const LL = lv && (LV[k] || []).find(l => l.id === lv), want = LL && LL.svg;
   try {
     const r = await fetch('https://assets.tarkov.dev/maps/svg/' + m.svg + '.svg'); if (!r.ok) throw new Error('HTTP ' + r.status);
     const doc = new DOMParser().parseFromString(await r.text(), 'image/svg+xml'), root = doc.documentElement;
     doc.querySelectorAll('script').forEach(e => e.remove());
-    if (m.layer && root.querySelector('[id="' + m.layer + '"]')) [...root.children].forEach(e => { if (e.tagName === 'g' && e.id && e.id !== m.layer) e.remove(); });
+    if (m.layer && root.querySelector('[id="' + m.layer + '"]')) {
+      const hasW = want && root.querySelector('[id="' + want + '"]');
+      [...root.children].forEach(e => { if (e.tagName === 'g' && e.id && e.id !== m.layer && !(hasW && e.id === want)) e.remove(); });
+      if (hasW) { const g0 = root.querySelector('[id="' + m.layer + '"]'); if (g0) g0.setAttribute('opacity', '0.4'); }
+      if (want && !hasW) svgCache['miss|' + ck] = 1;
+    }
     root.setAttribute('preserveAspectRatio', 'none');
-    svgCache[k] = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(doc)], { type: 'image/svg+xml' }));
-  } catch (e) { svgCache[k] = null; }
-  return svgCache[k];
+    svgCache[ck] = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(doc)], { type: 'image/svg+xml' }));
+  } catch (e) { svgCache[ck] = null; }
+  return svgCache[ck];
 }
 function applyPV(){ const i = $('#pin'); if (!i) return; i.style.transform = `translate(${PV.x}px,${PV.y}px) scale(${PV.z})`; i.style.setProperty('--z', PV.z); }
 async function drawPlanMap(){
@@ -2026,15 +2108,59 @@ async function drawPlanMap(){
   inner.style.width = w + 'px'; inner.style.height = h + 'px';
   if (PV.key !== k) PV = { key: k, z: 1, x: (W - w) / 2, y: (H - h) / 2 };
   applyPV();
-  const url = await mapSvgUrl(k); const img = $('#pimg'), note = $('#pnote');
-  if (!$('#pmap') || $('#pmap').dataset.map !== k) return;
+  const lv = box.dataset.lv || '', LL = lv && (LV[k] || []).find(l => l.id === lv);
+  const url = await mapSvgUrl(k, lv); const img = $('#pimg'), note = $('#pnote');
+  if (!$('#pmap') || $('#pmap').dataset.map !== k || ($('#pmap').dataset.lv || '') !== lv) return;
   if (url && img) img.src = url;
-  if (note) note.textContent = url ? '' : (MAPS[k].svg ? tx('No se pudo cargar la imagen del mapa: solo se ven los puntos.', 'Could not load the map image: only the points are shown.') : tx('Para este mapa no hay imagen: solo se ven los puntos.', 'There is no image for this map: only the points are shown.'));
+  if (note) note.textContent = url ? (LL && (!LL.svg || svgCache['miss|' + svgKey(k, lv)]) ? tx('Esta planta no tiene dibujo propio: se ve el mapa base y se resaltan sus puntos.', 'This floor has no drawing of its own: the base map is shown and its points are highlighted.') : '') : (MAPS[k].svg ? tx('No se pudo cargar la imagen del mapa: solo se ven los puntos.', 'Could not load the map image: only the points are shown.') : tx('Para este mapa no hay imagen: solo se ven los puntos.', 'There is no image for this map: only the points are shown.'));
 }
 function fitPlan(){
   const narrow = window.innerWidth < 900, m = $('#pmap'), c = $('#plistcol');
   if (m) m.style.height = narrow ? '340px' : Math.max(340, window.innerHeight - m.getBoundingClientRect().top - 78) + 'px';
   if (c) c.style.height = narrow ? 'auto' : Math.max(340, window.innerHeight - c.getBoundingClientRect().top - 14) + 'px';
+}
+/* Fotos de la wiki de la misión (ordenadas por parecido con el objetivo pulsado). */
+const WKAPI = 'https://escapefromtarkov.fandom.com/api.php', QIMG_LS = 'tkv_qimg_v1', qimgMem = {};
+let photoReq = 0;
+function qimgLoad(){ try { return JSON.parse(localStorage.getItem(QIMG_LS) || '{}'); } catch (e) { return {}; } }
+async function questImages(t){
+  const m = /\/wiki\/(.+)$/.exec(t.wiki || ''); if (!m) return null;
+  const title = decodeURIComponent(m[1]).replace(/_/g, ' ');
+  if (qimgMem[title]) return qimgMem[title];
+  const c = qimgLoad(); if (c[title] && Date.now() - c[title].ts < 14 * 864e5) return (qimgMem[title] = c[title].imgs);
+  const r = await fetch(WKAPI + '?action=parse&format=json&prop=wikitext&redirects=1&origin=*&page=' + encodeURIComponent(title)); if (!r.ok) throw new Error('HTTP ' + r.status);
+  const wt = (((await r.json()).parse || {}).wikitext || {})['*'] || '';
+  const found = [], seen = new Set(); let sec = '';
+  wt.split('\n').forEach(line => {
+    const h = /^=+\s*(.*?)\s*=+\s*$/.exec(line); if (h) { sec = h[1].replace(/[\[\]']/g, ''); return; }
+    const re = /(?:\[\[|^\s*|\|\s*)(?:File|Image):([^|\]\n]+\.(?:png|jpe?g|webp|gif))([^\]\n]*)/gi; let x;
+    while ((x = re.exec(line))) {
+      const f = x[1].trim().replace(/_/g, ' '); if (seen.has(f) || /icon|portrait|logo|banner|button|flag|trader|prapor_|therapist_/i.test(f)) continue;
+      const px = /\|(\d+)px/.exec(x[2] || ''); if (px && +px[1] < 150) continue;
+      const cap = (x[2] || '').split('|').map(z => z.trim()).filter(z => z && !/^\d+px$|^(thumb|thumbnail|right|left|center|frameless|none)$/i.test(z)).pop() || '';
+      seen.add(f); found.push({ f, cap: cap.replace(/\[\[|\]\]|'''|''/g, ''), sec });
+    }
+  });
+  const list = found.slice(0, 24); const out = [];
+  for (let i = 0; i < list.length; i += 12) {
+    const part = list.slice(i, i + 12);
+    const q = await (await fetch(WKAPI + '?action=query&format=json&prop=imageinfo&iiprop=url&iiurlwidth=640&origin=*&titles=' + encodeURIComponent(part.map(z => 'File:' + z.f).join('|')))).json();
+    const pages = Object.values((q.query || {}).pages || {});
+    part.forEach(z => { const pg = pages.find(p => (p.title || '').replace(/^File:/i, '').replace(/_/g, ' ') === z.f), ii = pg && pg.imageinfo && pg.imageinfo[0]; if (ii) out.push({ f: z.f, cap: z.cap, sec: z.sec, th: ii.thumburl || ii.url, u: ii.descriptionurl || ii.url }); });
+  }
+  qimgMem[title] = out; try { c[title] = { ts: Date.now(), imgs: out }; localStorage.setItem(QIMG_LS, JSON.stringify(c)); } catch (e) {}
+  return out;
+}
+async function showPhotos(qid, oi){
+  const box = $('#pphoto'); if (!box) return; const t = D.byId[qid]; if (!t || t.custom || t.extra) { box.innerHTML = ''; return; }
+  const my = ++photoReq; box.innerHTML = `<div class="pph"><small>${tx('Buscando fotos en la wiki…', 'Looking for photos on the wiki…')}</small></div>`;
+  let imgs; try { imgs = await questImages(t); } catch (e) { if (my === photoReq) box.innerHTML = `<div class="pph"><small>${tx('No se pudieron cargar las fotos de la wiki.', 'Could not load the wiki photos.')} <a href="${esc(t.wiki)}" target="_blank" rel="noopener">${tx('Abrir la misión en la wiki', 'Open the quest on the wiki')} ↗</a></small></div>`; return; }
+  if (my !== photoReq) return;
+  if (!imgs || !imgs.length) { box.innerHTML = `<div class="pph"><small>${tx('La wiki no tiene fotos para esta misión.', 'The wiki has no photos for this quest.')} <a href="${esc(t.wiki)}" target="_blank" rel="noopener">${tx('Ver la misión en la wiki', 'View the quest on the wiki')} ↗</a></small></div>`; return; }
+  const o = t.obj[oi], words = new Set(norm((o && (o.xEn || o.x) || '') + ' ' + (o && o.xEs || '')).split(/[^a-z0-9]+/).filter(w => w.length > 3));
+  const score = z => norm(z.f + ' ' + z.cap + ' ' + z.sec).split(/[^a-z0-9]+/).filter(w => words.has(w)).length;
+  const ord = imgs.map((z, i) => ({ z, i, s: score(z) })).sort((a, b) => b.s - a.s || a.i - b.i).slice(0, 6);
+  box.innerHTML = `<div class="pph"><div class="pphh">${tx('Fotos de la wiki', 'Wiki photos')} — ${esc(t.name)} <a href="${esc(t.wiki)}" target="_blank" rel="noopener">↗</a></div><div class="pphg">${ord.map(x => `<a href="${esc(x.z.u)}" target="_blank" rel="noopener"><img src="${esc(x.z.th)}" alt="" loading="lazy"><span>${esc(x.z.cap || x.z.sec || x.z.f)}</span></a>`).join('')}</div><small>${tx('Ordenadas por parecido con el objetivo pulsado. Pulsa una para verla grande en la wiki.', 'Sorted by similarity to the clicked objective. Click one to see it large on the wiki.')}</small></div>`;  try { box.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
 }
 function renderPlan(){
   const n = D.tasks.filter(t => S.plan[t.id]).length;
@@ -2078,16 +2204,20 @@ function planHtml(){
   let mapHtml;
   if (!ks.length) mapHtml = `<p class="hint">${tx('Las misiones del plan no tienen puntos con coordenadas en tarkov.dev (por ejemplo, las que se hacen en cualquier mapa o con objetivos genéricos).', 'The quests in your plan have no points with coordinates on tarkov.dev (for example, those done on any map or with generic objectives).')}</p>`;
   else {
-    const k = S.pmap, g = mapGeo(k), dots = [];
-    act.forEach(t => live(t).filter(p => p[0] === k).forEach(p => { const [u, v] = g.uv(p[1], p[2]); const o = t.obj[p[4]]; const dim = S.pfocus && S.pfocus !== t.id;
-      dots.push(`<i class="pdot ${p[5] ? 'loc' : ''} ${dim ? 'dim' : ''} ${S.pfocus === t.id ? 'foc' : ''}" style="--pc:${pcol[t.id] || '#e5271b'};left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="ppt" data-txt="${esc(t.name + (o && o.x ? ' — ' + o.x : '') + (p[5] ? tx(' (posible ubicación del objeto)', ' (possible item location)') : ''))}"></i>`); }));
+    const k = S.pmap, g = mapGeo(k), dots = [], lvs = LV[k] || [], lvSel = lvs.some(l => l.id === PLV[k]) ? PLV[k] : '', lvc = { '': 0 };
+    lvs.forEach(l => { lvc[l.id] = 0; });
+    act.forEach(t => live(t).filter(p => p[0] === k).forEach(p => { const lp = levelOf(k, p[1], p[2], p[3]); lvc[lp] = (lvc[lp] || 0) + 1; }));
+    const lvBar = lvs.length ? `<div class="plvs"><span class="plt">${tx('Planta', 'Floor')}:</span><button class="${lvSel === '' ? 'on' : ''}" data-act="plv" data-id="0">${tx('Principal', 'Main')}</button>${lvs.map(l => `<button class="${lvSel === l.id ? 'on' : ''}" data-act="plv" data-id="${l.id}">${esc(lvName(l))} <b>${lvc[l.id] || 0}</b></button>`).join('')}</div>` : '';
+    act.forEach(t => live(t).filter(p => p[0] === k).forEach(p => { const [u, v] = g.uv(p[1], p[2]); const o = t.obj[p[4]]; const dim = (S.pfocus && S.pfocus !== t.id) || (lvSel && levelOf(k, p[1], p[2], p[3]) !== lvSel);
+      dots.push(`<i class="pdot ${p[5] ? 'loc' : ''} ${dim ? 'dim' : ''} ${S.pfocus === t.id ? 'foc' : ''}" style="--pc:${pcol[t.id] || '#e5271b'};left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-qid="${esc(t.id)}" data-oi="${p[4]}" data-act="ppt" data-txt="${esc(t.name + (o && o.x ? ' — ' + o.x : '') + (p[5] ? tx(' (posible ubicación del objeto)', ' (possible item location)') : ''))}"></i>`); }));
     const exs = S.extShow && D.ext && D.ext[k] ? D.ext[k].map((e, ei) => { const [u, v] = g.uv(e[2], e[3]); const nm = e[1] || e[0];
       return `<i class="pex ${e[5] ? 'shared' : ''} ${e[7] ? 'req' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="pex" data-ex="${k}|${ei}"><s></s><b>${esc(nm)}${e[7] ? ' 🔑' : ''}</b></i>`; }).join('') : '';
     mapHtml = `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="pmap" data-id="${x}">${esc(mapName(x))} <b>${cnt[x]}</b></button>`).join('')}</div>
+      ${lvBar}
       <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (verde; amarillo = también Scav)', 'Show PMC extracts (green; yellow = also Scav)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label></div>
-      <div class="pmapbox"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}"><div id="pin"><img id="pimg" alt="" src="${svgCache[k] || ''}">${exs}${dots.join('')}</div></div>
+      <div class="pmapbox"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}" data-lv="${lvSel}"><div id="pin"><img id="pimg" alt="" src="${svgCache[svgKey(k, lvSel)] || ''}">${exs}${dots.join('')}</div></div>
         <div class="pzoom"><button data-act="pzoom" data-d="in" title="Zoom +">+</button><button data-act="pzoom" data-d="out" title="Zoom −">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button></div></div>
-      <div id="plabel">${tx('Pulsa un punto de color (cada misión tiene el suyo) o un rombo verde (extracción) para ver qué es. Rueda del ratón = zoom; arrastra para moverte.', 'Click a coloured dot (each quest has its own colour) or a green diamond (extract) to see what it is. Mouse wheel = zoom; drag to move around.')}</div><div class="pnote" id="pnote"></div>`;
+      <div id="plabel">${tx('Pulsa un punto de color (cada misión tiene el suyo) o un rombo verde (extracción) para ver qué es. Rueda del ratón = zoom; arrastra para moverte.', 'Click a coloured dot (each quest has its own colour) or a green diamond (extract) to see what it is. Mouse wheel = zoom; drag to move around.')}</div><div id="pphoto"></div><div class="pnote" id="pnote"></div>`;
   }
   // misiones
   const rows = all.map(t => { const failed = !!S.fail[t.id], done = isDone(t.id), hasPts = t.pts.length > 0;
@@ -2157,7 +2287,8 @@ document.addEventListener('click', e => {
   else if (a === 'pfocus') { S.pfocus = S.pfocus === id ? null : id; renderList(); }
   else if (a === 'pzoom') { const b = $('#pmap'); if (b) { const d = t.dataset.d; if (d === 'reset') { PV.key = null; drawPlanMap(); } else window.__pz(d === 'in' ? 1.4 : 1 / 1.4, b.clientWidth / 2, b.clientHeight / 2); } }
   else if (a === 'pex') { const l = $('#plabel'), [k, ei] = t.dataset.ex.split('|'); if (l) l.innerHTML = extInfoHtml(k, +ei); }
-  else if (a === 'ppt') { const l = $('#plabel'); if (l) l.textContent = '● ' + t.dataset.txt; }
+  else if (a === 'plv') { PLV[S.pmap] = id === '0' ? '' : id; renderList(); }
+  else if (a === 'ppt') { const l = $('#plabel'); if (l) l.textContent = '● ' + t.dataset.txt; if (t.dataset.qid) showPhotos(t.dataset.qid, +t.dataset.oi); }
   else if (a === 'noop') { /* clic en la casilla: no abre el detalle */ }
   else if (a === 'chip') { S.adding = false; S.trader = id; S.chapter = null; S.sel = null; saveState(); renderView(); }
   else if (a === 'node') { S.sel = id; renderList(); }
@@ -2280,7 +2411,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 28 · Mi plan sin saltos y diagnóstico de llaves', 'version 28 · Steady plan list & key diagnostic');
+  $('#ver').textContent = tx('versión 30 · Mapa por plantas y fotos de la wiki', 'version 30 · Steady plan list & key diagnostic');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
