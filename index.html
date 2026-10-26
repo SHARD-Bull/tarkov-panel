@@ -1726,7 +1726,8 @@ function renderView(){
       <label>${tx('Mi nivel', 'My level')} <input type="number" id="lvl" min="0" max="79" value="${S.level || ''}"></label>
       <label id="zoomwrap">${tx('Tamaño', 'Size')} <input type="range" id="zoom" min="12" max="120" step="1" value="${Math.round((S.zoom || 1) * 100)}"></label>
       <button class="btn" data-act="fit">${tx('Ver todo', 'Fit all')}</button>
-      <button class="btn" data-act="addq" title="${tx('Para misiones nuevas del juego que aún no estén en tarkov.dev', 'For new game quests that are not on tarkov.dev yet')}">＋ ${tx('Añadir misión que falta', 'Add a missing quest')}</button>`;
+      <button class="btn" data-act="keydiag" title="${tx('Descarga un archivo con las llaves y objetos que la página tiene apuntados para cada misión, para poder compararlos con la wiki.', 'Downloads a file with the keys and items the page has listed for each quest, so they can be compared with the wiki.')}">${tx('Descargar diagnóstico de llaves', 'Download key diagnostic')}</button>
+      <button class="btn" data-act="addq" title=""${tx('Para misiones nuevas del juego que aún no estén en tarkov.dev', 'For new game quests that are not on tarkov.dev yet')}">＋ ${tx('Añadir misión que falta', 'Add a missing quest')}</button>`;
   } else if (S.view === 'trade') {
     app.classList.add('wide');
     ctl = `<input type="search" id="q" placeholder="${tx('Buscar un tradeo (por lo que da o lo que pide)…', 'Search a barter (by what it gives or asks for)…')}" value="${esc(S.q)}">
@@ -2038,7 +2039,9 @@ function fitPlan(){
 function renderPlan(){
   const n = D.tasks.filter(t => S.plan[t.id]).length;
   $('#sum').textContent = n ? tx(`${n} misiones en tu plan`, `${n} quests in your plan`) : '';
+  const oc = $('#plistcol'), ot = oc ? oc.scrollTop : 0, ow = window.scrollY;
   $('#list').innerHTML = planHtml(); fitPlan(); drawPlanMap();
+  const nc = $('#plistcol'); if (nc && ot) nc.scrollTop = ot; if (ow && window.scrollY !== ow) window.scrollTo(0, ow);
 }
 const CURR = { '5449016a4bdc2d6f028b456f': '₽', '5696686a4bdc2d3d298b4569': '$', '569668774bdc2da2298b4568': '€' };
 function extInfoHtml(k, ei){
@@ -2126,6 +2129,14 @@ document.addEventListener('click', e => {
     S.lastBackup = Date.now(); delete S.bkSnooze; saveState(); updBackup();
     const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' }); const u = URL.createObjectURL(blob);
     const l = document.createElement('a'); l.href = u; l.download = 'tarkov-progreso.json'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+  }
+  else if (a === 'keydiag') {
+    const rows = D.tasks.filter(t => !t.custom && !t.extra).map(t => ({ quest: t.en || t.name, wiki: t.wiki, trader: t.trader.nameEn || t.trader.name, map: t.mapEn || t.map || '',
+      keys: (D.reqs[t.id] || []).filter(r => r.type === 'access').map(r => { const it = D.items[r.itemId]; return it ? (it.nameEn || it.name) : r.itemId; }),
+      items: (D.reqs[t.id] || []).filter(r => r.type !== 'access').map(r => { const it = D.items[r.itemId]; return (r.count > 1 ? r.count + 'x ' : '') + (it ? (it.nameEn || it.name) : r.itemId) + (r.fir ? ' (FIR)' : '') + ' [' + r.type + ']'; }),
+      objectives: t.obj.map(o => o.xEn || o.xEs || '') }));
+    const blob = new Blob([JSON.stringify({ mode: S.mode, version: ($('#ver') || {}).textContent, quests: rows }, null, 1)], { type: 'application/json' }); const u = URL.createObjectURL(blob);
+    const l = document.createElement('a'); l.href = u; l.download = 'diagnostico-llaves.json'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
   }
   else if (a === 'import') { $('#importFile').click(); }
   else if (a === 'inc' || a === 'dec') { S[store][id] = Math.max(0, (S[store][id] || 0) + (a === 'inc' ? 1 : -1)); saveState(); renderList(); }
@@ -2269,7 +2280,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 27 · Mapa de Labs y 2 misiones nuevas', 'version 27 · Labs map & 2 new quests');
+  $('#ver').textContent = tx('versión 28 · Mi plan sin saltos y diagnóstico de llaves', 'version 28 · Steady plan list & key diagnostic');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
