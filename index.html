@@ -1905,23 +1905,23 @@ function ammoRows(){
     const pc = [1, 2, 3, 4, 5, 6].filter(n => a[4] - 10 * n >= 0).length;
     return { id: a[0], it, cal: a[1], dmg: a[2], proj: a[3], d: a[2] * a[3], pen: a[4], adm: a[5], price: c != null && c > 0 ? c : null, pc }; }).filter(Boolean);
 }
+const AM_MIN = 33, AM_OVER = 59, AM_PRICEX = 2, AM_PRICEMIN = 1500;
 function ammoPicks(rows){
-  const good = [], bad = [], bestV = {};
-  const byCal = {}; rows.forEach(r => { (byCal[r.cal] = byCal[r.cal] || []).push(r); });
+  const good = [], bad = [], byCal = {};
+  rows.forEach(r => { (byCal[r.cal] = byCal[r.cal] || []).push(r); });
   Object.entries(byCal).forEach(([cal, L]) => {
-    const P = L.filter(r => r.price).sort((x, y) => x.price - y.price); if (!P.length) return;
-    const val = r => r.d * (1 + r.pc / 3) / r.price, med = P[Math.floor(P.length / 2)].price;
-    const A = P.slice().sort((x, y) => y.d - x.d || y.pen - x.pen)[0], B = P.slice().sort((x, y) => val(y) - val(x))[0];
-    const C = P.filter(r => r.price <= 3 * med).sort((x, y) => y.pen - x.pen || y.d - x.d)[0];
+    const P = L.filter(r => r.price && r.pen >= AM_MIN).sort((x, y) => x.price - y.price); if (!P.length) return;
+    const cheap = P[0].price;
+    const over = r => r.pen > AM_OVER && r.price >= AM_PRICEX * cheap && r.price >= AM_PRICEMIN;
+    P.filter(over).forEach(r => bad.push({ r, reasons: [tx('Penetra ' + r.pen + ' (probabilidad alta o muy alta contra nivel VI) y cuesta ' + (r.price / cheap).toFixed(1) + '× la más barata de su calibre que ya atraviesa el nivel IV', 'Penetration ' + r.pen + ' (high or very high chance against class VI) and costs ' + (r.price / cheap).toFixed(1) + '× the cheapest of its caliber that already goes through class IV')] }));
+    let Q = P.filter(r => !over(r)); if (!Q.length) return;
+    const val = r => r.d * (1 + r.pc / 3) / r.price, med = Q[Math.floor(Q.length / 2)].price;
+    const A = Q.slice().sort((x, y) => y.d - x.d || y.pen - x.pen)[0], B = Q.slice().sort((x, y) => val(y) - val(x))[0];
+    const C = Q.filter(r => r.price <= 3 * med).sort((x, y) => y.pen - x.pen || y.d - x.d)[0];
     const pick = new Map(); const add = (r, tag) => { if (!r) return; const e = pick.get(r.id) || { r, tags: [] }; e.tags.push(tag); pick.set(r.id, e); };
-    if (P.length === 1) add(A, tx('Única con precio', 'Only priced one')); else { add(A, tx('Más daño', 'Most damage')); add(B, tx('Mejor calidad-precio', 'Best value')); add(C, tx('Más penetración razonable', 'Best affordable penetration')); }
-    if (pick.size < 2 && P.length > 1) P.slice().sort((x, y) => val(y) - val(x)).forEach(r => { if (pick.size < 2) add(r, tx('Buena opción', 'Good option')); });
-    [...pick.values()].forEach(e => good.push(e)); bestV[cal] = B;
-    P.forEach(r => { const reasons = [];
-      const dom = P.filter(o => o.id !== r.id && o.price <= r.price && o.pen >= r.pen && o.d >= r.d && o.adm >= r.adm && (o.price < r.price || o.pen > r.pen || o.d > r.d || o.adm > r.adm)).sort((x, y) => x.price - y.price)[0];
-      if (dom) reasons.push(tx('Hay una más barata (' + dom.it.name + ') que penetra y daña igual o más', 'A cheaper one (' + dom.it.name + ') penetrates and damages the same or more'));
-      if (r.pc >= 5 && B && r.price >= 2 * B.price && r.id !== B.id) reasons.push(tx('Atraviesa hasta el nivel ' + ROM[r.pc - 1] + ', pero cuesta ' + (r.price / B.price).toFixed(1) + '× la de mejor calidad-precio (' + B.it.name + ')', 'Goes through up to class ' + ROM[r.pc - 1] + ', but costs ' + (r.price / B.price).toFixed(1) + '× the best-value one (' + B.it.name + ')'));
-      if (reasons.length) bad.push({ r, reasons }); }); });
+    if (Q.length === 1) add(A, tx('Única que atraviesa nivel IV', 'Only one through class IV')); else { add(A, tx('Más daño', 'Most damage')); add(B, tx('Mejor calidad-precio', 'Best value')); add(C, tx('Más penetración razonable', 'Best affordable penetration')); }
+    [...pick.values()].forEach(e => good.push(e));
+  });
   return { good, bad };
 }
 function renderAmmo(){
@@ -1936,9 +1936,9 @@ function renderAmmo(){
   all.sort(srt || ((x, y) => calName(x.cal).localeCompare(calName(y.cal), LOC()) || y.pen - x.pen || y.d - x.d));
   $('#sum').innerHTML = tx(`<b>${rows.length}</b> municiones. Los colores indican la probabilidad estimada de atravesar cada clase de armadura (I a VI): ${PCH.map(c => `<span style="color:${c[0]};font-weight:700">${c[1]}</span>`).join(' · ')}. Es una estimación a partir de la penetración; el juego la calcula con más factores (durabilidad, zona…).`, `<b>${rows.length}</b> ammo types. Colours show the estimated chance to penetrate each armor class (I to VI): ${PCH.map(c => `<span style="color:${c[0]};font-weight:700">${c[2]}</span>`).join(' · ')}. It is an estimate from penetration power; the game uses more factors (durability, zone…).`);
   $('#list').innerHTML = `<div class="amgrid">
-    <section class="amp"><h3>✔ ${tx('Las mejores de cada calibre', 'Best of each caliber')}</h3><p class="hint">${tx('Hasta 3 por calibre: la que más daña, la de mejor calidad-precio y la que más penetra sin dispararse de precio.', 'Up to 3 per caliber: the most damaging, the best value and the one that penetrates most without a huge price.')}</p>
-      <div class="amscroll"><table class="amt">${head(tx('Por qué', 'Why'))}<tbody>${g.map(e => `<tr>${cell(e.r)}<td>${e.tags.map(t => `<span class="amtag">${esc(t)}</span>`).join('')}</td></tr>`).join('') || `<tr><td colspan="6">${tx('Sin datos con precio.', 'No priced data.')}</td></tr>`}</tbody></table></div></section>
-    <section class="amp"><h3>✘ ${tx('No compensa llevarlas a raid', 'Not worth taking to a raid')}</h3><p class="hint">${tx('Balas que te sobran: hay otra más barata que hace lo mismo o más, o penetran por encima de lo que necesitas a un precio muy alto.', 'Ammo you do not need: a cheaper one does the same or more, or it penetrates far beyond what you need at a very high price.')}</p>
+    <section class="amp"><h3>✔ ${tx('Las mejores de cada calibre', 'Best of each caliber')}</h3><p class="hint">${tx('Solo las que atraviesan el nivel IV con probabilidad media-baja o mejor (penetración 33 o más). Hasta 3 por calibre: la que más daña, la de mejor calidad-precio y la que más penetra sin dispararse de precio. Los calibres sin ninguna que llegue al nivel IV no aparecen.', 'Only ammo that goes through class IV with at least a medium-low chance (penetration 33 or more). Up to 3 per caliber: the most damaging, the best value and the one that penetrates most without a huge price. Calibers with nothing reaching class IV are not listed.')}</p>
+      <div class="amscroll"><table class="amt">${head(tx('Por qué', 'Why'))}<tbody>${g.map(e => `<tr>${cell(e.r)}<td>${e.tags.map(t => `<span class="amtag">${esc(t)}</span>`).join('')}</td></tr>`).join('') || `<tr><td colspan="6">${tx('Ninguna con estos filtros.', 'None with these filters.')}</td></tr>`}</tbody></table></div></section>
+    <section class="amp"><h3>✘ ${tx('No compensa llevarlas a raid', 'Not worth taking to a raid')}</h3><p class="hint">${tx('Atraviesan el nivel IV y además tienen probabilidad alta o muy alta contra el nivel VI (penetración 60 o más, te sobra), pero son muy caras: cuestan 2 veces o más la más barata de su calibre que ya atraviesa el nivel IV, y al menos 1.500 ₽.', 'They go through class IV and also have a high or very high chance against class VI (penetration 60 or more, more than you need), but they are very expensive: 2× or more the cheapest of their caliber that already goes through class IV, and at least 1,500 ₽.')}</p>
       <div class="amscroll"><table class="amt">${head(tx('Motivo', 'Reason'))}<tbody>${b.map(e => `<tr>${cell(e.r)}<td class="amwhy">${e.reasons.map(t => esc(t)).join('<br>')}</td></tr>`).join('') || `<tr><td colspan="6">${tx('Ninguna con estos filtros.', 'None with these filters.')}</td></tr>`}</tbody></table></div></section></div>
     <section class="amp amall"><h3>${tx('Todas las municiones', 'All ammo')} <span class="cnt">${all.length}</span></h3>
       <div class="amscroll"><table class="amt">${head(tx('Calibre', 'Caliber'))}<tbody>${all.map(r => `<tr>${cell(r)}<td>${esc(calName(r.cal))}</td></tr>`).join('')}</tbody></table></div></section>`;
@@ -2486,7 +2486,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 32 · Municiones', 'version 32 · Ammo');
+  $('#ver').textContent = tx('versión 34 · Municiones (umbrales ajustados)', 'version 34 · Ammo (adjusted thresholds)');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
