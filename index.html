@@ -274,6 +274,16 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 .pmaps button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12.5px;cursor:pointer}
 .pmaps button.on{background:var(--acc);color:#101a24;border-color:var(--acc);font-weight:700}
 .pmaps button b{color:#ff8a7a}.pmaps button.on b{color:#7a1810}
+.amgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.amp{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}.amp h3{margin:0 0 4px}.amp .hint{margin:0 0 8px;font-size:12.5px}
+.amscroll{overflow:auto;max-height:520px}.amall .amscroll{max-height:none}
+.amt{width:100%;border-collapse:collapse;font-size:13px}.amt th{position:sticky;top:0;background:var(--panel);text-align:left;color:var(--mute);font-weight:600;font-size:12px;padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.amt td{padding:6px 8px;border-bottom:1px solid #1d232a;vertical-align:middle}.amt tr:hover td{background:#171c22}
+.amn{display:flex;gap:8px;align-items:center;min-width:120px}.amn img{width:34px;height:34px;object-fit:contain;background:#090b0e;border-radius:6px;flex:none}.amn small{display:block;color:var(--mute);font-size:11.5px}
+.acs{display:inline-flex;gap:3px}.ac{display:inline-flex;align-items:center;justify-content:center;width:20px;height:23px;border:1.5px solid var(--c);border-radius:7px 7px 3px 3px;background:color-mix(in srgb,var(--c) 22%,#14181c);font-style:normal}
+.ac b{font-size:10px;color:var(--c);font-weight:800;letter-spacing:-.3px}.amp0{display:block;color:var(--mute);font-size:11px;margin-top:2px}
+.amtag{display:inline-block;background:#1c2a33;border:1px solid #2c4150;color:#9fc4de;border-radius:999px;padding:1px 8px;font-size:11.5px;margin:1px 3px 1px 0;white-space:normal}.amwhy{font-size:12px;color:#e0b3a8;min-width:150px;white-space:normal;line-height:1.35}
+@media (max-width:900px){.amgrid{grid-template-columns:1fr}}
 .plvs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}.plvs .plt{font-size:12.5px;color:var(--mute)}
 .plvs button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:3px 10px;font-size:12.5px;cursor:pointer}
 .plvs button.on{background:#5a6f86;color:#fff;border-color:#9fb3c8;font-weight:700}.plvs button b{color:#ff8a7a}
@@ -400,6 +410,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
     <button data-view="gun">Gunsmith</button>
     <button data-view="both"></button>
     <button data-view="trade"></button>
+    <button data-view="ammo"></button>
     <button data-view="friends"></button>
   </nav>
   <div id="status"></div>
@@ -416,7 +427,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
 
 /* ───────── Constantes ───────── */
 const WIKI = 'https://escapefromtarkov.fandom.com/wiki/';
-const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v12', LS_PRICES = 'tkv_prices_v2';
+const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v13', LS_PRICES = 'tkv_prices_v2';
 const DATA_MAX = 24 * 3600e3, PRICE_MAX = 3600e3;
 
 // Cada paso: ['Título', 'objetivo', 'objetivo opcional*', ...]  (el asterisco final marca un objetivo opcional)
@@ -1023,6 +1034,11 @@ async function fetchStatic(){
     (m.extracts || []).forEach(x => { if (!x.position || (x.faction !== 'pmc' && x.faction !== 'shared')) return; const list = ext[k] = ext[k] || []; if (list.some(e => e[6] === x.name)) return;
       list.push([mapsEs[x.name] || mapsEn[x.name] || x.name, mapsEn[x.name] || mapsEs[x.name] || x.name, r1(x.position.x), r1(x.position.z), r1(x.position.y || 0), x.faction === 'shared' ? 1 : 0, x.name, ...(() => { const ti = x.transferItem, it = ti && regItem(ti.item); return it ? [it.id, ti.count || 1] : []; })()]); }); });
   Object.values(allItems).forEach(a => { if (a && (a.types || []).includes('keys')) regItem(a.id); });
+  const ammo = [];
+  Object.values(allItems).forEach(a => { const pr = a && a.properties; if (!pr || pr.penetrationPower == null || pr.damage == null || !pr.caliber) return;
+    if (/flare|grenade|rocket|Caliber40mm|Caliber30x29|Caliber26x75|Caliber40x46|Caliber20x1mm/i.test(pr.caliber)) return;
+    const it = regItem(a.id); if (!it) return;
+    ammo.push([it.id, pr.caliber, pr.damage, pr.projectileCount || 1, pr.penetrationPower, pr.armorDamage || 0, pr.fragmentationChance || 0]); });
   const lootKeys = Object.values(items).filter(it => it.key && !it.special).map(it => it.id);
   const pm = []; Object.values(allItems).forEach(a => { const nm = ien[a.id + ' Name'], pr = a.avg24hPrice || a.basePrice || 0; if (nm && pr >= 3000 && nm.length >= 4 && !(a.types || []).includes('keys')) pm.push([nm.toLowerCase(), pr]); }); pm.sort((x, y) => y[0].length - x[0].length);
   const keyRaw = {}; Object.values(items).forEach(it => { if (it.key && !it.special) keyRaw[it.rawId] = it.id; });
@@ -1036,7 +1052,7 @@ async function fetchStatic(){
     if (typeof es !== 'string' || typeof en !== 'string' || es === en || /^[0-9a-f]{24}/.test(k) || /_(DESC|COND)$/.test(k) || /^(QuestCondition|FAC_)/.test(k)) return;
     if (es.length < 4 || es.length > 50 || !/^[A-ZÁÉÍÓÚÑ0-9]/.test(es)) return; pl.push([es, en]); });
   Object.values(items).forEach(it => { if (it.key && !it.special && it.nameEs && it.nameEn && it.nameEs !== it.nameEn) pl.push([it.nameEs, it.nameEn]); });
-  return { ts: Date.now(), tasks, reqs, items, hideout, gun, trn: trnames, stn, mapn, ext, barters, traders, klock, kloose, pl, lootKeys, pm, warnings, prices: buildPrices(allItems, items) };
+  return { ts: Date.now(), tasks, reqs, items, ammo, hideout, gun, trn: trnames, stn, mapn, ext, barters, traders, klock, kloose, pl, lootKeys, pm, warnings, prices: buildPrices(allItems, items) };
 }
 
 /* Elige los textos según el idioma (los dos idiomas se guardan siempre). */
@@ -1748,6 +1764,12 @@ function renderView(){
     app.classList.add('wide');
     ctl = `<input type="search" id="q" placeholder="${tx('Buscar un tradeo (por lo que da o lo que pide)…', 'Search a barter (by what it gives or asks for)…')}" value="${esc(S.q)}">
       <label>${tx('Mostrar', 'Show')} <select id="tfilter"><option value="imp">${tx('Solo lo importante (cajas, bitcoin, valiosos)', 'Only the important ones (cases, bitcoin, valuables)')}</option><option value="case">${tx('Solo cajas y contenedores', 'Only cases and containers')}</option><option value="val">${tx('Solo bitcoin y objetos valiosos', 'Only bitcoin and valuables')}</option><option value="all">${tx('Todos los tradeos', 'All barters')}</option></select></label>`;
+  } else if (S.view === 'ammo') {
+    app.classList.add('wide');
+    const cals = [...new Set((D.ammo || []).map(a => a[1]))].sort((x, y) => calName(x).localeCompare(calName(y), LOC()));
+    ctl = `<input type="search" id="q" placeholder="${tx('Buscar una munición…', 'Search an ammo…')}" value="${esc(S.q)}">
+      <label>${tx('Calibre', 'Caliber')} <select id="acal"><option value="">${tx('Todos', 'All')}</option>${cals.map(c => `<option value="${esc(c)}" ${S.acal === c ? 'selected' : ''}>${esc(calName(c))}</option>`).join('')}</select></label>
+      <label>${tx('Ordenar por', 'Sort by')} <select id="asort"><option value="cal" ${S.asort === 'cal' || !S.asort ? 'selected' : ''}>${tx('Calibre y penetración', 'Caliber and penetration')}</option><option value="pen" ${S.asort === 'pen' ? 'selected' : ''}>${tx('Penetración', 'Penetration')}</option><option value="dmg" ${S.asort === 'dmg' ? 'selected' : ''}>${tx('Daño a la carne', 'Flesh damage')}</option><option value="price" ${S.asort === 'price' ? 'selected' : ''}>${tx('Precio (menor primero)', 'Price (lowest first)')}</option></select></label>`;
   } else if (S.view === 'friends') {
     app.classList.add('wide'); ctl = '';
   } else if (S.view === 'plan') {
@@ -1871,6 +1893,57 @@ function renderGunDetail(t, sum, list){
       ${S.fail[t.id] ? '' : `<button class="btn" data-act="togglefail" data-id="${esc(t.id)}" title="${tx('Para las misiones que hay que fallar a propósito para desbloquear otras', 'For quests you must fail on purpose to unlock others')}">✗ ${tx('Marcar como fallada', 'Mark as failed')}</button>`}
       <a class="btn" href="${esc(wiki)}" target="_blank" rel="noopener">${tx('Ver en la Tarkov Wiki ↗', 'View on the Tarkov Wiki ↗')}</a></div></div>${wikiBuildHtml(t)}${builds}`;
 }
+/* ───────── Vista: Municiones ───────── */
+const CAL_FIX = { '9x18PM': '9x18 PM', '9x19PARA': '9x19 Parabellum', '9x21': '9x21', '9x39': '9x39', '1143x23ACP': '.45 ACP', '762x25TT': '7.62x25 TT', '762x51': '7.62x51', '762x39': '7.62x39', '762x54R': '7.62x54 R', '545x39': '5.45x39', '556x45NATO': '5.56x45 NATO', '366TKM': '.366 TKM', '127x55': '12.7x55', '57x28': '5.7x28', '46x30': '4.6x30', '68x51': '6.8x51', '86x70': '.338 Lapua Magnum', '9x33R': '.357 Magnum', '127x108': '12.7x108', '12g': '12/70', '20g': '20/70', '23x75': '23x75', '762x35': '.300 Blackout', '9x18': '9x18 PM' };
+const calName = c => { const k = String(c || '').replace(/^Caliber/i, ''); if (CAL_FIX[k]) return CAL_FIX[k]; const m = /^(\d)(\d{2})x(\d+)(.*)$/.exec(k); return m ? m[1] + '.' + m[2] + 'x' + m[3] + (m[4] ? ' ' + m[4] : '') : k; };
+const ROM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+const PCH = [['#3fa34d', 'muy alta', 'very high'], ['#9bcf3f', 'alta', 'high'], ['#e3c53a', 'media', 'medium'], ['#e8892b', 'baja', 'low'], ['#d64545', 'muy baja', 'very low']];
+const penLevel = (pen, c) => { const d = pen - 10 * c; return d >= 5 ? 0 : d >= 0 ? 1 : d > -3 ? 2 : d > -8 ? 3 : 4; };
+const armorIcons = pen => '<span class="acs">' + ROM.map((r, i) => { const L = penLevel(pen, i + 1), c = PCH[L]; return `<i class="ac" style="--c:${c[0]}" title="${tx('Armadura clase ' + r + ': probabilidad ' + c[1], 'Armor class ' + r + ': ' + c[2] + ' chance')}"><b>${r}</b></i>`; }).join('') + '</span>';
+function ammoRows(){
+  return (D.ammo || []).map(a => { const it = D.items[a[0]]; if (!it) return null; const c = cheapest(a[0]);
+    const pc = [1, 2, 3, 4, 5, 6].filter(n => a[4] - 10 * n >= 0).length;
+    return { id: a[0], it, cal: a[1], dmg: a[2], proj: a[3], d: a[2] * a[3], pen: a[4], adm: a[5], price: c != null && c > 0 ? c : null, pc }; }).filter(Boolean);
+}
+function ammoPicks(rows){
+  const good = [], bad = [], bestV = {};
+  const byCal = {}; rows.forEach(r => { (byCal[r.cal] = byCal[r.cal] || []).push(r); });
+  Object.entries(byCal).forEach(([cal, L]) => {
+    const P = L.filter(r => r.price).sort((x, y) => x.price - y.price); if (!P.length) return;
+    const val = r => r.d * (1 + r.pc / 3) / r.price, med = P[Math.floor(P.length / 2)].price;
+    const A = P.slice().sort((x, y) => y.d - x.d || y.pen - x.pen)[0], B = P.slice().sort((x, y) => val(y) - val(x))[0];
+    const C = P.filter(r => r.price <= 3 * med).sort((x, y) => y.pen - x.pen || y.d - x.d)[0];
+    const pick = new Map(); const add = (r, tag) => { if (!r) return; const e = pick.get(r.id) || { r, tags: [] }; e.tags.push(tag); pick.set(r.id, e); };
+    if (P.length === 1) add(A, tx('Única con precio', 'Only priced one')); else { add(A, tx('Más daño', 'Most damage')); add(B, tx('Mejor calidad-precio', 'Best value')); add(C, tx('Más penetración razonable', 'Best affordable penetration')); }
+    if (pick.size < 2 && P.length > 1) P.slice().sort((x, y) => val(y) - val(x)).forEach(r => { if (pick.size < 2) add(r, tx('Buena opción', 'Good option')); });
+    [...pick.values()].forEach(e => good.push(e)); bestV[cal] = B;
+    P.forEach(r => { const reasons = [];
+      const dom = P.filter(o => o.id !== r.id && o.price <= r.price && o.pen >= r.pen && o.d >= r.d && o.adm >= r.adm && (o.price < r.price || o.pen > r.pen || o.d > r.d || o.adm > r.adm)).sort((x, y) => x.price - y.price)[0];
+      if (dom) reasons.push(tx('Hay una más barata (' + dom.it.name + ') que penetra y daña igual o más', 'A cheaper one (' + dom.it.name + ') penetrates and damages the same or more'));
+      if (r.pc >= 5 && B && r.price >= 2 * B.price && r.id !== B.id) reasons.push(tx('Atraviesa hasta el nivel ' + ROM[r.pc - 1] + ', pero cuesta ' + (r.price / B.price).toFixed(1) + '× la de mejor calidad-precio (' + B.it.name + ')', 'Goes through up to class ' + ROM[r.pc - 1] + ', but costs ' + (r.price / B.price).toFixed(1) + '× the best-value one (' + B.it.name + ')'));
+      if (reasons.length) bad.push({ r, reasons }); }); });
+  return { good, bad };
+}
+function renderAmmo(){
+  const rows = ammoRows(), money = v => fmt(v), cell = r => `<td><div class="amn">${r.it.icon ? `<img src="${esc(r.it.icon)}" alt="" loading="lazy">` : ''}<div><b>${itemLink(r.it)}</b><small>${esc(calName(r.cal))}</small></div></div></td><td>${armorIcons(r.pen)}<small class="amp0">${tx('Pen.', 'Pen.')} ${r.pen}</small></td><td>${r.proj > 1 ? r.dmg + '×' + r.proj : r.dmg}</td><td>${r.adm}%</td><td>${r.price ? money(r.price) : '—'}</td>`;
+  const head = last => `<thead><tr><th>${tx('Munición', 'Ammo')}</th><th>${tx('Atraviesa blindaje', 'Armor penetration')}</th><th>${tx('Daño carne', 'Flesh dmg')}</th><th>${tx('Daño armadura', 'Armor dmg')}</th><th>${tx('Precio', 'Price')}</th><th>${last}</th></tr></thead>`;
+  if (!rows.length) { $('#sum').textContent = ''; $('#list').innerHTML = `<div class="msg">${tx('No hay datos de munición. Pulsa «Actualizar datos».', 'No ammo data. Press “Refresh data”.')}</div>`; return; }
+  const q = norm(S.q), { good, bad } = ammoPicks(rows), inCal = r => !S.acal || r.cal === S.acal;
+  const g = good.filter(e => inCal(e.r)).sort((x, y) => calName(x.r.cal).localeCompare(calName(y.r.cal), LOC()) || y.r.d - x.r.d);
+  const b = bad.filter(e => inCal(e.r)).sort((x, y) => y.r.price - x.r.price);
+  let all = rows.filter(r => inCal(r) && (!q || r.it.sq.includes(q) || norm(calName(r.cal)).includes(q)));
+  const srt = { pen: (x, y) => y.pen - x.pen, dmg: (x, y) => y.d - x.d, price: (x, y) => (x.price || 1e12) - (y.price || 1e12) }[S.asort];
+  all.sort(srt || ((x, y) => calName(x.cal).localeCompare(calName(y.cal), LOC()) || y.pen - x.pen || y.d - x.d));
+  $('#sum').innerHTML = tx(`<b>${rows.length}</b> municiones. Los colores indican la probabilidad estimada de atravesar cada clase de armadura (I a VI): ${PCH.map(c => `<span style="color:${c[0]};font-weight:700">${c[1]}</span>`).join(' · ')}. Es una estimación a partir de la penetración; el juego la calcula con más factores (durabilidad, zona…).`, `<b>${rows.length}</b> ammo types. Colours show the estimated chance to penetrate each armor class (I to VI): ${PCH.map(c => `<span style="color:${c[0]};font-weight:700">${c[2]}</span>`).join(' · ')}. It is an estimate from penetration power; the game uses more factors (durability, zone…).`);
+  $('#list').innerHTML = `<div class="amgrid">
+    <section class="amp"><h3>✔ ${tx('Las mejores de cada calibre', 'Best of each caliber')}</h3><p class="hint">${tx('Hasta 3 por calibre: la que más daña, la de mejor calidad-precio y la que más penetra sin dispararse de precio.', 'Up to 3 per caliber: the most damaging, the best value and the one that penetrates most without a huge price.')}</p>
+      <div class="amscroll"><table class="amt">${head(tx('Por qué', 'Why'))}<tbody>${g.map(e => `<tr>${cell(e.r)}<td>${e.tags.map(t => `<span class="amtag">${esc(t)}</span>`).join('')}</td></tr>`).join('') || `<tr><td colspan="6">${tx('Sin datos con precio.', 'No priced data.')}</td></tr>`}</tbody></table></div></section>
+    <section class="amp"><h3>✘ ${tx('No compensa llevarlas a raid', 'Not worth taking to a raid')}</h3><p class="hint">${tx('Balas que te sobran: hay otra más barata que hace lo mismo o más, o penetran por encima de lo que necesitas a un precio muy alto.', 'Ammo you do not need: a cheaper one does the same or more, or it penetrates far beyond what you need at a very high price.')}</p>
+      <div class="amscroll"><table class="amt">${head(tx('Motivo', 'Reason'))}<tbody>${b.map(e => `<tr>${cell(e.r)}<td class="amwhy">${e.reasons.map(t => esc(t)).join('<br>')}</td></tr>`).join('') || `<tr><td colspan="6">${tx('Ninguna con estos filtros.', 'None with these filters.')}</td></tr>`}</tbody></table></div></section></div>
+    <section class="amp amall"><h3>${tx('Todas las municiones', 'All ammo')} <span class="cnt">${all.length}</span></h3>
+      <div class="amscroll"><table class="amt">${head(tx('Calibre', 'Caliber'))}<tbody>${all.map(r => `<tr>${cell(r)}<td>${esc(calName(r.cal))}</td></tr>`).join('')}</tbody></table></div></section>`;
+}
+
 /* ───────── Vista: Tradeos (barters) ───────── */
 const T_CASE = /(^|-)case$|secure-container|-container$/, T_VAL = /bitcoin|graphics-card|ledx|red-rebel|keycard|vpx|tetriz|rfid|virtex|ssd|ultralink|gold|roler|rolex/;
 function itemValue(id){ const it = D.items[id], p = P && P.byId[id]; if (p && p.flea != null) return [p.flea, 'flea']; if (p && p.avg != null) return [p.avg, 'avg']; return [it ? it.bp : 0, 'base']; }
@@ -2242,7 +2315,7 @@ function fitPanes(){
 function renderList(){
   if (!D) return; const y = window.scrollY;
   updTabs();
-  if (S.view === 'quests') renderQuests(); else if (S.view === 'plan') renderPlan(); else if (S.view === 'trade') renderTrade(); else if (S.view === 'friends') renderFriends(); else if (S.view === 'gun') renderGun(); else renderBoth();
+  if (S.view === 'quests') renderQuests(); else if (S.view === 'plan') renderPlan(); else if (S.view === 'trade') renderTrade(); else if (S.view === 'ammo') renderAmmo(); else if (S.view === 'friends') renderFriends(); else if (S.view === 'gun') renderGun(); else renderBoth();
   renderDrawer(); window.scrollTo(0, y);
 }
 
@@ -2339,6 +2412,8 @@ document.addEventListener('change', e => {
   else if (t.id === 'extShow') { S.extShow = t.checked; saveState(); renderList(); }
   else if (t.id === 'extNames') { S.extNames = t.checked; saveState(); renderList(); }
   else if (t.id === 'chain') { S.chain = t.checked; saveState(); treeKey = ''; renderList(); }
+  else if (t.id === 'acal') { S.acal = t.value; saveState(); renderList(); }
+  else if (t.id === 'asort') { S.asort = t.value; saveState(); renderList(); }
   else if (t.id === 'hideLocked') { S.hideLocked = t.checked; saveState(); renderList(); }
   else if (t.id === 'hideDone') { S.hideDone = t.checked; saveState(); renderList(); }
   else if (t.id === 'hideBuilt') { S.hideBuilt = t.checked; saveState(); renderList(); }
@@ -2411,7 +2486,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 31 · Llaves en tu idioma', 'version 31 · Keys in your language');
+  $('#ver').textContent = tx('versión 32 · Municiones', 'version 32 · Ammo');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
@@ -2419,7 +2494,7 @@ function applyStatic(){
   set('[data-act=reload]', tx('Actualizar datos', 'Refresh data')); set('[data-act=prices]', tx('Actualizar precios', 'Refresh prices'));
   set('[data-act=export]', tx('Guardar copia', 'Save backup')); set('[data-act=import]', tx('Cargar copia', 'Load backup'));
   set('#tabs [data-view=quests]', tx('Misiones', 'Quests')); updTabs(); set('#tabs [data-view=gun]', 'Gunsmith');
-  set('#tabs [data-view=both]', tx('Items, llaves y Hideout', 'Items, keys & Hideout')); set('#tabs [data-view=trade]', tx('Tradeos', 'Barters'));
+  set('#tabs [data-view=both]', tx('Items, llaves y Hideout', 'Items, keys & Hideout')); set('#tabs [data-view=trade]', tx('Tradeos', 'Barters')); set('#tabs [data-view=ammo]', tx('Municiones', 'Ammo'));
   $('#drawer').setAttribute('aria-label', tx('Detalle de la misión', 'Quest details'));
   $('#foot').innerHTML = tx('Datos y precios', 'Data and prices') + ': <a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a> · ' + tx('Enlaces', 'Links') + ': <a href="https://escapefromtarkov.fandom.com/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener">Tarkov Wiki</a>. ' + tx('Tu progreso se guarda solo en este navegador.', 'Your progress is saved only in this browser.');
 }
