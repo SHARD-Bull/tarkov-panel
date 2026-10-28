@@ -1057,7 +1057,7 @@ function applyLang(d){
   d.tasks.forEach(t => { if (t.custom) return;
     t.name = pick(t.nameEs, t.en); t.trader.name = pick(t.trader.nameEs, t.trader.nameEn); t.map = t.mapEn || t.mapEs;
     t.obj.forEach(o => { o.x = en ? (o.xEn || o.xEs) : plApply(o.xEs || o.xEn, d); }); });
-  Object.values(d.items).forEach(i => { i.name = i.key ? (i.nameEn || i.nameEs) : pick(i.nameEs, i.nameEn); i.short = i.key ? (i.shortEn || i.shortEs) : pick(i.shortEs, i.shortEn); i.sq = norm([i.nameEs, i.nameEn, i.shortEs, i.shortEn].join(' ')); });
+  Object.values(d.items).forEach(i => { i.name = i.key ? (en ? (i.nameEn || i.nameEs) : plApply(i.nameEs || i.nameEn, PL_EMPTY)) : pick(i.nameEs, i.nameEn); i.short = i.key ? (en ? (i.shortEn || i.shortEs) : plApply(i.shortEs || i.shortEn, PL_EMPTY)) : pick(i.shortEs, i.shortEn); i.sq = norm([i.nameEs, i.nameEn, i.shortEs, i.shortEn].join(' ')); });
   d.hideout.forEach(s => { s.name = pick(s.nameEs, s.nameEn); s.sq = norm(s.nameEs + ' ' + s.nameEn); s.levels.forEach(l => l.skills.forEach(k => { k.name = pick(k.nameEs, k.nameEn); })); });
   Object.values(d.gun || {}).forEach(g => g.builds.forEach(b => { b.cats = (en ? b.catsEn : b.catsEs) || []; }));
   Object.values(d.traders || {}).forEach(t => { t.name = pick(t.nameEs, t.nameEn); });
@@ -1652,7 +1652,7 @@ function keyDetailHtml(id){
   const flLn = `<div class="kln"><span>Flea</span><span class="${p.flea != null ? 'pr' : 'm'}">${p.flea != null ? fmt(p.flea) : tx('No disponible', 'Not available')}</span></div>`;
   return `<button class="btn kback" data-act="kback">${tx('← Volver a las llaves', '← Back to keys')}</button>
   <div class="kdt"><div class="kcol">
-    <div class="kbox"><div class="khead"><div class="ic big">${itemImg(it)}</div><div><b class="kname">${esc(it.name)}</b>${S.lang === 'es' && it.nameEs && it.nameEs !== it.name ? `<div class="m" style="font-size:12.5px">${esc(plApply(it.nameEs, PL_EMPTY))}</div>` : ''}<div class="ktags" style="margin-top:6px"><span class="bd k">${tx('Llave', 'Key')}</span>${it.us ? `<span class="bd w">${it.us} ${tx('usos', 'uses')}</span>` : ''}${((D.klock && D.klock[id]) || []).length ? [...new Set(D.klock[id].map(x => x[0]))].map(m => `<span class="bd q">${esc(mapName(m))}</span>`).join('') : ''}</div></div></div>
+    <div class="kbox"><div class="khead"><div class="ic big">${itemImg(it)}</div><div><b class="kname">${esc(it.name)}</b>${S.lang === 'es' && it.nameEn && it.nameEn !== it.name ? `<div class="m" style="font-size:12.5px">${esc(it.nameEn)}</div>` : ''}<div class="ktags" style="margin-top:6px"><span class="bd k">${tx('Llave', 'Key')}</span>${it.us ? `<span class="bd w">${it.us} ${tx('usos', 'uses')}</span>` : ''}${((D.klock && D.klock[id]) || []).length ? [...new Set(D.klock[id].map(x => x[0]))].map(m => `<span class="bd q">${esc(mapName(m))}</span>`).join('') : ''}</div></div></div>
       <div class="ikpis" style="margin:12px 0 10px">${[[tx('Valor de venta', 'Sell value'), p.sell ? fmt(p.sell.p) : fmt(it.bp)], [tx('Peso', 'Weight'), (it.wt || 0).toLocaleString(S.lang === 'en' ? 'en-US' : 'es-ES') + ' kg'], [tx('Estado', 'Status'), own ? `<span style="color:var(--ok);font-size:16px">${tx('La tienes', 'Owned')}</span>` : `<span style="color:var(--warn);font-size:16px">${tx('No la tienes', 'Not owned')}</span>`]].map(k => `<div class="ikpi"><small>${k[0]}</small><b style="font-size:16px">${k[1]}</b></div>`).join('')}</div>
       <button class="btn" data-act="kown" data-id="${esc(id)}">${own ? tx('✓ La tengo (quitar)', '✓ I have it (remove)') : tx('Marcar que la tengo', 'Mark as owned')}</button> ${it.wiki ? `<a class="btn" href="${esc(it.wiki)}" target="_blank" rel="noopener">${tx('Wiki ↗', 'Wiki ↗')}</a>` : ''}</div>
     <div class="kbox"><h6>${tx('Qué abre', 'What it opens')}</h6><div class="kln"><span>${tx('Cerraduras en tarkov.dev', 'Locks on tarkov.dev')}</span><span>${nLocks}</span></div><div id="kwLock" class="kw m">${tx('Cargando información de la wiki…', 'Loading wiki information…')}</div></div>
@@ -2411,7 +2411,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 30 · Mapa por plantas y fotos de la wiki', 'version 30 · Steady plan list & key diagnostic');
+  $('#ver').textContent = tx('versión 31 · Llaves en tu idioma', 'version 31 · Keys in your language');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
