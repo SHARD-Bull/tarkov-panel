@@ -1910,10 +1910,9 @@ function ammoPicks(rows){
   const good = [], bad = [], byCal = {};
   rows.forEach(r => { (byCal[r.cal] = byCal[r.cal] || []).push(r); });
   Object.entries(byCal).forEach(([cal, L]) => {
-    const P = L.filter(r => r.price && r.pen >= AM_MIN).sort((x, y) => x.price - y.price); if (!P.length) return;
-    const cheap = P[0].price;
-    const over = r => r.pen > AM_OVER && r.price >= AM_PRICEX * cheap && r.price >= AM_PRICEMIN;
-    P.filter(over).forEach(r => bad.push({ r, reasons: [tx('Penetra ' + r.pen + ' (probabilidad alta o muy alta contra nivel VI) y cuesta ' + (r.price / cheap).toFixed(1) + '× la más barata de su calibre que ya atraviesa el nivel IV', 'Penetration ' + r.pen + ' (high or very high chance against class VI) and costs ' + (r.price / cheap).toFixed(1) + '× the cheapest of its caliber that already goes through class IV')] }));
+    const over = r => r.pen > AM_OVER;
+    L.filter(r => over(r)).forEach(r => bad.push({ r, reasons: [tx('Penetra ' + r.pen + ': probabilidad alta o muy alta contra nivel VI, te sobra', 'Penetration ' + r.pen + ': high or very high chance against class VI, more than you need')] }));
+    const P = L.filter(r => r.price && r.pen >= AM_MIN).sort((x, y) => x.price - y.price);
     let Q = P.filter(r => !over(r)); if (!Q.length) return;
     const val = r => r.d * (1 + r.pc / 3) / r.price, med = Q[Math.floor(Q.length / 2)].price;
     const A = Q.slice().sort((x, y) => y.d - x.d || y.pen - x.pen)[0], B = Q.slice().sort((x, y) => val(y) - val(x))[0];
@@ -1938,7 +1937,7 @@ function renderAmmo(){
   $('#list').innerHTML = `<div class="amgrid">
     <section class="amp"><h3>✔ ${tx('Las mejores de cada calibre', 'Best of each caliber')}</h3><p class="hint">${tx('Solo las que atraviesan el nivel IV con probabilidad media-baja o mejor (penetración 33 o más). Hasta 3 por calibre: la que más daña, la de mejor calidad-precio y la que más penetra sin dispararse de precio. Los calibres sin ninguna que llegue al nivel IV no aparecen.', 'Only ammo that goes through class IV with at least a medium-low chance (penetration 33 or more). Up to 3 per caliber: the most damaging, the best value and the one that penetrates most without a huge price. Calibers with nothing reaching class IV are not listed.')}</p>
       <div class="amscroll"><table class="amt">${head(tx('Por qué', 'Why'))}<tbody>${g.map(e => `<tr>${cell(e.r)}<td>${e.tags.map(t => `<span class="amtag">${esc(t)}</span>`).join('')}</td></tr>`).join('') || `<tr><td colspan="6">${tx('Ninguna con estos filtros.', 'None with these filters.')}</td></tr>`}</tbody></table></div></section>
-    <section class="amp"><h3>✘ ${tx('No compensa llevarlas a raid', 'Not worth taking to a raid')}</h3><p class="hint">${tx('Atraviesan el nivel IV y además tienen probabilidad alta o muy alta contra el nivel VI (penetración 60 o más, te sobra), pero son muy caras: cuestan 2 veces o más la más barata de su calibre que ya atraviesa el nivel IV, y al menos 1.500 ₽.', 'They go through class IV and also have a high or very high chance against class VI (penetration 60 or more, more than you need), but they are very expensive: 2× or more the cheapest of their caliber that already goes through class IV, and at least 1,500 ₽.')}</p>
+    <section class="amp"><h3>✘ ${tx('No compensa llevarlas a raid', 'Not worth taking to a raid')}</h3><p class="hint">${tx('Atraviesan el nivel IV y además tienen probabilidad alta o muy alta contra el nivel VI (penetración 60 o más, te sobra). Para no gastar de más, llévalas solo si de verdad te hacen falta.', 'They go through class IV and also have a high or very high chance against class VI (penetration 60 or more, more than you need). Take them only if you really need them.')}</p>
       <div class="amscroll"><table class="amt">${head(tx('Motivo', 'Reason'))}<tbody>${b.map(e => `<tr>${cell(e.r)}<td class="amwhy">${e.reasons.map(t => esc(t)).join('<br>')}</td></tr>`).join('') || `<tr><td colspan="6">${tx('Ninguna con estos filtros.', 'None with these filters.')}</td></tr>`}</tbody></table></div></section></div>
     <section class="amp amall"><h3>${tx('Todas las municiones', 'All ammo')} <span class="cnt">${all.length}</span></h3>
       <div class="amscroll"><table class="amt">${head(tx('Calibre', 'Caliber'))}<tbody>${all.map(r => `<tr>${cell(r)}<td>${esc(calName(r.cal))}</td></tr>`).join('')}</tbody></table></div></section>`;
@@ -2486,7 +2485,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 34 · Municiones (umbrales ajustados)', 'version 34 · Ammo (adjusted thresholds)');
+  $('#ver').textContent = tx('versión 35 · Municiones (sin filtro de precio)', 'version 35 · Ammo (no price filter)');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
