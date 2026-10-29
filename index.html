@@ -1094,6 +1094,26 @@ const EXTRA_TASKS = [
     objEn: ['Scout the Rogues position near the BRDM vehicle in the northern part of the Water Treatment Plant', 'Scout the Rogues checkpoint with a watchtower in the southwestern part of the Water Treatment Plant', 'Scout the Water Treatment Plant territory from the roof of any of the plant buildings'] },
   { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0,
     obj: ['Survive and extract from The Lab'], objEn: ['Survive and extract from The Lab'] },
+
+  /* Evento de Halloween (wiki oficial): cadena de Skier y Therapist en los mapas infectados */
+  { id: 'x_h_rumors', es: 'Halloween: Rumores', en: 'Halloween: Rumors', trader: 'skier', traderName: 'Skier', map: 'Infected Factory', lvl: 0, ev: 1,
+    obj: ['Visita Infected Factory', 'Elimina a 10 infectados en Infected Factory'], objEn: ['Visit the Infected Factory', 'Eliminate 10 infected on Infected Factory'] },
+  { id: 'x_h_best_defense', es: 'Halloween: La mejor defensa', en: 'Halloween: The Best Defense', trader: 'skier', traderName: 'Skier', map: 'Infected Lab', lvl: 0, ev: 1, req: ['x_h_rumors'],
+    obj: ['Visita Infected Lab', 'Elimina a 10 infectados en Infected Lab'], objEn: ['Visit the Infected Lab', 'Eliminate 10 infected on Infected Lab'], opt: [[0, 'Sobrevive y sal de Infected Lab', 'Survive and extract from Infected Lab'], [0, 'Consigue el objeto especial para usar la extracción', 'Obtain the special item to use the exfil']] },
+  { id: 'x_h_followup', es: 'Halloween: Examen de seguimiento', en: 'Halloween: Follow-Up Examination', trader: 'therapist', traderName: 'Therapist', map: 'Infected Factory, Infected Lab', lvl: 0, ev: 1, req: ['x_h_best_defense'],
+    obj: ['Localiza al científico muerto con traje de materiales peligrosos en Infected Lab o Infected Factory', 'Abre el cuerpo del científico con herramientas médicas', 'Obtén la muestra de sangre en Infected Lab o Infected Factory', 'Entrega la muestra de sangre'],
+    objEn: ['Locate the dead scientist in a hazmat suit on Infected Lab or Infected Factory', "Open the scientist's body using Medical instruments", 'Obtain the blood sample on Infected Lab or Infected Factory', 'Hand over the blood sample'] },
+  { id: 'x_h_unexpected', es: 'Halloween: Ayuda inesperada', en: 'Halloween: Unexpected Help', trader: 'skier', traderName: 'Skier', map: 'Lighthouse, Customs', lvl: 0, ev: 1, req: ['x_h_followup'],
+    obj: ['Localiza y consigue el cargamento de vacuna en la planta de tratamiento de agua de Lighthouse', 'Guarda el cargamento de vacuna en la habitación 105 de los dormitorios de dos plantas de Customs'],
+    objEn: ['Locate and obtain the vaccine shipment at the water treatment plant on Lighthouse', 'Stash the vaccine shipment in room 105 of the two-story dorm on Customs'] },
+  { id: 'x_h_initial', es: 'Halloween: Examen inicial', en: 'Halloween: Initial Examination', trader: 'therapist', traderName: 'Therapist', map: 'Lighthouse', lvl: 0, ev: 1, req: ['x_h_unexpected'],
+    obj: ['Entrega el cargamento de vacuna (alternativa a "Ayuda inesperada": guardarla en Customs hace fallar esta misión y entregarla a Therapist hace fallar la otra)'], objEn: ['Hand over the vaccine shipment (alternative to "Unexpected Help": stashing it on Customs fails this quest, handing it to Therapist fails the other)'] },
+  { id: 'x_h_vaccine_t', es: 'Halloween: Una nueva vacuna', en: 'Halloween: A new Vaccine', trader: 'therapist', traderName: 'Therapist', map: 'Infected Factory, Infected Lab', lvl: 0, ev: 1, req: ['x_h_initial'],
+    obj: ['Sobrevive y sal de Infected Factory o Infected Lab'], objEn: ['Survive and extract from Infected Factory or Infected Lab'] },
+  { id: 'x_h_vaccine_s', es: 'Halloween: Una nueva vacuna', en: 'Halloween: A new Vaccine', trader: 'skier', traderName: 'Skier', map: 'Infected Factory, Infected Lab', lvl: 0, ev: 1, req: ['x_h_initial'],
+    obj: ['Sobrevive y sal de Infected Factory', 'Sobrevive y sal de Infected Lab', 'Entrega 2.000 USD', 'Consigue el objeto especial para usar la extracción'], objEn: ['Survive and extract from Infected Factory', 'Survive and extract from Infected Lab', 'Hand over 2,000 USD', 'Obtain the special item to use the exfil'] },
+  { id: 'x_h_quarantine', es: 'Halloween: Endurecer la cuarentena', en: 'Halloween: Tightening The Quarantine', trader: 'skier', traderName: 'Skier', map: '', lvl: 0, ev: 1, req: ['x_h_initial'],
+    obj: ['Entrega encontrados en incursión: 5 botiquines cualesquiera que quiten la hemorragia fuerte', 'Entrega encontrados en incursión: 2 bálsamos médicos cualesquiera', 'Entrega encontrados en incursión: 2 kits quirúrgicos cualesquiera'], objEn: ['Hand over the found in raid item: 5 Any medkits that can remove heavy bleeding', 'Hand over the found in raid item: 2 Any medical balm', 'Hand over the found in raid item: 2 Any surgical kit'] },
 ];
 /* Correcciones de llaves comprobadas en la wiki: misión (nombre en inglés) → llaves que faltan en tarkov.dev (nombre en inglés). */
 const KEY_FIX = { 'Wet Job - Part 5': ['Health Resort universal utility room key'] };
@@ -1110,7 +1130,7 @@ function customTasks(d){
   EXTRA_TASKS.filter(e => !hasReal(e)).forEach(e => {
     const tr = (d.traders || {})[e.trader] || {}, en = S.lang === 'en';
     d.tasks.push({ id: e.id, extra: true, name: en ? e.en : e.es, nameEs: e.es, en: e.en, wiki: 'https://escapefromtarkov.fandom.com/wiki/' + encodeURIComponent(e.en.replace(/ /g, '_')), lvl: e.lvl, kappa: false, pts: [], mps: e.mk ? [e.mk] : [],
-      trader: { id: tr.id || '', name: tr.name || e.traderName, key: e.trader }, map: e.map, req: [], obj: e.obj.map((x, i) => ({ id: e.id + 'o' + i, xEs: x, xEn: e.objEn[i], x: en ? e.objEn[i] : x, op: false })) });
+      trader: { id: tr.id || '', name: tr.name || e.traderName, key: e.trader }, map: e.map, req: (e.req || []).slice(), event: !!e.ev, obj: e.obj.map((x, i) => ({ id: e.id + 'o' + i, xEs: x, xEn: e.objEn[i], x: en ? e.objEn[i] : x, op: false })).concat((e.opt || []).map((o, i) => ({ id: e.id + 'p' + i, xEs: o[1], xEn: o[2], x: en ? o[2] : o[1], op: true }))) });
   });
   (S.custom || []).forEach(c => {
     const tr = (d.traders || {})[c.trader] || {};
@@ -2290,6 +2310,9 @@ function planHtml(){
   const cnt = {}; act.forEach(t => live(t).forEach(p => { cnt[p[0]] = (cnt[p[0]] || 0) + 1; }));
   const ks = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]);
   if (!ks.includes(S.pmap)) S.pmap = ks[0] || null;
+  const qmaps = t => [...new Set(t.pts.map(p => p[0]).concat(t.mps || []))];
+  const inMap = t => !S.pmap || S.planAll || !qmaps(t).length || qmaps(t).includes(S.pmap);
+  const nHid = all.filter(t => !inMap(t)).length;
   let mapHtml;
   if (!ks.length) mapHtml = `<p class="hint">${tx('Las misiones del plan no tienen puntos con coordenadas en tarkov.dev (por ejemplo, las que se hacen en cualquier mapa o con objetivos genéricos).', 'The quests in your plan have no points with coordinates on tarkov.dev (for example, those done on any map or with generic objectives).')}</p>`;
   else {
@@ -2303,13 +2326,13 @@ function planHtml(){
       return `<i class="pex ${e[5] ? 'shared' : ''} ${e[7] ? 'req' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="pex" data-ex="${k}|${ei}"><s></s><b>${esc(nm)}${e[7] ? ' 🔑' : ''}</b></i>`; }).join('') : '';
     mapHtml = `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="pmap" data-id="${x}">${esc(mapName(x))} <b>${cnt[x]}</b></button>`).join('')}</div>
       ${lvBar}
-      <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (verde; amarillo = también Scav)', 'Show PMC extracts (green; yellow = also Scav)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label>${ROOMS[baseOf(k)] ? `<label><input type="checkbox" id="roomNames" ${S.roomNames ? 'checked' : ''}> ${tx('Mostrar nombres de las salas', 'Show room names')}</label>` : ''}</div>
+      <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (verde; amarillo = también Scav)', 'Show PMC extracts (green; yellow = also Scav)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label><label><input type="checkbox" id="planOnly" ${S.planAll ? '' : 'checked'}> ${tx('Mostrar solo las misiones de este mapa', 'Show only the quests of this map')}${nHid && !S.planAll ? ` <small style="color:var(--mute)">(${nHid} ${tx(nHid === 1 ? 'oculta' : 'ocultas', 'hidden')})</small>` : ''}</label>${ROOMS[baseOf(k)] ? `<label><input type="checkbox" id="roomNames" ${S.roomNames ? 'checked' : ''}> ${tx('Mostrar nombres de las salas', 'Show room names')}</label>` : ''}</div>
       <div class="pmapbox"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}" data-lv="${lvSel}"><div id="pin"><img id="pimg" alt="" src="${svgCache[svgKey(k, lvSel)] || ''}">${S.roomNames && ROOMS[baseOf(k)] ? roomHtml(k, lvSel, g) : ''}${exs}${dots.join('')}</div></div>
         <div class="pzoom"><button data-act="pzoom" data-d="in" title="Zoom +">+</button><button data-act="pzoom" data-d="out" title="Zoom −">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button></div></div>
       <div id="plabel">${tx('Pulsa un punto de color (cada misión tiene el suyo) o un rombo verde (extracción) para ver qué es. Rueda del ratón = zoom; arrastra para moverte.', 'Click a coloured dot (each quest has its own colour) or a green diamond (extract) to see what it is. Mouse wheel = zoom; drag to move around.')}</div><div id="pphoto"></div><div class="pnote" id="pnote"></div>`;
   }
   // misiones
-  const rows = all.map(t => { const failed = !!S.fail[t.id], done = isDone(t.id), hasPts = t.pts.length > 0;
+  const rows = all.filter(inMap).map(t => { const failed = !!S.fail[t.id], done = isDone(t.id), hasPts = t.pts.length > 0;
     const objs = (t.obj || []).map(o => `<label class="obj ${(S.obj[o.id] || done) ? 'on' : ''}" data-act="noop"><input type="checkbox" data-act="obj" data-id="${esc(o.id)}" ${(S.obj[o.id] || done) ? 'checked' : ''} ${done ? 'disabled' : ''}><span>${esc(o.x || tx('Objetivo sin texto', 'Objective without text'))}${o.op ? ` <span class="b">${tx('opcional', 'optional')}</span>` : ''}</span></label>`).join('');
     const maps = [...new Set(t.pts.map(p => p[0]).concat(t.mps || []))].map(mapName).join(', ') || t.map || tx('cualquier mapa', 'any map');
     return `<div class="prow ${done ? 'done' : ''} ${failed ? 'failed' : ''} ${S.pfocus === t.id ? 'foc' : ''}" ${pcol[t.id] ? `style="--pc:${pcol[t.id]}"` : ''} data-act="pfocus" data-id="${esc(t.id)}"><div class="pt"><span class="pn">${esc(t.name)}</span><button class="rm" data-act="plan" data-id="${esc(t.id)}" title="${tx('Quitar de mi plan', 'Remove from my plan')}">×</button></div>
@@ -2317,7 +2340,7 @@ function planHtml(){
       <div class="pst"><button class="btn sm ${S.done[t.id] ? 'prim' : ''}" data-act="toggledone" data-id="${esc(t.id)}">✓ ${S.done[t.id] ? tx('Completada', 'Completed') : tx('Marcar completada', 'Mark completed')}</button><button class="btn sm ${failed ? 'bad on' : ''}" data-act="togglefail" data-id="${esc(t.id)}">✗ ${failed ? tx('Fallada', 'Failed') : tx('Marcar fallada', 'Mark failed')}</button></div></div>`; }).join('');
   // llaves y objetos
   const keys = new Map(), items = new Map();
-  act.forEach(t => (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it) return;
+  act.filter(inMap).forEach(t => (D.reqs[t.id] || []).forEach(r => { const it = D.items[r.itemId]; if (!it) return;
     if (r.type === 'access') { const a = keys.get(it.id) || { it, q: [] }; a.q.push(t.name); keys.set(it.id, a); }
     else { const a = items.get(it.id) || { it, n: 0, fir: false, q: [] }; a.n += r.count; a.fir = a.fir || r.fir; a.q.push(t.name); items.set(it.id, a); } }));
   const keyHtml = keys.size ? `<h3>${tx('Llaves necesarias', 'Keys needed')} (${keys.size})</h3><ul class="plist">${[...keys.values()].map(a => `<li>${itemLink(a.it)} <small style="color:var(--mute)">— ${esc(a.q.join(', '))}</small></li>`).join('')}</ul>` : '';
@@ -2427,6 +2450,7 @@ document.addEventListener('change', e => {
   else if (t.id === 'tfilter') { S.tfilter = t.value; saveState(); renderList(); }
   else if (t.id === 'extShow') { S.extShow = t.checked; saveState(); renderList(); }
   else if (t.id === 'extNames') { S.extNames = t.checked; saveState(); renderList(); }
+  else if (t.id === 'planOnly') { S.planAll = !t.checked; saveState(); renderList(); }
   else if (t.id === 'roomNames') { S.roomNames = t.checked; saveState(); renderList(); }
   else if (t.id === 'chain') { S.chain = t.checked; saveState(); treeKey = ''; renderList(); }
   else if (t.id === 'acal') { S.acal = t.value; saveState(); renderList(); }
@@ -2503,7 +2527,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 36 · Labs 3 plantas + infectados', 'version 36 · Labs 3 floors + infected');
+  $('#ver').textContent = tx('versión 38 · Mi plan por mapa', 'version 38 · My plan by map');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
