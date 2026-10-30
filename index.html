@@ -1089,11 +1089,40 @@ function applyLang(d){
 
 /* Misiones del juego que tarkov.dev aún no tiene: las ven todos. Si tarkov.dev las añade (mismo nombre), se usan las suyas y estas desaparecen solas. */
 const EXTRA_TASKS = [
-  { id: 'x_fog_of_war', es: 'La Niebla de la Guerra', en: 'Fog of War', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0,
+  { id: 'x_fog_of_war', es: 'La Niebla de la Guerra', en: 'Fog of War', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1,
     obj: ['Explora la posición de los Rogues cerca del vehículo BRDM en la parte norte de la Planta de Tratamiento de Agua', 'Explora el punto de control de los Rogues con una torre de vigilancia en la parte suroeste de la Planta de Tratamiento de Agua', 'Explora el territorio de la Planta de Tratamiento de Agua desde el tejado de cualquiera de los edificios de la planta'],
     objEn: ['Scout the Rogues position near the BRDM vehicle in the northern part of the Water Treatment Plant', 'Scout the Rogues checkpoint with a watchtower in the southwestern part of the Water Treatment Plant', 'Scout the Water Treatment Plant territory from the roof of any of the plant buildings'] },
-  { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0,
+  { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0, ev: 1, req: ['c_hidden_route'],
     obj: ['Survive and extract from The Lab'], objEn: ['Survive and extract from The Lab'] },
+
+  /* Cadena nueva de Lighthouse (wiki oficial, septiembre 2026) */
+  { id: 'x_lh_number', es: 'Número temporalmente no disponible', en: 'Number Temporarily Unavailable', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_fog_of_war'],
+    obj: ['Guarda 3 componentes electrónicos en el nuevo campamento de Prapor en Lighthouse', 'Guarda 1 cable militar en el nuevo campamento de Prapor en Lighthouse', 'Guarda 3 condensadores en el nuevo campamento de Prapor en Lighthouse'], objEn: ["Stash 3 Electronic components at Prapor's new camp on Lighthouse", "Stash a Military cable at Prapor's new camp on Lighthouse", "Stash 3 Capacitors at Prapor's new camp on Lighthouse"] },
+  { id: 'x_lh_allinclusive', es: 'Apoyo con todo incluido', en: 'All-Inclusive Support', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_number'],
+    obj: ['Elimina a 15 objetivos cualesquiera en Lighthouse', 'Lanza una bengala de señales roja en la cabaña abandonada del lago de montaña en Lighthouse', 'Usa la transición de Lighthouse a Reserve'], objEn: ['Eliminate any 15 targets on Lighthouse', 'Launch a red signal flare at the abandoned mountain lake cabin on Lighthouse', 'Use the transit from Lighthouse to Reserve'] },
+  { id: 'x_lh_familiar', es: 'Un Rostro Familiar...', en: 'A Familiar Face...', trader: 'skier', traderName: 'Skier', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_allinclusive'],
+    obj: ['Sal de Lighthouse por el Tren Blindado (Armored Train) llevando puesto un chaleco balístico Kirasa-N o NFM THOR CRV'], objEn: ['Extract from Lighthouse through the Armored Train while wearing a Kirasa-N or NFM THOR CRV body armor'] },
+  { id: 'x_lh_scope', es: 'Inspeccionar el claro', en: 'Scope the Clearing', trader: 'skier', traderName: 'Skier', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_familiar'],
+    obj: ['Coloca la primera cámara Wi-Fi en la plataforma del tren de los contrabandistas en Lighthouse', 'Coloca la segunda cámara Wi-Fi en la plataforma del tren de los contrabandistas en Lighthouse', 'Coloca la tercera cámara Wi-Fi en la transición a Woods en Lighthouse'], objEn: ['Plant the first Wi-Fi Camera at the smuggler train platform on Lighthouse', 'Plant the second Wi-Fi Camera at the smuggler train platform on Lighthouse', 'Plant the third Wi-Fi Camera at the Woods transit on Lighthouse'] },
+  { id: 'x_lh_tail', es: 'Despistar al perseguidor', en: 'Lose the Tail', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_allinclusive'],
+    obj: ['Elimina a 5 guardias de Glukhar en Lighthouse', 'Localiza y neutraliza a Glukhar en Lighthouse'], objEn: ["Eliminate 5 of Glukhar's guards on Lighthouse", 'Locate and neutralize Glukhar on Lighthouse'] },
+  { id: 'x_lh_malachite', es: 'Indicativo Malachite', en: 'Callsign Malachite', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_tail'],
+    obj: ['Localiza y consigue el expediente personal del operativo BEAR en Lighthouse', 'Entrega la información encontrada'], objEn: ["Locate and obtain the BEAR operative's personnel file on Lighthouse", 'Hand over the found intel'], opt: [[0, "Lee el expediente personal de S.I. Tretyakov", "Read S.I. Tretyakov's personnel file"]] },
+  { id: 'x_lh_ease', es: 'Facilitar la mudanza', en: 'Ease the Move', trader: 'peacekeeper', traderName: 'Peacekeeper', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_malachite'],
+    obj: ['Localiza y marca el primer alijo de los Rogues en el pueblo abandonado de la isla con un marcador MS2000 en Lighthouse', 'Localiza y marca el segundo alijo de los Rogues en el pueblo abandonado de la isla con un marcador MS2000 en Lighthouse', 'Localiza y marca el alijo de los Rogues en la gruta con un marcador MS2000 en Lighthouse'], objEn: ['Locate and mark the first Rogue stash at the abandoned island village with an MS2000 Marker on Lighthouse', 'Locate and mark the second Rogue stash at the abandoned island village with an MS2000 Marker on Lighthouse', 'Locate and mark the Rogue stash at the grotto with an MS2000 Marker on Lighthouse'] },
+  { id: 'x_lh_cutroot', es: 'Cortar de raíz', en: 'Cut Down to the Root', trader: 'jaeger', traderName: 'Jaeger', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_malachite'],
+    obj: ['Elimina a 15 Rogues en Lighthouse'], objEn: ['Eliminate 15 Rogues on Lighthouse'] },
+  { id: 'x_lh_preserve', es: 'Conservar una pieza valiosa', en: 'Preserve a Valuable Piece', trader: 'lightkeeper', traderName: 'Lightkeeper', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_malachite'],
+    obj: ['Elimina a 7 operativos PMC en Lighthouse'], objEn: ['Eliminate 7 PMC operatives on Lighthouse'] },
+  /* Cadena nueva de The Lab con Therapist (wiki oficial, octubre 2026) */
+  { id: 'x_lab_extend', es: 'Ampliar la operación', en: 'Extending the Operation', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0, ev: 1, req: ['x_simple_task_difficult_place'],
+    obj: ['Elimina a 6 objetivos cualesquiera en The Lab'], objEn: ['Eliminate any 6 targets in The Lab'] },
+  { id: 'x_lab_info', es: 'Rastro de información', en: 'Information Trail', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0, ev: 1, req: ['x_lab_extend'],
+    obj: ['Consigue la información de Scourge', 'Sobrevive y sal de The Lab', 'Entrega el objeto encontrado'], objEn: ['Obtain the intel from Scourge', 'Survive and extract from The Lab', 'Hand over the found item'] },
+  { id: 'x_lab_hustle', es: 'Trabajo extra', en: 'Side Hustle', trader: 'therapist', traderName: 'Therapist', map: 'The Lab, Streets of Tarkov', mk: 'the-lab', lvl: 0, ev: 1, req: ['x_lab_info'],
+    obj: ['Elimina a 3 gladiadores de Ref en The Lab', 'Localiza y consigue los precursores', 'Entrega el objeto encontrado'], objEn: ["Eliminate 3 of Ref's gladiators in The Lab", 'Locate and obtain the precursors', 'Hand over the found item'], opt: [[1, 'Busca una caja o un contenedor con precursores', 'Find a case or a box containing precursors']] },
+  { id: 'x_gz_doxed', es: 'Datos expuestos', en: 'Doxed', trader: 'mechanic', traderName: 'Mechanic', map: 'Ground Zero', mk: 'ground-zero', lvl: 0, ev: 1, req: ['x_lab_hustle'],
+    obj: ['Localiza el SSD con las rutas de entrega en Ground Zero', 'Entrega la información encontrada'], objEn: ['Locate the SSD with delivery routes on Ground Zero', 'Hand over the found intel'] },
 
   /* Evento de Halloween (wiki oficial): cadena de Skier y Therapist en los mapas infectados */
   { id: 'x_h_rumors', es: 'Halloween: Rumores', en: 'Halloween: Rumors', trader: 'skier', traderName: 'Skier', map: 'Infected Factory', lvl: 0, ev: 1,
@@ -2527,7 +2556,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 38 · Mi plan por mapa', 'version 38 · My plan by map');
+  $('#ver').textContent = tx('versión 39 · Quests nuevas', 'version 39 · New quests');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
