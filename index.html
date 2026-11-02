@@ -152,7 +152,7 @@ footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:v
 .edges path.done{stroke:#537599;opacity:.9}
 .edges path.go{stroke:var(--acc);opacity:1}
 .edges path.virt{stroke-dasharray:7 5}
-#ptiles{position:absolute;inset:0;pointer-events:none}#ptiles img{position:absolute;display:block;user-select:none}
+#ptiles{position:absolute;inset:0;overflow:hidden;pointer-events:none}.ptl{position:absolute}#ptiles img{position:absolute;display:block;user-select:none}
 #pimg:not([src]),#pimg[src='']{display:none}
 .node{position:absolute;width:300px;height:88px;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;background:linear-gradient(180deg,#1f262d,#15191e);border:1px solid #35414d;border-radius:12px;cursor:pointer;box-shadow:0 3px 10px #0009;transition:border-color .15s,transform .15s,opacity .15s}
 .node:hover{border-color:var(--acc2);transform:translateY(-1px)}
@@ -639,15 +639,15 @@ const STORY = [
 ];
 /* Mapas (límites, rotación y capa tomados del mapa interactivo de tarkov.dev) */
 const MAPS = {
-  customs: { ids: ['56f40101d2720b2a4d8b45d6'], rot: 180, b: [[698, -307], [-372, 237]], svg: 'Customs', layer: 'Ground_Level', es: 'Customs', en: 'Customs' },
-  factory: { ids: ['55f2d3fd4bdc2d5f408b4567', '59fc81d786f774390775787e'], rot: 90, b: [[77, -64.5], [-65.5, 67.4]], svg: 'Factory', layer: 'Ground_Floor', es: 'Factory', en: 'Factory' },
-  woods: { ids: ['5704e3c2d2720bac5b8b4567'], rot: 180, b: [[646, -914], [-761, 442]], svg: 'Woods', layer: 'Ground_Level', es: 'Woods', en: 'Woods' },
-  shoreline: { ids: ['5704e554d2720bac5b8b456e'], rot: 180, b: [[504, -415], [-1056, 618]], svg: 'Shoreline', layer: 'Ground_Level', es: 'Shoreline', en: 'Shoreline' },
-  reserve: { ids: ['5704e5fad2720bc05b8b4567'], rot: 180, b: [[289, -274], [-303, 272]], svg: 'Reserve', layer: 'Ground_Level', es: 'Reserve', en: 'Reserve' },
+  customs: { ids: ['56f40101d2720b2a4d8b45d6'], rot: 180, b: [[698, -307], [-372, 237]], tiles: 'customs_0.16/main', tf: [0.239, 168.65, 0.239, 136.35], svg: 'Customs', layer: 'Ground_Level', es: 'Customs', en: 'Customs' },
+  factory: { ids: ['55f2d3fd4bdc2d5f408b4567', '59fc81d786f774390775787e'], rot: 90, b: [[77, -64.5], [-65.5, 67.4]], tiles: 'factory/main', tf: [1.629, 119.9, 1.629, 139.3], svg: 'Factory', layer: 'Ground_Floor', es: 'Factory', en: 'Factory' },
+  woods: { ids: ['5704e3c2d2720bac5b8b4567'], rot: 180, b: [[646, -914], [-761, 442]], tiles: 'woods/main_0.16', tf: [0.1855, 112.95, 0.1855, 167.85], svg: 'Woods', layer: 'Ground_Level', es: 'Woods', en: 'Woods' },
+  shoreline: { ids: ['5704e554d2720bac5b8b456e'], rot: 180, b: [[504, -415], [-1056, 618]], tiles: 'shoreline/main_summer', tf: [0.16, 83.2, 0.16, 111.1], svg: 'Shoreline', layer: 'Ground_Level', es: 'Shoreline', en: 'Shoreline' },
+  reserve: { ids: ['5704e5fad2720bc05b8b4567'], rot: 180, b: [[289, -293], [-303, 244]], tiles: 'reserve/main', tf: [0.395, 122.0, 0.395, 137.65], svg: 'Reserve', layer: 'Ground_Level', es: 'Reserve', en: 'Reserve' },
   lighthouse: { ids: ['5704e4dad2720bb55b8b4567'], rot: 180, b: [[515, -998], [-545, 725]], svg: 'Lighthouse', layer: 'Ground_Level', es: 'Lighthouse', en: 'Lighthouse' },
-  interchange: { ids: ['5714dbc024597771384a510d'], rot: 180, b: [[598, -442], [-433, 426]], svg: 'Interchange', layer: 'Ground_Level', es: 'Interchange', en: 'Interchange' },
+  interchange: { ids: ['5714dbc024597771384a510d'], rot: 180, b: [[598, -442], [-433, 426]], tiles: 'interchange/main', tf: [0.265, 150.6, 0.265, 134.6], svg: 'Interchange', layer: 'Ground_Level', es: 'Interchange', en: 'Interchange' },
   streets: { ids: ['5714dc692459777137212e12'], rot: 180, b: [[323, -295], [-280, 532]], svg: 'StreetsOfTarkov', layer: 'Ground_Level', es: 'Streets of Tarkov', en: 'Streets of Tarkov' },
-  'ground-zero': { ids: ['653e6760052c01c1c805532f', '65b8d6f5cdde2479cb2a3125'], rot: 180, b: [[249, -124], [-99, 364]], svg: 'GroundZero', layer: 'Ground_Level', es: 'Ground Zero', en: 'Ground Zero' },
+  'ground-zero': { ids: ['653e6760052c01c1c805532f', '65b8d6f5cdde2479cb2a3125'], rot: 180, b: [[249, -124], [-99, 364]], tiles: 'groundzero/main_summer', tf: [0.524, 167.3, 0.524, 65.1], svg: 'GroundZero', layer: 'Ground_Level', es: 'Ground Zero', en: 'Ground Zero' },
   'the-lab': { ids: ['5b0fc42d86f7744a585f9105'], rot: 270, b: [[-80, -477], [-287, -193]], svg: '', layer: '', tiles: 'labs_v4/1st', tz: 3, ts: 175, tf: [0.575, 281.2, 0.575, 193.7], es: 'The Lab', en: 'The Lab' },
   labyrinth: { ids: ['6733700029c367a3d40b02af'], rot: 270, b: [[-52, -37], [53, 76]], tiles: 'labyrinth/main', tf: [2.115, 85.5, 2.115, 128], svg: '', layer: '', es: 'The Labyrinth', en: 'The Labyrinth' },
   icebreaker: { ids: ['69af492a4819ea4ba10a69c5'], rot: 180, b: [[77, -64.5], [-65.5, 67.4]], svg: '', layer: '', es: 'Icebreaker', en: 'Icebreaker' },
@@ -2204,15 +2204,15 @@ const svgKey = (k, lv) => k + '|' + (lv || '');
 const BX = (...a) => a;
 const LV = {
   customs: [
-    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[2.7,6.5,[[243,190],[165,125]]],[2.7,6.5,[[116,-83],[72,-170]]],[2.7,6.5,[[356,-30],[341,-84]]],[2.7,6.5,[[334,-52],[321,-59]]],[2.7,6.5,[[589,10],[577,-1]]],[2.7,6.5,[[580,-104],[532,-134]]],[2.7,6.5,[[625,-120],[599,-139]]],[5.7,1000,[[580,-104],[532,-134]]],[5.7,1000,[[-199,-90],[-223,-131]]],[5.7,1000,[[239,3],[169,-160]]],[5.7,1000,[[336,-56],[316,-95]]],[5.7,1000,[[584,-46],[556,-92]]],[5.7,1000,[[93,0],[65,-22]]],[14,15,[[497,-44],[450,-90]]],[3.9,7.6,[[73,57],[22,-38]]],[4.4,6.5,[[119,-57],[100,-42]]],[4.6,7.9,[[279,-79],[246,-1.4]]]] },
-    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[5.7,1000,[[243,190],[165,125]]],[7.7,11.3,[[73,-73],[22,-38]]],[6.7,11.6,[[126,-64],[88,-35]]],[8,11.1,[[279,-79],[246,-1.4]]]] },
-    { id: 'f4', svg: null, es: '4ª planta', en: '4th floor', ex: [[11.2,54.7,[[279,-79],[246,-1.4]]]] },
-    { id: 'u', svg: 'Underground_Level', es: 'Subterráneo', en: 'Underground', ex: [[-1000,0.5,[[635,-137],[620,-125]]],[-1000,0.5,[[473,-122],[458,-110]]],[-1000,0.5,[[314,-173],[308,-184]]],[-1000,0.5,[[349,-88],[323,-32]]],[-1000,0.5,[[219,-158],[193,-137]]],[-1000,0.5,[[122,-61],[88,-40]]]] },
+    { id: 'f2', tiles: 'customs_0.16/2nd', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[2.7,6.5,[[243,190],[165,125]]],[2.7,6.5,[[116,-83],[72,-170]]],[2.7,6.5,[[356,-30],[341,-84]]],[2.7,6.5,[[334,-52],[321,-59]]],[2.7,6.5,[[589,10],[577,-1]]],[2.7,6.5,[[580,-104],[532,-134]]],[2.7,6.5,[[625,-120],[599,-139]]],[5.7,1000,[[580,-104],[532,-134]]],[5.7,1000,[[-199,-90],[-223,-131]]],[5.7,1000,[[239,3],[169,-160]]],[5.7,1000,[[336,-56],[316,-95]]],[5.7,1000,[[584,-46],[556,-92]]],[5.7,1000,[[93,0],[65,-22]]],[14,15,[[497,-44],[450,-90]]],[3.9,7.6,[[73,57],[22,-38]]],[4.4,6.5,[[119,-57],[100,-42]]],[4.6,7.9,[[279,-79],[246,-1.4]]]] },
+    { id: 'f3', tiles: 'customs_0.16/3rd', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[5.7,1000,[[243,190],[165,125]]],[7.7,11.3,[[73,-73],[22,-38]]],[6.7,11.6,[[126,-64],[88,-35]]],[8,11.1,[[279,-79],[246,-1.4]]]] },
+    { id: 'f4', tiles: 'customs_0.16/4th', svg: null, es: '4ª planta', en: '4th floor', ex: [[11.2,54.7,[[279,-79],[246,-1.4]]]] },
+    { id: 'u', tiles: 'customs_0.16/underground', svg: 'Underground_Level', es: 'Subterráneo', en: 'Underground', ex: [[-1000,0.5,[[635,-137],[620,-125]]],[-1000,0.5,[[473,-122],[458,-110]]],[-1000,0.5,[[314,-173],[308,-184]]],[-1000,0.5,[[349,-88],[323,-32]]],[-1000,0.5,[[219,-158],[193,-137]]],[-1000,0.5,[[122,-61],[88,-40]]]] },
   ],
   factory: [
-    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[3,6,null]] },
-    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[6,10000,null]] },
-    { id: 'u', svg: 'Basement', es: 'Túneles', en: 'Tunnels', ex: [[-10000,-1,null]] },
+    { id: 'f2', tiles: 'factory/2nd', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[3,6,null]] },
+    { id: 'f3', tiles: 'factory/3rd', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[6,10000,null]] },
+    { id: 'u', tiles: 'factory/tunnels', svg: 'Basement', es: 'Túneles', en: 'Tunnels', ex: [[-10000,-1,null]] },
   ],
   shoreline: [
     { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[-1,2,null]] },
@@ -2220,11 +2220,11 @@ const LV = {
     { id: 'u', svg: 'Underground_Level', es: 'Subterráneo', en: 'Underground', ex: [[-1000,-5,[[-137,-68],[-237,-104]]],[-1000,-5,[[-234,-134],[-268,-163]]]] },
   ],
   reserve: [
-    { id: 'f2', svg: null, es: '2ª planta', en: '2nd floor', ex: [[22.1,25.7,[[1,164],[-17,199]]],[-3.5,-0.64,[[-77,26],[-177,106]]],[-3.5,-0.64,[[62,59],[51,108]]],[-3.5,-0.64,[[-104,-37],[-177,5]]],[-3.9,-0.6,[[-47,-47],[-85,-18]]],[-4.3,-2.2,[[-19.91,-13],[-78,39]]],[-3.8,-1.1,[[99,-50],[-2,7]]],[-1.9,11.3,[[191,-175],[137,-120]]],[1,8,[[-109,-156],[-119,-147]]],[1,8,[[289,-92],[299,-82]]],[1,8,[[3,-210],[-7,-200]]],[1,8,[[195,-260],[185,-250]]],[1,8,[[276,17],[266,27]]],[-4.1,-1.2,[[-128,-139],[-146,-120]]]] },
-    { id: 'f3', svg: null, es: '3ª planta', en: '3rd floor', ex: [[25.7,29.3,[[1,164],[-17,199]]],[-0.64,2.23,[[-77,26],[-177,106]]],[-0.64,2.23,[[-104,-37],[-177,5]]],[-0.6,10,[[-47,-47],[-85,-18]]],[-2.2,2.14,[[-19.91,-13],[-78,39]]],[-1.1,1.6,[[99,-50],[-2,7]]]] },
-    { id: 'f4', svg: null, es: '4ª planta', en: '4th floor', ex: [[29.3,36,[[1,164],[-17,199]]],[2.23,5,[[-77,26],[-177,106]]],[2.15,6.6,[[-19.91,-13],[-78,39]]],[1.6,4.7,[[99,-50],[-2,7]]]] },
-    { id: 'f5', svg: null, es: '5ª planta', en: '5th floor', ex: [[5,9.5,[[-77,26],[-177,106]]]] },
-    { id: 'u', svg: 'Bunkers', es: 'Bunkers', en: 'Bunkers', ex: [[-10000,-7.27,[[128,-208],[18,-33]]],[-10000,-7.27,[[-46,-42],[-176,127]]],[-10000,-12,[[-40,124],[-124,189]]],[-10000,18,[[23,173],[-65,189]]],[-7.27,-3.2,[[74,-196],[19,-149]]],[-11,-4.6,[[-246,-79],[-274,-53]]],[-11,-4.6,[[238,-26],[126,45]]]] },
+    { id: 'f2', tiles: 'reserve/2nd', svg: null, es: '2ª planta', en: '2nd floor', ex: [[22.1,25.7,[[1,164],[-17,199]]],[-3.5,-0.64,[[-77,26],[-177,106]]],[-3.5,-0.64,[[62,59],[51,108]]],[-3.5,-0.64,[[-104,-37],[-177,5]]],[-3.9,-0.6,[[-47,-47],[-85,-18]]],[-4.3,-2.2,[[-19.91,-13],[-78,39]]],[-3.8,-1.1,[[99,-50],[-2,7]]],[-1.9,11.3,[[191,-175],[137,-120]]],[1,8,[[-109,-156],[-119,-147]]],[1,8,[[289,-92],[299,-82]]],[1,8,[[3,-210],[-7,-200]]],[1,8,[[195,-260],[185,-250]]],[1,8,[[276,17],[266,27]]],[-4.1,-1.2,[[-128,-139],[-146,-120]]]] },
+    { id: 'f3', tiles: 'reserve/3rd', svg: null, es: '3ª planta', en: '3rd floor', ex: [[25.7,29.3,[[1,164],[-17,199]]],[-0.64,2.23,[[-77,26],[-177,106]]],[-0.64,2.23,[[-104,-37],[-177,5]]],[-0.6,10,[[-47,-47],[-85,-18]]],[-2.2,2.14,[[-19.91,-13],[-78,39]]],[-1.1,1.6,[[99,-50],[-2,7]]]] },
+    { id: 'f4', tiles: 'reserve/4th', svg: null, es: '4ª planta', en: '4th floor', ex: [[29.3,36,[[1,164],[-17,199]]],[2.23,5,[[-77,26],[-177,106]]],[2.15,6.6,[[-19.91,-13],[-78,39]]],[1.6,4.7,[[99,-50],[-2,7]]]] },
+    { id: 'f5', tiles: 'reserve/5th', svg: null, es: '5ª planta', en: '5th floor', ex: [[5,9.5,[[-77,26],[-177,106]]]] },
+    { id: 'u', tiles: 'reserve/bunkers', svg: 'Bunkers', es: 'Bunkers', en: 'Bunkers', ex: [[-10000,-7.27,[[128,-208],[18,-33]]],[-10000,-7.27,[[-46,-42],[-176,127]]],[-10000,-12,[[-40,124],[-124,189]]],[-10000,18,[[23,173],[-65,189]]],[-7.27,-3.2,[[74,-196],[19,-149]]],[-11,-4.6,[[-246,-79],[-274,-53]]],[-11,-4.6,[[238,-26],[126,45]]]] },
   ],
   interchange: [
     { id: 'f2', svg: 'First_Floor', es: '2ª planta', en: '2nd floor', ex: [[25,34,[[120,218],[-222,-327]]]] },
@@ -2238,9 +2238,9 @@ const LV = {
     { id: 'u', svg: 'Underground_Level', es: 'Subterráneo', en: 'Underground', ex: [[-10000,-6,null]] },
   ],
   'ground-zero': [
-    { id: 'f2', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[28,32.3,null],[26,31,[[98,216],[91,228]]]] },
-    { id: 'f3', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[32.3,1000,null]] },
-    { id: 'u', svg: 'Underground_Level', es: 'Garage', en: 'Garage', ex: [[-1000,21,[[117,-100],[43,190]]],[-1000,21,[[143,49],[117,80]]]] },
+    { id: 'f2', tiles: 'groundzero/2nd', svg: 'Second_Floor', es: '2ª planta', en: '2nd floor', ex: [[28,32.3,null],[26,31,[[98,216],[91,228]]]] },
+    { id: 'f3', tiles: 'groundzero/3rd', svg: 'Third_Floor', es: '3ª planta', en: '3rd floor', ex: [[32.3,1000,null]] },
+    { id: 'u', tiles: 'groundzero/garage', svg: 'Underground_Level', es: 'Garage', en: 'Garage', ex: [[-1000,21,[[117,-100],[43,190]]],[-1000,21,[[143,49],[117,80]]]] },
   ],
   'the-lab': [
     { id: 'f2', svg: 'Second_Level', tiles: 'labs_v4/2nd', es: '2ª planta', en: '2nd floor', ex: [[3,10000,[[-101,-422],[-271,-270]]]] },
@@ -2270,15 +2270,22 @@ function roomHtml(k, lv, g){
 let PV = { key: null, z: 1, x: 0, y: 0 };
 function mapGeo(k){
   if (geoCache[k]) return geoCache[k];
-  const m = MAPS[k]; if (m.tf) return (geoCache[k] = { ar: 1, uv: (x, z) => [(m.tf[0] * z + m.tf[1]) / (m.ts || 256), (m.tf[2] * x + m.tf[3]) / (m.ts || 256)] });
-  const th = m.rot * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
+  const m = MAPS[k], th = m.rot * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
   const pr = (x, z) => { const lat = z, lng = x; return [lng * c - lat * s, -(lat * c + lng * s)]; };
+  if (m.tf) {
+    const ts = m.ts || 256, raw = (x, z) => { const q = pr(x, z); return [(m.tf[0] * q[0] + m.tf[1]) / ts, (m.tf[2] * q[1] + m.tf[3]) / ts]; };
+    const A = raw(m.b[0][0], m.b[0][1]), B = raw(m.b[1][0], m.b[1][1]);
+    let u0 = Math.min(A[0], B[0]), u1 = Math.max(A[0], B[0]), v0 = Math.min(A[1], B[1]), v1 = Math.max(A[1], B[1]);
+    const pu = (u1 - u0) * 0.02, pv = (v1 - v0) * 0.02; u0 -= pu; u1 += pu; v0 -= pv; v1 += pv;
+    const du = u1 - u0, dv = v1 - v0;
+    return (geoCache[k] = { ar: du / dv, crop: { u0: u0, v0: v0, du: du, dv: dv }, uv: (x, z) => { const q = raw(x, z); return [(q[0] - u0) / du, (q[1] - v0) / dv]; } });
+  }
   const a = pr(m.b[0][0], m.b[0][1]), b = pr(m.b[1][0], m.b[1][1]);
   const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
   return (geoCache[k] = { ar: (x1 - x0) / (y1 - y0), uv: (x, z) => { const q = pr(x, z); return [(q[0] - x0) / (x1 - x0), (q[1] - y0) / (y1 - y0)]; } });
 }
 async function mapSvgUrl(k, lv){
-  const m = MAPS[k]; if (!m.svg) return null; const ck = svgKey(k, lv); if (svgCache[ck] !== undefined) return svgCache[ck];
+  const m = MAPS[k]; if (!m.svg || m.tiles) return null; const ck = svgKey(k, lv); if (svgCache[ck] !== undefined) return svgCache[ck];
   const LL = lv && (LV[k] || []).find(l => l.id === lv), want = LL && LL.svg;
   try {
     const emb = document.getElementById('svg-' + m.svg.toLowerCase()); let txt;
@@ -2307,7 +2314,14 @@ async function drawPlanMap(){
   const url = await mapSvgUrl(k, lv); const img = $('#pimg'), note = $('#pnote');
   if (!$('#pmap') || $('#pmap').dataset.map !== k || ($('#pmap').dataset.lv || '') !== lv) return;
   if (url && img) img.src = url;
-  if (MAPS[k].tiles && inner) { const tl = (LL && LL.tiles) || MAPS[k].tiles, Zt = MAPS[k].tz || 3, N = 1 << Zt, old = $('#ptiles'); if (!old || old.dataset.t !== tl) { if (old) old.remove(); let h = `<div id="ptiles" data-t="${tl}">`; for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) h += `<img alt="" loading="lazy" onerror="this.style.display='none'" src="https://assets.tarkov.dev/maps/${tl}/${Zt}/${x}/${y}.png" style="left:${x * 100 / N}%;top:${y * 100 / N}%;width:${100 / N + 0.15}%;height:${100 / N + 0.15}%">`; inner.insertAdjacentHTML('afterbegin', h + '</div>'); } }
+  if (MAPS[k].tiles && inner) {
+    const base = MAPS[k].tiles, ft = LL && LL.tiles, key = base + '|' + (ft || ''), old = $('#ptiles');
+    if (!old || old.dataset.t !== key) {
+      if (old) old.remove();
+      const cr = g.crop, Zt = MAPS[k].tz || 3, N = 1 << Zt, layer = (dir, op) => { let h = `<div class="ptl" style="opacity:${op};left:${(-cr.u0 / cr.du * 100).toFixed(3)}%;top:${(-cr.v0 / cr.dv * 100).toFixed(3)}%;width:${(100 / cr.du).toFixed(3)}%;height:${(100 / cr.dv).toFixed(3)}%">`; for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) h += `<img alt="" loading="lazy" onerror="this.style.display='none'" src="https://assets.tarkov.dev/maps/${dir}/${Zt}/${x}/${y}.png" style="left:${x * 100 / N}%;top:${y * 100 / N}%;width:${100 / N + 0.15}%;height:${100 / N + 0.15}%">`; return h + '</div>'; };
+      inner.insertAdjacentHTML('afterbegin', `<div id="ptiles" data-t="${key}">` + layer(base, ft ? 0.4 : 1) + (ft ? layer(ft, 1) : '') + '</div>');
+    }
+  }
   if (note) note.textContent = MAPS[k].tiles ? '' : url ? (LL && (!LL.svg || svgCache['miss|' + svgKey(k, lv)]) ? tx('Esta planta no tiene dibujo propio: se ve el mapa base y se resaltan sus puntos.', 'This floor has no drawing of its own: the base map is shown and its points are highlighted.') : '') : (MAPS[k].svg ? tx('No se pudo cargar la imagen del mapa: solo se ven los puntos.', 'Could not load the map image: only the points are shown.') : tx('Para este mapa no hay imagen: solo se ven los puntos.', 'There is no image for this map: only the points are shown.'));
 }
 function fitPlan(){
@@ -2614,7 +2628,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 44 · Hacer las paces + Conocerse', 'version 44 · Make Amends + Getting Acquainted');
+  $('#ver').textContent = tx('versión 45 · Mapas con imagen satélite', 'version 45 · Satellite-style maps');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
