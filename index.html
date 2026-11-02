@@ -152,6 +152,7 @@ footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;font-size:12px;color:v
 .edges path.done{stroke:#537599;opacity:.9}
 .edges path.go{stroke:var(--acc);opacity:1}
 .edges path.virt{stroke-dasharray:7 5}
+#ptiles{position:absolute;inset:0;pointer-events:none}#ptiles img{position:absolute;display:block;user-select:none}
 #pimg:not([src]),#pimg[src='']{display:none}
 .node{position:absolute;width:300px;height:88px;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;background:linear-gradient(180deg,#1f262d,#15191e);border:1px solid #35414d;border-radius:12px;cursor:pointer;box-shadow:0 3px 10px #0009;transition:border-color .15s,transform .15s,opacity .15s}
 .node:hover{border-color:var(--acc2);transform:translateY(-1px)}
@@ -642,13 +643,13 @@ const MAPS = {
   factory: { ids: ['55f2d3fd4bdc2d5f408b4567', '59fc81d786f774390775787e'], rot: 90, b: [[77, -64.5], [-65.5, 67.4]], svg: 'Factory', layer: 'Ground_Floor', es: 'Factory', en: 'Factory' },
   woods: { ids: ['5704e3c2d2720bac5b8b4567'], rot: 180, b: [[646, -914], [-761, 442]], svg: 'Woods', layer: 'Ground_Level', es: 'Woods', en: 'Woods' },
   shoreline: { ids: ['5704e554d2720bac5b8b456e'], rot: 180, b: [[504, -415], [-1056, 618]], svg: 'Shoreline', layer: 'Ground_Level', es: 'Shoreline', en: 'Shoreline' },
-  reserve: { ids: ['5704e5fad2720bc05b8b4567'], rot: 180, b: [[289, -293], [-303, 244]], svg: 'Reserve', layer: 'Ground_Level', es: 'Reserve', en: 'Reserve' },
+  reserve: { ids: ['5704e5fad2720bc05b8b4567'], rot: 180, b: [[289, -274], [-303, 272]], svg: 'Reserve', layer: 'Ground_Level', es: 'Reserve', en: 'Reserve' },
   lighthouse: { ids: ['5704e4dad2720bb55b8b4567'], rot: 180, b: [[515, -998], [-545, 725]], svg: 'Lighthouse', layer: 'Ground_Level', es: 'Lighthouse', en: 'Lighthouse' },
   interchange: { ids: ['5714dbc024597771384a510d'], rot: 180, b: [[598, -442], [-433, 426]], svg: 'Interchange', layer: 'Ground_Level', es: 'Interchange', en: 'Interchange' },
   streets: { ids: ['5714dc692459777137212e12'], rot: 180, b: [[323, -295], [-280, 532]], svg: 'StreetsOfTarkov', layer: 'Ground_Level', es: 'Streets of Tarkov', en: 'Streets of Tarkov' },
   'ground-zero': { ids: ['653e6760052c01c1c805532f', '65b8d6f5cdde2479cb2a3125'], rot: 180, b: [[249, -124], [-99, 364]], svg: 'GroundZero', layer: 'Ground_Level', es: 'Ground Zero', en: 'Ground Zero' },
   'the-lab': { ids: ['5b0fc42d86f7744a585f9105'], rot: 270, b: [[-80, -477], [-287, -193]], svg: 'Labs', layer: 'First_Level', solo: 1, es: 'The Lab', en: 'The Lab' },
-  labyrinth: { ids: ['6733700029c367a3d40b02af'], rot: 180, b: [[60, -60], [-60, 60]], svg: '', layer: '', es: 'The Labyrinth', en: 'The Labyrinth' },
+  labyrinth: { ids: ['6733700029c367a3d40b02af'], rot: 270, b: [[-52, -37], [53, 76]], tiles: 'labyrinth/main', tf: [2.115, 85.5, 2.115, 128], svg: '', layer: '', es: 'The Labyrinth', en: 'The Labyrinth' },
   icebreaker: { ids: ['69af492a4819ea4ba10a69c5'], rot: 180, b: [[77, -64.5], [-65.5, 67.4]], svg: '', layer: '', es: 'Icebreaker', en: 'Icebreaker' },
 };
 const MAPKEY = {}; Object.entries(MAPS).forEach(([k, m]) => m.ids.forEach(id => { MAPKEY[id] = k; }));
@@ -1095,6 +1096,37 @@ const EXTRA_TASKS = [
   { id: 'x_simple_task_difficult_place', es: 'A Simple Task in a Difficult Place', en: 'A Simple Task in a Difficult Place', trader: 'therapist', traderName: 'Therapist', map: 'The Lab', mk: 'the-lab', lvl: 0, ev: 1, req: ['c_hidden_route'],
     obj: ['Survive and extract from The Lab'], objEn: ['Survive and extract from The Lab'] },
 
+  { id: 'x_ttl_trust', es: 'Hacia la Luz - Confía pero Verifica', en: 'To the Light - Trust but Verify', trader: 'mechanic', traderName: 'Mechanic', map: 'The Lab', mk: 'the-lab', lvl: 0,
+    obj: ['Esconde el Disco duro con información falsa en la sala de servidores cerca del área de pruebas de armas en The Lab (en una sola incursión)'], objEn: ['Stash the Hard drive with false data in the server room near the weapon testing area in The Lab (in one raid)'],
+    opt: [[0, 'Tras esconder el disco duro, extrae por el Conducto de Ventilación (Ventilation Shaft) para completar la misión', 'After stashing the hard drive, extract through the Ventilation Shaft to complete the quest']] },
+  /* Cadena "To the Light" de Mechanic y misiones del BTR Driver / Ragman que tarkov.dev aún no tiene (wiki oficial) */
+  { id: 'x_ttl_false', es: 'Hacia la Luz - Falsa Llamada', en: 'To the Light - False Call', trader: 'mechanic', traderName: 'Mechanic', map: 'Customs', mk: 'customs', lvl: 0, req: ['x_ttl_trust'],
+    obj: ['Elimina a 5 Scavs entre las 21:00 y las 06:00 en Customs (en una sola incursión)', 'Elimina a 1 operativo PMC entre las 21:00 y las 06:00 en Customs (en una sola incursión)', 'Esconde una cámara Wi-Fi en la unidad de aire acondicionado de la tienda cerca del puente en Customs (en una sola incursión)', 'Lanza una bengala de señales amarilla en la transición a Shoreline en Customs (en una sola incursión)'],
+    objEn: ['Eliminate 5 Scavs during 21:00-06:00 on Customs (in one raid)', 'Eliminate 1 PMC operative during 21:00-06:00 on Customs (in one raid)', 'Hide a Wi-Fi camera at the AC unit at the convenience store near the bridge on Customs (in one raid)', 'Launch a yellow signal flare at the Shoreline transit on Customs (in one raid)'] },
+  { id: 'x_ttl_someone', es: 'Hacia la Luz - ¿Alguien llamó?', en: 'To the Light - Someone Called?', trader: 'mechanic', traderName: 'Mechanic', map: 'Customs', mk: 'customs', lvl: 0, req: ['x_ttl_false'],
+    obj: ['Vuelve al Refugio (Hideout)'], objEn: ['Return to the Hideout'] },
+  { id: 'x_ttl_clip', es: 'Hacia la Luz - Cortarles las alas', en: 'To the Light - Clip Their Wings', trader: 'mechanic', traderName: 'Mechanic', map: 'Woods, Customs, Shoreline', lvl: 0, req: ['x_ttl_false'],
+    obj: ['Coloca un inhibidor de señal en la estación meteorológica de la montaña en Woods (en una sola incursión)', 'Coloca un inhibidor de señal en la caseta de guardia del aserradero en Woods (en una sola incursión)', 'Usa la transición de Woods a Customs (en una sola incursión)', 'Coloca un inhibidor de señal en la segunda planta de la obra junto a la carretera en Customs (en una sola incursión)', 'Usa la transición de Customs a Shoreline (en una sola incursión)', 'Coloca un inhibidor de señal en los archivos de la segunda planta del edificio de administración del Health Resort en Shoreline (en una sola incursión)'],
+    objEn: ['Plant a Signal jammer at the weather station on the mountain on Woods (in one raid)', 'Plant a Signal jammer at the sawmill guardhouse on Woods (in one raid)', 'Use the transit from Woods to Customs (in one raid)', 'Plant a Signal jammer on the second floor of the roadside construction site on Customs (in one raid)', 'Use the transit from Customs to Shoreline (in one raid)', 'Plant a Signal jammer at the second floor archives in the Health Resort admin building on Shoreline (in one raid)'] },
+  { id: 'x_ttl_bird', es: 'Hacia la Luz - Pájaro caído', en: 'To the Light - Fallen Bird', trader: 'mechanic', traderName: 'Mechanic', map: '', lvl: 0, req: ['x_ttl_clip'],
+    obj: ['Vuelve al Refugio (Hideout)'], objEn: ['Return to the Hideout'] },
+  { id: 'x_ttl_ambitions', es: 'Hacia la Luz - Ambiciones peligrosas', en: 'To the Light - Dangerous Ambitions', trader: 'mechanic', traderName: 'Mechanic', map: '', lvl: 0, req: ['x_ttl_bird'],
+    obj: ['Entrega el Amuleto de Lightkeeper a Peacekeeper'], objEn: ['Hand over the Amulet from Lightkeeper to Peacekeeper'] },
+  { id: 'x_ttl_dust', es: 'Hacia la Luz - Morder el polvo', en: 'To the Light - Bite the Dust', trader: 'peacekeeper', traderName: 'Peacekeeper', map: '', lvl: 0, req: ['x_ttl_bird'],
+    obj: ['Entrega las pruebas que implican a la persona detrás de las interrupciones'], objEn: ['Hand over the evidence implicating the person behind the disruptions'] },
+  { id: 'x_ttl_throw', es: 'Hacia la Luz - Tiempo de lanzar piedras', en: 'To the Light - A Time to Throw Stones', trader: 'mechanic', traderName: 'Mechanic', map: 'The Lab', mk: 'the-lab', lvl: 0, req: ['x_ttl_dust'],
+    obj: ['Elimina a 2 operativos PMC en una sola incursión en The Lab'], objEn: ['Eliminate 2 PMC operatives within one raid in The Lab'] },
+  { id: 'x_ttl_gather', es: 'Hacia la Luz - Tiempo de recoger piedras', en: 'To the Light - A Time to Gather Stones', trader: 'mechanic', traderName: 'Mechanic', map: '', lvl: 0, req: ['x_ttl_throw'],
+    obj: ['Entrega 2 placas de identificación de PMC encontradas en incursión (nivel 30 o superior)'], objEn: ['Hand over 2 found in raid PMC dogtags (Level 30 or higher)'] },
+  { id: 'x_ttl_other', es: 'Hacia la Luz - El otro lado', en: 'To the Light - The Other Side', trader: 'mechanic', traderName: 'Mechanic', map: 'Reserve, Streets of Tarkov, Customs', lvl: 0, req: ['x_ttl_gather'],
+    obj: ['Guarda los materiales "Carpetas Azules" de TerraGroup en cualquier sala marcada de Reserve', 'Guarda los materiales "Carpetas Azules" de TerraGroup en cualquier sala marcada de Streets of Tarkov', 'Guarda los materiales "Carpetas Azules" de TerraGroup en cualquier sala marcada de Customs'], objEn: ['Stash the TerraGroup "Blue Folders" materials in any marked room on Reserve', 'Stash the TerraGroup "Blue Folders" materials in any marked room on Streets of Tarkov', 'Stash the TerraGroup "Blue Folders" materials in any marked room on Customs'] },
+  { id: 'x_btr_review', es: 'Reseña sincera', en: 'Honest Review', trader: 'btr-driver', traderName: 'BTR Driver', map: 'Lighthouse', mk: 'lighthouse', lvl: 0,
+    obj: ['Explora el cruce del pueblo en Lighthouse', 'Explora el control de la ONU en la carretera principal en Lighthouse', 'Explora el aparcamiento entre los dos edificios principales de la planta de tratamiento de agua en Lighthouse', 'Da tu opinión al BTR Driver'], objEn: ['Scout the intersection at the village on Lighthouse', 'Scout the UN checkpoint at the main road on Lighthouse', 'Scout the parking between the two main buildings at the water treatment plant on Lighthouse', 'Share your feedback with the BTR Driver'] },
+  { id: 'x_btr_myself', es: 'Yo mismo soy un poco BTR', en: "I'm Something of a BTR Myself", trader: 'btr-driver', traderName: 'BTR Driver', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, req: ['x_btr_review'],
+    obj: ['Elimina a 15 Scavs con cualquier arma de calibre 7.62x54R en Lighthouse', 'Informa al BTR Driver'], objEn: ['Eliminate 15 Scavs with any 7.62x54R caliber weapon on Lighthouse', 'Report back to the BTR Driver'] },
+  { id: 'x_ragman_fare', es: '¡Paga el pasaje!', en: 'Pay the Fare!', trader: 'ragman', traderName: 'Ragman', map: '', lvl: 0,
+    obj: ['Encuentra en incursión: llave de tubo (Pipe grip wrench)', 'Entrega el objeto', 'Encuentra en incursión: llave de carraca (Ratchet wrench)', 'Entrega el objeto', 'Encuentra en incursión: taladro eléctrico (Electric drill)', 'Entrega el objeto'], objEn: ['Find the item in raid: Pipe grip wrench', 'Hand over the item', 'Find the item in raid: Ratchet wrench', 'Hand over the item', 'Find the item in raid: Electric drill', 'Hand over the item'] },
+
   /* Cadena nueva de Lighthouse (wiki oficial, septiembre 2026) */
   { id: 'x_lh_number', es: 'Número temporalmente no disponible', en: 'Number Temporarily Unavailable', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_fog_of_war'],
     obj: ['Guarda 3 componentes electrónicos en el nuevo campamento de Prapor en Lighthouse', 'Guarda 1 cable militar en el nuevo campamento de Prapor en Lighthouse', 'Guarda 3 condensadores en el nuevo campamento de Prapor en Lighthouse'], objEn: ["Stash 3 Electronic components at Prapor's new camp on Lighthouse", "Stash a Military cable at Prapor's new camp on Lighthouse", "Stash 3 Capacitors at Prapor's new camp on Lighthouse"] },
@@ -1145,6 +1177,14 @@ const EXTRA_TASKS = [
     obj: ['Entrega encontrados en incursión: 5 botiquines cualesquiera que quiten la hemorragia fuerte', 'Entrega encontrados en incursión: 2 bálsamos médicos cualesquiera', 'Entrega encontrados en incursión: 2 kits quirúrgicos cualesquiera'], objEn: ['Hand over the found in raid item: 5 Any medkits that can remove heavy bleeding', 'Hand over the found in raid item: 2 Any medical balm', 'Hand over the found in raid item: 2 Any surgical kit'] },
 ];
 /* Correcciones de llaves comprobadas en la wiki: misión (nombre en inglés) → llaves que faltan en tarkov.dev (nombre en inglés). */
+/* Requisitos que tarkov.dev pone de más y que no se cumplen en el juego PVE: misión (inglés) → misiones previas (inglés) que se quitan. */
+const REQ_ADD = { 'To the Light - Getting Acquainted': ['x_ttl_other'] };
+const REQ_FIX = { 'The Hermit': ['The Survivalist Path - Tough Guy'] };
+function applyReqFix(d){
+  const byEn = {}; d.tasks.forEach(t => { if (t.en) byEn[norm(t.en)] = t; });
+  d.tasks.forEach(t => { const ad = REQ_ADD[t.en]; if (ad) ad.forEach(id => { if (!t.req.includes(id)) t.req.push(id); }); });
+  d.tasks.forEach(t => { const fx = REQ_FIX[t.en]; if (!fx) return; const rm = new Set(fx.map(n => byEn[norm(n)] && byEn[norm(n)].id).filter(Boolean)); if (rm.size) t.req = t.req.filter(r => !rm.has(r)); });
+}
 const KEY_FIX = { 'Wet Job - Part 5': ['Health Resort universal utility room key'] };
 function applyKeyFix(d){
   const byName = {}; Object.values(d.items || {}).forEach(i => { if (i.key && i.nameEn) byName[norm(i.nameEn)] = i; });
@@ -1154,7 +1194,7 @@ function applyKeyFix(d){
 }
 function customTasks(d){
   d.tasks = d.tasks.filter(t => !t.custom && !t.extra);
-  applyKeyFix(d);
+  applyKeyFix(d); applyReqFix(d);
   const hasReal = e => d.tasks.some(t => norm(t.en || '') === norm(e.en) || norm(t.nameEs || '') === norm(e.es));
   EXTRA_TASKS.filter(e => !hasReal(e)).forEach(e => {
     const tr = (d.traders || {})[e.trader] || {}, en = S.lang === 'en';
@@ -2214,7 +2254,8 @@ function roomHtml(k, lv, g){
 let PV = { key: null, z: 1, x: 0, y: 0 };
 function mapGeo(k){
   if (geoCache[k]) return geoCache[k];
-  const m = MAPS[k], th = m.rot * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
+  const m = MAPS[k]; if (m.tf) return (geoCache[k] = { ar: 1, uv: (x, z) => [(m.tf[0] * z + m.tf[1]) / 256, (m.tf[2] * x + m.tf[3]) / 256] });
+  const th = m.rot * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
   const pr = (x, z) => { const lat = z, lng = x; return [lng * c - lat * s, -(lat * c + lng * s)]; };
   const a = pr(m.b[0][0], m.b[0][1]), b = pr(m.b[1][0], m.b[1][1]);
   const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
@@ -2250,7 +2291,8 @@ async function drawPlanMap(){
   const url = await mapSvgUrl(k, lv); const img = $('#pimg'), note = $('#pnote');
   if (!$('#pmap') || $('#pmap').dataset.map !== k || ($('#pmap').dataset.lv || '') !== lv) return;
   if (url && img) img.src = url;
-  if (note) note.textContent = url ? (LL && (!LL.svg || svgCache['miss|' + svgKey(k, lv)]) ? tx('Esta planta no tiene dibujo propio: se ve el mapa base y se resaltan sus puntos.', 'This floor has no drawing of its own: the base map is shown and its points are highlighted.') : '') : (MAPS[k].svg ? tx('No se pudo cargar la imagen del mapa: solo se ven los puntos.', 'Could not load the map image: only the points are shown.') : tx('Para este mapa no hay imagen: solo se ven los puntos.', 'There is no image for this map: only the points are shown.'));
+  if (MAPS[k].tiles && inner && !$('#ptiles')) { const Zt = 3, N = 1 << Zt; let h = '<div id="ptiles">'; for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) h += `<img alt="" loading="lazy" onerror="this.style.display='none'" src="https://assets.tarkov.dev/maps/${MAPS[k].tiles}/${Zt}/${x}/${y}.png" style="left:${x * 100 / N}%;top:${y * 100 / N}%;width:${100 / N + 0.15}%;height:${100 / N + 0.15}%">`; inner.insertAdjacentHTML('afterbegin', h + '</div>'); }
+  if (note) note.textContent = MAPS[k].tiles ? '' : url ? (LL && (!LL.svg || svgCache['miss|' + svgKey(k, lv)]) ? tx('Esta planta no tiene dibujo propio: se ve el mapa base y se resaltan sus puntos.', 'This floor has no drawing of its own: the base map is shown and its points are highlighted.') : '') : (MAPS[k].svg ? tx('No se pudo cargar la imagen del mapa: solo se ven los puntos.', 'Could not load the map image: only the points are shown.') : tx('Para este mapa no hay imagen: solo se ven los puntos.', 'There is no image for this map: only the points are shown.'));
 }
 function fitPlan(){
   const narrow = window.innerWidth < 900, m = $('#pmap'), c = $('#plistcol');
@@ -2556,7 +2598,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 39 · Quests nuevas', 'version 39 · New quests');
+  $('#ver').textContent = tx('versión 42 · Reserve + Labyrinth', 'version 42 · Reserve + Labyrinth');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
