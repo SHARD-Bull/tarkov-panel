@@ -430,7 +430,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
 
 /* ───────── Constantes ───────── */
 const WIKI = 'https://escapefromtarkov.fandom.com/wiki/';
-const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v14', LS_PRICES = 'tkv_prices_v2';
+const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v15', LS_PRICES = 'tkv_prices_v2';
 const DATA_MAX = 24 * 3600e3, PRICE_MAX = 3600e3;
 
 // Cada paso: ['Título', 'objetivo', 'objetivo opcional*', ...]  (el asterisco final marca un objetivo opcional)
@@ -1134,6 +1134,22 @@ const EXTRA_TASKS = [
     obj: ['Elimina a 15 objetivos cualesquiera en Lighthouse', 'Lanza una bengala de señales roja en la cabaña abandonada del lago de montaña en Lighthouse', 'Usa la transición de Lighthouse a Reserve'], objEn: ['Eliminate any 15 targets on Lighthouse', 'Launch a red signal flare at the abandoned mountain lake cabin on Lighthouse', 'Use the transit from Lighthouse to Reserve'] },
   { id: 'x_lh_familiar', es: 'Un Rostro Familiar...', en: 'A Familiar Face...', trader: 'skier', traderName: 'Skier', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_allinclusive'],
     obj: ['Sal de Lighthouse por el Tren Blindado (Armored Train) llevando puesto un chaleco balístico Kirasa-N o NFM THOR CRV'], objEn: ['Extract from Lighthouse through the Armored Train while wearing a Kirasa-N or NFM THOR CRV body armor'] },
+  { id: 'x_ttl_acq', es: 'Hacia la Luz - Conocerse', en: 'To the Light - Getting Acquainted', trader: 'mechanic', traderName: 'Mechanic', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, req: ['x_ttl_other'],
+    obj: ['Consigue la memoria V3 en Lighthouse', 'Reflashea el transmisor de radio con la memoria V3', 'Entrega la memoria', 'Visita el edificio de Lighthouse'], objEn: ['Obtain the V3 Flash drive on Lighthouse', 'Reflash the Radio transmitter using the V3 Flash drive', 'Hand over the flash drive', 'Visit the Lighthouse building'] },
+  { id: 'x_ma_security', es: 'Hacer las paces - Seguridad', en: 'Make Amends - Security', trader: 'mechanic', traderName: 'Mechanic', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, req: [],
+    obj: ['Coloca una cámara Wi-Fi en el autobús amarillo del puente sur junto a la planta de tratamiento de agua', 'Coloca una cámara Wi-Fi en la excavadora amarilla del sureste de la planta', 'Coloca una cámara Wi-Fi en el camión de policía del oeste de la planta', 'Coloca una cámara Wi-Fi en el camión militar de la zona industrial del norte de la planta'], objEn: ['Place a WI-FI Camera at the yellow bus on the southern bridge approaching the water treatment plant on Lighthouse', 'Place a WI-FI Camera at the yellow bulldozer in the south-eastern part of the water treatment plant on Lighthouse', 'Place a WI-FI Camera at the police truck in the western part of the water treatment plant on Lighthouse', 'Place a WI-FI Camera at the army truck near the industrial zone in the northern part of the water treatment plant on Lighthouse'] },
+  { id: 'x_ma_sweep', es: 'Hacer las paces - Limpieza', en: 'Make Amends - Sweep Up', trader: 'mechanic', traderName: 'Mechanic', map: 'Reserve', mk: 'reserve', lvl: 0, req: ['x_ma_security'],
+    obj: ['Elimina a 25 Raiders en Reserve'], objEn: ['Eliminate 25 Raiders on Reserve'] },
+  { id: 'x_ma_buyout', es: 'Hacer las paces - Compra', en: 'Make Amends - Buyout', trader: 'mechanic', traderName: 'Mechanic', map: '', lvl: 0, req: [],
+    obj: ['Entrega 1.000.000 RUB al Mecánico'], objEn: ['Hand over 1,000,000 RUB to Mechanic'] },
+  { id: 'x_ma_equipment', es: 'Hacer las paces - Equipo', en: 'Make Amends - Equipment', trader: 'mechanic', traderName: 'Mechanic', map: '', lvl: 0, req: ['x_ma_buyout'],
+    obj: ['Entrega 4 fusiles de francotirador SVDS encontrados en incursión'], objEn: ['Hand over the 4 found in raid SVDS sniper rifles'] },
+  { id: 'x_ma_software', es: 'Hacer las paces - Software', en: 'Make Amends - Software', trader: 'mechanic', traderName: 'Mechanic', map: '', lvl: 0, req: [],
+    obj: ['Entrega 15 memorias seguras (Secure Flash drive) encontradas en incursión'], objEn: ['Hand over 15 found in raid Secure Flash drives'] },
+  { id: 'x_ma_quarantine', es: 'Hacer las paces - Cuarentena', en: 'Make Amends - Quarantine', trader: 'mechanic', traderName: 'Mechanic', map: 'The Lab', mk: 'the-lab', lvl: 0, req: ['x_ma_software'],
+    obj: ['Coloca una cámara Wi-Fi dentro de la zona de cuarentena en The Lab'], objEn: ['Place a WI-FI Camera inside the quarantine zone in The Lab'] },
+  { id: 'x_ma_final', es: 'Hacer las paces', en: 'Make Amends', trader: 'mechanic', traderName: 'Mechanic', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, req: ['x_ma_sweep', 'x_ma_equipment', 'x_ma_quarantine'],
+    obj: ['Consigue la memoria V3 en Lighthouse', 'Reflashea el transmisor de radio', 'Entrega la memoria al Mecánico', 'Visita el edificio de Lighthouse'], objEn: ['Obtain the V3 Flash drive on Lighthouse', 'Reflash the Radio transmitter', 'Hand over the flash drive to Mechanic', 'Visit the Lighthouse building'] },
   { id: 'x_lh_scope', es: 'Inspeccionar el claro', en: 'Scope the Clearing', trader: 'skier', traderName: 'Skier', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_familiar'],
     obj: ['Coloca la primera cámara Wi-Fi en la plataforma del tren de los contrabandistas en Lighthouse', 'Coloca la segunda cámara Wi-Fi en la plataforma del tren de los contrabandistas en Lighthouse', 'Coloca la tercera cámara Wi-Fi en la transición a Woods en Lighthouse'], objEn: ['Plant the first Wi-Fi Camera at the smuggler train platform on Lighthouse', 'Plant the second Wi-Fi Camera at the smuggler train platform on Lighthouse', 'Plant the third Wi-Fi Camera at the Woods transit on Lighthouse'] },
   { id: 'x_lh_tail', es: 'Despistar al perseguidor', en: 'Lose the Tail', trader: 'prapor', traderName: 'Prapor', map: 'Lighthouse', mk: 'lighthouse', lvl: 0, ev: 1, req: ['x_lh_allinclusive'],
@@ -2598,7 +2614,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 43 · Labs + Reserve', 'version 43 · Labs + Reserve');
+  $('#ver').textContent = tx('versión 44 · Hacer las paces + Conocerse', 'version 44 · Make Amends + Getting Acquainted');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
