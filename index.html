@@ -648,7 +648,7 @@ const MAPS = {
   interchange: { ids: ['5714dbc024597771384a510d'], rot: 180, b: [[598, -442], [-433, 426]], svg: 'Interchange', layer: 'Ground_Level', es: 'Interchange', en: 'Interchange' },
   streets: { ids: ['5714dc692459777137212e12'], rot: 180, b: [[323, -295], [-280, 532]], svg: 'StreetsOfTarkov', layer: 'Ground_Level', es: 'Streets of Tarkov', en: 'Streets of Tarkov' },
   'ground-zero': { ids: ['653e6760052c01c1c805532f', '65b8d6f5cdde2479cb2a3125'], rot: 180, b: [[249, -124], [-99, 364]], svg: 'GroundZero', layer: 'Ground_Level', es: 'Ground Zero', en: 'Ground Zero' },
-  'the-lab': { ids: ['5b0fc42d86f7744a585f9105'], rot: 270, b: [[-80, -477], [-287, -193]], svg: 'Labs', layer: 'First_Level', solo: 1, es: 'The Lab', en: 'The Lab' },
+  'the-lab': { ids: ['5b0fc42d86f7744a585f9105'], rot: 270, b: [[-80, -477], [-287, -193]], svg: '', layer: '', tiles: 'labs_v4/1st', tz: 3, ts: 175, tf: [0.575, 281.2, 0.575, 193.7], es: 'The Lab', en: 'The Lab' },
   labyrinth: { ids: ['6733700029c367a3d40b02af'], rot: 270, b: [[-52, -37], [53, 76]], tiles: 'labyrinth/main', tf: [2.115, 85.5, 2.115, 128], svg: '', layer: '', es: 'The Labyrinth', en: 'The Labyrinth' },
   icebreaker: { ids: ['69af492a4819ea4ba10a69c5'], rot: 180, b: [[77, -64.5], [-65.5, 67.4]], svg: '', layer: '', es: 'Icebreaker', en: 'Icebreaker' },
 };
@@ -2227,8 +2227,8 @@ const LV = {
     { id: 'u', svg: 'Underground_Level', es: 'Garage', en: 'Garage', ex: [[-1000,21,[[117,-100],[43,190]]],[-1000,21,[[143,49],[117,80]]]] },
   ],
   'the-lab': [
-    { id: 'f2', svg: 'Second_Level', es: '2ª planta', en: '2nd floor', ex: [[3,10000,[[-101,-422],[-271,-270]]]] },
-    { id: 'u', svg: 'Technical_Level', es: 'Técnico', en: 'Technical', ex: [[-10000,-0.9,null]] },
+    { id: 'f2', svg: 'Second_Level', tiles: 'labs_v4/2nd', es: '2ª planta', en: '2nd floor', ex: [[3,10000,[[-101,-422],[-271,-270]]]] },
+    { id: 'u', svg: 'Technical_Level', tiles: 'labs_v4/technical', es: 'Técnico', en: 'Technical', ex: [[-10000,-0.9,null]] },
   ],
 };
 /* Planta a la que pertenece un punto: la de la zona más específica (altura mínima más alta); si no cae en ninguna, es la planta baja ('' ). */
@@ -2254,7 +2254,7 @@ function roomHtml(k, lv, g){
 let PV = { key: null, z: 1, x: 0, y: 0 };
 function mapGeo(k){
   if (geoCache[k]) return geoCache[k];
-  const m = MAPS[k]; if (m.tf) return (geoCache[k] = { ar: 1, uv: (x, z) => [(m.tf[0] * z + m.tf[1]) / 256, (m.tf[2] * x + m.tf[3]) / 256] });
+  const m = MAPS[k]; if (m.tf) return (geoCache[k] = { ar: 1, uv: (x, z) => [(m.tf[0] * z + m.tf[1]) / (m.ts || 256), (m.tf[2] * x + m.tf[3]) / (m.ts || 256)] });
   const th = m.rot * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
   const pr = (x, z) => { const lat = z, lng = x; return [lng * c - lat * s, -(lat * c + lng * s)]; };
   const a = pr(m.b[0][0], m.b[0][1]), b = pr(m.b[1][0], m.b[1][1]);
@@ -2291,7 +2291,7 @@ async function drawPlanMap(){
   const url = await mapSvgUrl(k, lv); const img = $('#pimg'), note = $('#pnote');
   if (!$('#pmap') || $('#pmap').dataset.map !== k || ($('#pmap').dataset.lv || '') !== lv) return;
   if (url && img) img.src = url;
-  if (MAPS[k].tiles && inner && !$('#ptiles')) { const Zt = 3, N = 1 << Zt; let h = '<div id="ptiles">'; for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) h += `<img alt="" loading="lazy" onerror="this.style.display='none'" src="https://assets.tarkov.dev/maps/${MAPS[k].tiles}/${Zt}/${x}/${y}.png" style="left:${x * 100 / N}%;top:${y * 100 / N}%;width:${100 / N + 0.15}%;height:${100 / N + 0.15}%">`; inner.insertAdjacentHTML('afterbegin', h + '</div>'); }
+  if (MAPS[k].tiles && inner) { const tl = (LL && LL.tiles) || MAPS[k].tiles, Zt = MAPS[k].tz || 3, N = 1 << Zt, old = $('#ptiles'); if (!old || old.dataset.t !== tl) { if (old) old.remove(); let h = `<div id="ptiles" data-t="${tl}">`; for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) h += `<img alt="" loading="lazy" onerror="this.style.display='none'" src="https://assets.tarkov.dev/maps/${tl}/${Zt}/${x}/${y}.png" style="left:${x * 100 / N}%;top:${y * 100 / N}%;width:${100 / N + 0.15}%;height:${100 / N + 0.15}%">`; inner.insertAdjacentHTML('afterbegin', h + '</div>'); } }
   if (note) note.textContent = MAPS[k].tiles ? '' : url ? (LL && (!LL.svg || svgCache['miss|' + svgKey(k, lv)]) ? tx('Esta planta no tiene dibujo propio: se ve el mapa base y se resaltan sus puntos.', 'This floor has no drawing of its own: the base map is shown and its points are highlighted.') : '') : (MAPS[k].svg ? tx('No se pudo cargar la imagen del mapa: solo se ven los puntos.', 'Could not load the map image: only the points are shown.') : tx('Para este mapa no hay imagen: solo se ven los puntos.', 'There is no image for this map: only the points are shown.'));
 }
 function fitPlan(){
@@ -2598,7 +2598,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 42 · Reserve + Labyrinth', 'version 42 · Reserve + Labyrinth');
+  $('#ver').textContent = tx('versión 43 · Labs + Reserve', 'version 43 · Labs + Reserve');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
