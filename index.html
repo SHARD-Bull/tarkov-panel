@@ -2543,9 +2543,11 @@ function bldRun(B, gid, o, maxOver){
   const zoomOf = id => { const z = (items[id].properties || {}).zoomLevels; return Array.isArray(z) ? Math.max(1, ...z.flat().filter(n => typeof n === 'number')) : 1; };
   const slotsOf = id => (items[id].properties && items[id].properties.slots) || [];
   const isReq = (s, st) => !!s.required || s.nameId === 'mod_magazine' || (!!st && o.scope && !st.sc && s.nameId === 'mod_scope');
-  const capOk = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || ((items[id].properties && items[id].properties.capacity) || 0) >= o.mag;
+  const capOf = id => (items[id].properties && items[id].properties.capacity) || 0;
+  const capOk = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || (capOf(id) >= o.mag && (o.mag >= 100 || capOf(id) < o.mag * 1.25));
+  const capGe = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || capOf(id) >= o.mag;
   const rangeOk = (s, id) => !(o.scope && o.range && o.range !== 'any') || s.nameId !== 'mod_scope' || !isSight(id) || (o.range === 'long' ? zoomOf(id) >= 3 : zoomOf(id) < 3);
-  const listFor = s => { const l = ((s.filters && s.filters.allowedItems) || []).filter(id => items[id] && price(id)); const l2 = l.filter(id => capOk(s, id) && rangeOk(s, id)); if (l2.length) return l2; const l3 = l.filter(id => rangeOk(s, id)); return l3.length ? l3 : l; };
+  const listFor = s => { const l = ((s.filters && s.filters.allowedItems) || []).filter(id => items[id] && price(id)); const l2 = l.filter(id => capOk(s, id) && rangeOk(s, id)); if (l2.length) return l2; const l2b = l.filter(id => capGe(s, id) && rangeOk(s, id)); if (l2b.length && s.nameId === 'mod_magazine') { const mn = Math.min(...l2b.map(capOf)); return l2b.filter(id => capOf(id) < mn * 1.25); } if (s.nameId === 'mod_magazine' && o.mag && l.length) { const mx = Math.max(...l.map(capOf)); const lm = l.filter(id => capOf(id) >= mx * 0.85 && rangeOk(s, id)); if (lm.length) return lm; } const l3 = l.filter(id => rangeOk(s, id)); return o.scope && o.range && o.range !== 'any' ? l3 : (l3.length ? l3 : l); };
   const bcache = {}, sbcache = {};
   const bnd = id => { if (id in bcache) return bcache[id]; bcache[id] = -1e9; let v = val(id); slotsOf(id).forEach(s => { v += sb(s); }); return (bcache[id] = v); };
   const sb = s => { const k = s.id; if (k in sbcache) return sbcache[k]; let best = -Infinity; listFor(s).forEach(id => { const b = bnd(id); if (b > best) best = b; }); const r = (s.required || s.nameId === 'mod_magazine') ? (best === -Infinity ? -1e6 : best) : Math.max(0, best === -Infinity ? 0 : best); return (sbcache[k] = r); };
@@ -2592,7 +2594,8 @@ function bldImg(x, h){ const u = x && (x.gridImageLink || x.iconLink); return u 
 function bldGunImg(B, gid){ const g = B.items[gid]; if (!g) return ''; const d = g.properties && g.properties.defaultPreset; const p = (typeof d === 'string' ? B.items[d] : d && B.items[d.id]) || g; const u = p.image512pxLink || p.gridImageLink || g.image512pxLink || g.iconLink; return u ? `<figure class="bgun"><img loading="lazy" alt="" src="${esc(u)}"><figcaption>${tx('Imagen de referencia: el arma con su montaje de fábrica. Las piezas del montaje de abajo son las que cambian.', 'Reference image: the weapon in its stock build. The parts listed below are what changes.')}</figcaption></figure>` : ''; }
 function bldResultHtml(B, res, o){
   if (res === 'none') return `<div class="msg">${tx('No he encontrado ningún montaje completo con esas condiciones. Prueba a subir el presupuesto, el nivel de lealtad o a incluir piezas que solo se encuentran en incursión.', 'I could not find a complete build with these conditions. Try a higher budget, a higher loyalty level, or include raid-only parts.')}</div>`;
-  return res.map((r, i) => { const over = r.budget !== Infinity && r.cost > r.budget;
+  const warn = res.rangeFail ? `<div class="msg">${tx('Para esta arma no existe ninguna mira del alcance que has elegido con esas condiciones, así que he usado cualquier mira.', 'No sight of the chosen range fits this weapon with these conditions, so any sight was used.')}</div>` : '';
+  return warn + res.map((r, i) => { const over = r.budget !== Infinity && r.cost > r.budget;
     const stat = (l, v, d, good) => `<div class="bst"><small>${l}</small><b>${v}</b><span class="${good ? 'pos' : 'neg'}">${d}</span></div>`;
     return `<section class="bres"><h3>${tx('Montaje', 'Build')} ${i + 1}${i === 0 ? ' · ' + tx('el mejor', 'the best') : ''}</h3>
       ${bldGunImg(B, o.gun)}
@@ -2617,7 +2620,7 @@ async function renderBuild(){
     <label>${tx('Presupuesto aproximado (₽)', 'Approximate budget (₽)')} <input type="number" min="0" step="10000" class="bld-budget" data-bld="budget" value="${o.budget}" ${o.unlimited ? 'disabled' : ''}></label>
     <label class="bchk"><input type="checkbox" data-bld="unlimited" ${o.unlimited ? 'checked' : ''}> ${tx('Sin límite de presupuesto', 'No budget limit')}</label>
     <label>${tx('Lealtad máxima de los comerciantes', 'Max trader loyalty')} ${sel('ll', [[1, 'LL1'], [2, 'LL2'], [3, 'LL3'], [4, 'LL4']], o.ll)}</label>
-    <label>${tx('Cargador mínimo', 'Min magazine')} ${sel('mag', [[0, tx('Cualquiera', 'Any')], [20, '20+'], [30, '30+'], [40, '40+'], [60, '60+'], [100, '100+']], o.mag)}</label>
+    <label>${tx('Capacidad del cargador', 'Magazine size')} ${sel('mag', [[0, tx('Cualquiera', 'Any')], [20, tx('Unas 20 (20-24)', 'About 20 (20-24)')], [30, tx('Unas 30 (30-37)', 'About 30 (30-37)')], [40, tx('Unas 40 (40-49)', 'About 40 (40-49)')], [60, tx('Unas 60 (60-74)', 'About 60 (60-74)')], [100, tx('100 o más', '100 or more')]], o.mag)}</label>
     <label>${tx('Mira (alcance)', 'Sight (range)')} ${sel('range', [['any', tx('Cualquiera', 'Any')], ['short', tx('Corto alcance (reflex, holo, hierro)', 'Short range (reflex, holo, iron)')], ['long', tx('Largo alcance (óptica con zoom)', 'Long range (zoom scope)')]], o.range)}</label>
     <label class="bchk"><input type="checkbox" data-bld="scope" ${o.scope ? 'checked' : ''}> ${tx('Poner una mira', 'Include a sight')}</label>
     <label class="bchk"><input type="checkbox" data-bld="raid" ${o.raid ? 'checked' : ''}> ${tx('Incluir piezas que solo se encuentran en incursión', 'Include raid-only parts')}</label>
@@ -2627,7 +2630,7 @@ async function renderBuild(){
 }
 function bldGo(){
   const o = bldOpts(), B = BLD; if (!B || !o.gun) return; const out = $('#bresults'); out.innerHTML = `<div class="msg">${tx('Calculando…', 'Calculating…')}</div>`;
-  setTimeout(() => { let r; try { r = bldRun(B, o.gun, o); if (!r.length) r = bldRun(B, o.gun, o, 1e9); } catch (e) { out.innerHTML = `<div class="msg">${esc(e.message)}</div>`; return; }
+  setTimeout(() => { let r; try { r = bldRun(B, o.gun, o); if (!r.length) r = bldRun(B, o.gun, o, 1e9); if (!r.length && o.range && o.range !== 'any') { r = bldRun(B, o.gun, Object.assign({}, o, { range: 'any' })); if (!r.length) r = bldRun(B, o.gun, Object.assign({}, o, { range: 'any' }), 1e9); if (r.length) r.rangeFail = true; } } catch (e) { out.innerHTML = `<div class="msg">${esc(e.message)}</div>`; return; }
     if (!r.length) r = 'none'; B.res = r; B.resKey = JSON.stringify([o.gun, o.mode, o.budget, o.unlimited, o.ll, o.raid, o.scope, o.mag, o.range, S.level]); out.innerHTML = bldResultHtml(B, r, o); }, 30);
 }
 document.addEventListener('change', e => { const t = e.target; if (!t.dataset || t.dataset.bld === undefined) return; const o = bldOpts(), k = t.dataset.bld;
@@ -2805,7 +2808,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 51 · Modear armas mejorado', 'version 51 · Weapon builder improved');
+  $('#ver').textContent = tx('versión 52 · Cargadores y alcance de miras', 'version 52 · Magazines and sight range');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
