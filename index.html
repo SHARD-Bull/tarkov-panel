@@ -296,7 +296,7 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 .pmapbox.full{position:fixed;inset:0;z-index:1000;background:#0b0e11}.pmapbox.full #pmap{height:100vh!important;border-radius:0;border:0}.pmapbox.full .pzoom{top:12px;right:12px}.pmapbox.full .pzoom button{width:36px;height:36px;font-size:19px}body.pfullon{overflow:hidden}body.pfullon #plabel{position:fixed;left:12px;bottom:12px;right:64px;max-width:680px;z-index:1001;background:#10151bf2;border:1px solid var(--line);border-radius:8px;padding:8px 12px}
 .bform{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;margin-bottom:10px}.bform label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--mute)}.bform label.bchk{flex-direction:row;align-items:center;color:var(--txt);gap:6px}.bform select,.bform input[type=number]{background:#10151b;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit}.bmodes{display:flex;gap:6px;flex-basis:100%}
 .bres{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:12px 0}.bres h3{margin:0 0 8px}.bstats{display:flex;flex-wrap:wrap;gap:10px 22px;margin-bottom:10px}.bst{display:flex;flex-direction:column}.bst small{color:var(--mute)}.bst b{font-size:20px}.bst .pos{color:#5fd38a;font-size:12.5px}.bst .neg{color:#ff8a6b;font-size:12.5px}
-.bt{border-collapse:collapse;width:100%}.bt td{padding:4px 8px;border-top:1px solid var(--line);font-size:13.5px}.bt .bsrc{color:var(--mute);text-align:right;white-space:nowrap}.bt small{color:var(--mute)}
+.bt{border-collapse:collapse;width:100%}.bt td{padding:4px 8px;border-top:1px solid var(--line);font-size:13.5px}.bt .bsrc{color:var(--mute);text-align:right;white-space:nowrap}.bt small{color:var(--mute)}.bnm{display:flex;align-items:center;gap:10px}.bimg{width:auto;min-width:28px;max-width:84px;object-fit:contain;background:rgba(255,255,255,.05);border-radius:4px;padding:2px;flex:none}.bgun{margin:6px 0 10px;text-align:center}.bgun img{max-width:100%;max-height:170px;object-fit:contain}.bgun figcaption{font-size:11.5px;color:var(--mute);margin-top:2px}.bld-budget{width:15ch!important;min-width:15ch}
 .pmines{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}.pmines polygon{fill:rgba(255,40,40,.30);stroke:#ff3b3b;stroke-width:1.6;stroke-dasharray:5 3;vector-effect:non-scaling-stroke}
 #pmap{position:relative;height:520px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#090b0d;cursor:grab;touch-action:none}
 #pmap.drag{cursor:grabbing}
@@ -2540,32 +2540,41 @@ function bldRun(B, gid, o, maxOver){
     }
     return (pcache[id] = best == null ? null : { p: best, src }); };
   const isSight = id => { const pp = items[id].properties || {}; return pp.sightingRange != null || pp.zoomLevels != null; };
+  const zoomOf = id => { const z = (items[id].properties || {}).zoomLevels; return Array.isArray(z) ? Math.max(1, ...z.flat().filter(n => typeof n === 'number')) : 1; };
   const slotsOf = id => (items[id].properties && items[id].properties.slots) || [];
   const isReq = (s, st) => !!s.required || s.nameId === 'mod_magazine' || (!!st && o.scope && !st.sc && s.nameId === 'mod_scope');
   const capOk = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || ((items[id].properties && items[id].properties.capacity) || 0) >= o.mag;
-  const listFor = s => { let l = ((s.filters && s.filters.allowedItems) || []).filter(id => items[id] && price(id)); const l2 = l.filter(id => capOk(s, id)); return l2.length ? l2 : l; };
+  const rangeOk = (s, id) => !(o.scope && o.range && o.range !== 'any') || s.nameId !== 'mod_scope' || !isSight(id) || (o.range === 'long' ? zoomOf(id) >= 3 : zoomOf(id) < 3);
+  const listFor = s => { const l = ((s.filters && s.filters.allowedItems) || []).filter(id => items[id] && price(id)); const l2 = l.filter(id => capOk(s, id) && rangeOk(s, id)); if (l2.length) return l2; const l3 = l.filter(id => rangeOk(s, id)); return l3.length ? l3 : l; };
   const bcache = {}, sbcache = {};
   const bnd = id => { if (id in bcache) return bcache[id]; bcache[id] = -1e9; let v = val(id); slotsOf(id).forEach(s => { v += sb(s); }); return (bcache[id] = v); };
   const sb = s => { const k = s.id; if (k in sbcache) return sbcache[k]; let best = -Infinity; listFor(s).forEach(id => { const b = bnd(id); if (b > best) best = b; }); const r = (s.required || s.nameId === 'mod_magazine') ? (best === -Infinity ? -1e6 : best) : Math.max(0, best === -Infinity ? 0 : best); return (sbcache[k] = r); };
   const pen = c => { if (budget === Infinity) return 0; return c <= budget ? 0.5 * c / budget : 0.5 + 100 * (c - budget) / budget; };
   const costW = id => budget === Infinity ? 0 : 1.5 * price(id).p / budget;
   const K = 7, BW = 60, MAXOVER = maxOver || 1.25;
-  const mk = (pend, parts, val0, cost, used, confl, sc) => ({ pend, parts, v: val0, c: cost, used, confl, sc: !!sc });
-  let live = [mk(slotsOf(gid).map(s => [gid, s, 0]), [], 0, 0, new Set(), new Set(), false)], done = [];
-  const est = st => st.v + st.pend.reduce((a, p) => a + sb(p[1]), 0) - pen(st.c);
+  const root = { pend: slotsOf(gid).map(s => [gid, s, 0]), parts: [], v: 0, c: 0, used: new Set(), confl: new Set(), filled: new Set(), blocked: new Set(), bcats: new Set(), ucats: new Set(), sc: false };
+  let live = [root], done = [];
+  const est = st => st.v + st.pend.reduce((a, p) => a + (st.blocked.has(p[1].id) ? 0 : sb(p[1])), 0) - pen(st.c);
   let guard = 0;
   while (live.length && guard++ < 400) {
     const nxt = [], seen = new Set();
     for (const st of live) {
       if (!st.pend.length) { done.push(st); continue; }
       const [pid, s, d] = st.pend[0], rest = st.pend.slice(1);
-      const cs = listFor(s).filter(id => !st.used.has(id) && !st.confl.has(id) && !(items[id].conflictingItems || []).some(x => st.used.has(x)))
-        .map(id => [id, bnd(id) - costW(id)]).sort((a, b) => b[1] - a[1]).slice(0, K);
       const push = ns => { const key = ns.parts.map(p => p[2]).sort().join(',') + '|' + ns.pend.length; if (seen.has(key)) return; seen.add(key); nxt.push(ns); };
-      cs.forEach(([id]) => { const pr = price(id); if (budget !== Infinity && st.c + pr.p > budget * MAXOVER) return;
-        const used = new Set(st.used); used.add(id); const confl = new Set(st.confl); (items[id].conflictingItems || []).forEach(x => confl.add(x));
-        push(mk(rest.concat(slotsOf(id).map(x => [id, x, d + 1])), st.parts.concat([[pid, s.nameId, id, d]]), st.v + val(id), st.c + pr.p, used, confl, st.sc || (s.nameId === 'mod_scope' && isSight(id)))); });
-      if (!isReq(s, st)) push(mk(rest, st.parts, st.v, st.c, st.used, st.confl, st.sc));
+      if (st.blocked.has(s.id)) { push(Object.assign({}, st, { pend: rest })); continue; }
+      const cs = listFor(s).filter(id => { const x = items[id];
+        if (st.used.has(id) || st.confl.has(id) || (x.conflictingItems || []).some(y => st.used.has(y))) return false;
+        if ((x.conflictingSlotIds || []).some(y => st.filled.has(y))) return false;
+        const xc = x.categories || []; if (xc.some(c => st.bcats.has(c)) || (x.conflictingCategories || []).some(c => st.ucats.has(c))) return false;
+        return true; })
+        .map(id => [id, bnd(id) - costW(id)]).sort((a, b) => b[1] - a[1]).slice(0, K);
+      cs.forEach(([id]) => { const pr = price(id), x = items[id]; if (budget !== Infinity && st.c + pr.p > budget * MAXOVER) return;
+        const used = new Set(st.used); used.add(id); const confl = new Set(st.confl); (x.conflictingItems || []).forEach(y => confl.add(y));
+        const filled = new Set(st.filled); filled.add(s.id); const blocked = new Set(st.blocked); (x.conflictingSlotIds || []).forEach(y => blocked.add(y));
+        const bcats = new Set(st.bcats); (x.conflictingCategories || []).forEach(y => bcats.add(y)); const ucats = new Set(st.ucats); (x.categories || []).forEach(y => ucats.add(y));
+        push({ pend: rest.concat(slotsOf(id).map(y => [id, y, d + 1])), parts: st.parts.concat([[pid, s.nameId, id, d, s.id]]), v: st.v + val(id), c: st.c + pr.p, used, confl, filled, blocked, bcats, ucats, sc: st.sc || (s.nameId === 'mod_scope' && isSight(id)) }); });
+      if (!isReq(s, st)) push(Object.assign({}, st, { pend: rest }));
     }
     nxt.sort((a, b) => est(b) - est(a)); live = nxt.slice(0, BW);
   }
@@ -2575,17 +2584,20 @@ function bldRun(B, gid, o, maxOver){
   for (const st of done) { const e1 = st.parts.reduce((a, p) => a + erg(p[2]), 0), r1 = st.parts.reduce((a, p) => a + rec(p[2]), 0), sg = e1.toFixed(1) + '|' + (r1 * 100).toFixed(1) + '|' + Math.round(st.c / 2000); if (sigs.has(sg)) continue; sigs.add(sg); out.push(st); if (out.length >= 3) break; }
   const gp = g.properties || {};
   return out.map(st => { const e = st.parts.reduce((a, p) => a + erg(p[2]), 0), r = st.parts.reduce((a, p) => a + rec(p[2]), 0);
-    return { parts: st.parts.map(p => ({ slot: p[1], id: p[2], depth: p[3], pr: price(p[2]) })), cost: st.c, ergo: (gp.ergonomics || 0) + e, dErgo: e, rv: (gp.recoilVertical || 0) * (1 + r), rh: (gp.recoilHorizontal || 0) * (1 + r), dRec: r * 100, bv: gp.recoilVertical || 0, bh: gp.recoilHorizontal || 0, be: gp.ergonomics || 0, budget }; });
+    return { parts: st.parts.map(p => ({ slot: p[1], id: p[2], depth: p[3], pr: price(p[2]), pid: p[0], sid: p[4] })), cost: st.c, ergo: (gp.ergonomics || 0) + e, dErgo: e, rv: (gp.recoilVertical || 0) * (1 + r), rh: (gp.recoilHorizontal || 0) * (1 + r), dRec: r * 100, bv: gp.recoilVertical || 0, bh: gp.recoilHorizontal || 0, be: gp.ergonomics || 0, budget }; });
 }
 function bldSrc(pr){ if (!pr) return ''; if (pr.src.t === 'raid') return tx('solo en incursión', 'raid only'); if (pr.src.t === 'flea') return 'Flea · ' + fmt(pr.p); return trn(pr.src.tr) + ' ' + tx('nv.', 'LL') + pr.src.l + ' · ' + fmt(pr.p); }
-function bldOpts(){ S.bld = Object.assign({ type: '', gun: '', mode: 'bal', budget: 250000, unlimited: false, ll: 4, raid: false, scope: true, mag: 30 }, S.bld || {}); return S.bld; }
+function bldOpts(){ S.bld = Object.assign({ type: '', gun: '', mode: 'bal', budget: 250000, unlimited: false, ll: 4, raid: false, scope: true, mag: 30, range: 'any' }, S.bld || {}); return S.bld; }
+function bldImg(x, h){ const u = x && (x.gridImageLink || x.iconLink); return u ? `<img class="bimg" loading="lazy" alt="" src="${esc(u)}" style="max-height:${h}px">` : ''; }
+function bldGunImg(B, gid){ const g = B.items[gid]; if (!g) return ''; const d = g.properties && g.properties.defaultPreset; const p = (typeof d === 'string' ? B.items[d] : d && B.items[d.id]) || g; const u = p.image512pxLink || p.gridImageLink || g.image512pxLink || g.iconLink; return u ? `<figure class="bgun"><img loading="lazy" alt="" src="${esc(u)}"><figcaption>${tx('Imagen de referencia: el arma con su montaje de fábrica. Las piezas del montaje de abajo son las que cambian.', 'Reference image: the weapon in its stock build. The parts listed below are what changes.')}</figcaption></figure>` : ''; }
 function bldResultHtml(B, res, o){
   if (res === 'none') return `<div class="msg">${tx('No he encontrado ningún montaje completo con esas condiciones. Prueba a subir el presupuesto, el nivel de lealtad o a incluir piezas que solo se encuentran en incursión.', 'I could not find a complete build with these conditions. Try a higher budget, a higher loyalty level, or include raid-only parts.')}</div>`;
   return res.map((r, i) => { const over = r.budget !== Infinity && r.cost > r.budget;
     const stat = (l, v, d, good) => `<div class="bst"><small>${l}</small><b>${v}</b><span class="${good ? 'pos' : 'neg'}">${d}</span></div>`;
     return `<section class="bres"><h3>${tx('Montaje', 'Build')} ${i + 1}${i === 0 ? ' · ' + tx('el mejor', 'the best') : ''}</h3>
+      ${bldGunImg(B, o.gun)}
       <div class="bstats">${stat(tx('Ergonomía', 'Ergonomics'), r.ergo.toFixed(1), (r.dErgo >= 0 ? '+' : '') + r.dErgo.toFixed(1), r.dErgo >= 0)}${stat(tx('Retroceso vertical', 'Vertical recoil'), Math.round(r.rv), (r.dRec >= 0 ? '+' : '') + r.dRec.toFixed(0) + ' %', r.dRec <= 0)}${stat(tx('Retroceso horizontal', 'Horizontal recoil'), Math.round(r.rh), '', true)}${stat(tx('Coste de las piezas', 'Parts cost'), fmt(r.cost), over ? (r.cost > r.budget * 1.25 ? tx('el presupuesto no alcanza para un montaje completo', 'budget is not enough for a full build') : tx('algo por encima del presupuesto', 'a bit over budget')) : '', !over)}</div>
-      <table class="bt"><tbody>${r.parts.map(p => `<tr><td style="padding-left:${6 + p.depth * 16}px"><small>${esc(slotName(p.slot))}</small></td><td><a href="${esc(B.items[p.id].wikiLink || searchLink(bn(B, p.id)))}" target="_blank" rel="noopener">${esc(bn(B, p.id))}</a></td><td class="bsrc">${esc(bldSrc(p.pr))}</td></tr>`).join('')}</tbody></table></section>`; }).join('');
+      <table class="bt"><tbody>${r.parts.map(p => `<tr><td style="padding-left:${6 + p.depth * 16}px"><small>${esc(slotName(p.slot))}</small></td><td class="bnm">${bldImg(B.items[p.id], 56)}<a href="${esc(B.items[p.id].wikiLink || searchLink(bn(B, p.id)))}" target="_blank" rel="noopener">${esc(bn(B, p.id))}</a></td><td class="bsrc">${esc(bldSrc(p.pr))}</td></tr>`).join('')}</tbody></table></section>`; }).join('');
 }
 async function renderBuild(){
   const o = bldOpts(); $('#sum').innerHTML = '';
@@ -2597,15 +2609,16 @@ async function renderBuild(){
   if (o.gun && !gunsOf.includes(o.gun)) o.gun = '';
   const sel = (k, opts, cur) => `<select data-bld="${k}">${opts.map(x => `<option value="${esc(x[0])}" ${String(cur) === String(x[0]) ? 'selected' : ''}>${esc(x[1])}</option>`).join('')}</select>`;
   const modes = [['ergo', tx('Mucha ergonomía', 'High ergonomics')], ['bal', tx('Equilibrado', 'Balanced')], ['rec', tx('Poco retroceso', 'Low recoil')]];
-  const res = BLD.res && BLD.resKey === JSON.stringify([o.gun, o.mode, o.budget, o.unlimited, o.ll, o.raid, o.scope, o.mag, S.level]) ? BLD.res : null;
+  const res = BLD.res && BLD.resKey === JSON.stringify([o.gun, o.mode, o.budget, o.unlimited, o.ll, o.raid, o.scope, o.mag, o.range, S.level]) ? BLD.res : null;
   box.innerHTML = `<div class="bform">
     <label>${tx('Tipo de arma', 'Weapon type')} ${sel('type', [['', tx('Todos', 'All')]].concat(types.map(t => [t, t])), o.type)}</label>
     <label>${tx('Arma', 'Weapon')} ${sel('gun', [['', tx('— elige un arma —', '— choose a weapon —')]].concat(gunsOf.map(id => [id, bn(B, id)])), o.gun)}</label>
     <div class="bmodes">${modes.map(m => `<button class="ich ${o.mode === m[0] ? 'on' : ''}" data-bldmode="${m[0]}">${m[1]}</button>`).join('')}</div>
-    <label>${tx('Presupuesto aproximado (₽)', 'Approximate budget (₽)')} <input type="number" min="0" step="10000" data-bld="budget" value="${o.budget}" ${o.unlimited ? 'disabled' : ''}></label>
+    <label>${tx('Presupuesto aproximado (₽)', 'Approximate budget (₽)')} <input type="number" min="0" step="10000" class="bld-budget" data-bld="budget" value="${o.budget}" ${o.unlimited ? 'disabled' : ''}></label>
     <label class="bchk"><input type="checkbox" data-bld="unlimited" ${o.unlimited ? 'checked' : ''}> ${tx('Sin límite de presupuesto', 'No budget limit')}</label>
     <label>${tx('Lealtad máxima de los comerciantes', 'Max trader loyalty')} ${sel('ll', [[1, 'LL1'], [2, 'LL2'], [3, 'LL3'], [4, 'LL4']], o.ll)}</label>
-    <label>${tx('Cargador mínimo', 'Min magazine')} ${sel('mag', [[0, tx('Cualquiera', 'Any')], [20, '20+'], [30, '30+'], [40, '40+']], o.mag)}</label>
+    <label>${tx('Cargador mínimo', 'Min magazine')} ${sel('mag', [[0, tx('Cualquiera', 'Any')], [20, '20+'], [30, '30+'], [40, '40+'], [60, '60+'], [100, '100+']], o.mag)}</label>
+    <label>${tx('Mira (alcance)', 'Sight (range)')} ${sel('range', [['any', tx('Cualquiera', 'Any')], ['short', tx('Corto alcance (reflex, holo, hierro)', 'Short range (reflex, holo, iron)')], ['long', tx('Largo alcance (óptica con zoom)', 'Long range (zoom scope)')]], o.range)}</label>
     <label class="bchk"><input type="checkbox" data-bld="scope" ${o.scope ? 'checked' : ''}> ${tx('Poner una mira', 'Include a sight')}</label>
     <label class="bchk"><input type="checkbox" data-bld="raid" ${o.raid ? 'checked' : ''}> ${tx('Incluir piezas que solo se encuentran en incursión', 'Include raid-only parts')}</label>
     <button class="btn prim" data-bldgo="1" ${o.gun ? '' : 'disabled'}>🔧 ${tx('Buscar el mejor montaje', 'Find the best build')}</button></div>
@@ -2615,7 +2628,7 @@ async function renderBuild(){
 function bldGo(){
   const o = bldOpts(), B = BLD; if (!B || !o.gun) return; const out = $('#bresults'); out.innerHTML = `<div class="msg">${tx('Calculando…', 'Calculating…')}</div>`;
   setTimeout(() => { let r; try { r = bldRun(B, o.gun, o); if (!r.length) r = bldRun(B, o.gun, o, 1e9); } catch (e) { out.innerHTML = `<div class="msg">${esc(e.message)}</div>`; return; }
-    if (!r.length) r = 'none'; B.res = r; B.resKey = JSON.stringify([o.gun, o.mode, o.budget, o.unlimited, o.ll, o.raid, o.scope, o.mag, S.level]); out.innerHTML = bldResultHtml(B, r, o); }, 30);
+    if (!r.length) r = 'none'; B.res = r; B.resKey = JSON.stringify([o.gun, o.mode, o.budget, o.unlimited, o.ll, o.raid, o.scope, o.mag, o.range, S.level]); out.innerHTML = bldResultHtml(B, r, o); }, 30);
 }
 document.addEventListener('change', e => { const t = e.target; if (!t.dataset || t.dataset.bld === undefined) return; const o = bldOpts(), k = t.dataset.bld;
   o[k] = t.type === 'checkbox' ? t.checked : (['budget', 'll', 'mag'].includes(k) ? +t.value : t.value); if (k === 'type') o.gun = ''; saveState(); renderBuild(); });
@@ -2792,7 +2805,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 50 · Modear armas', 'version 50 · Weapon builder');
+  $('#ver').textContent = tx('versión 51 · Modear armas mejorado', 'version 51 · Weapon builder improved');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
