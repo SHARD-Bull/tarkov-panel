@@ -2542,13 +2542,18 @@ function bldRun(B, gid, o, maxOver){
   const isSight = id => { const pp = items[id].properties || {}; return pp.sightingRange != null || pp.zoomLevels != null; };
   const zoomOf = id => { const z = (items[id].properties || {}).zoomLevels; return Array.isArray(z) ? Math.max(1, ...z.flat().filter(n => typeof n === 'number')) : 1; };
   const slotsOf = id => (items[id].properties && items[id].properties.slots) || [];
-  const isReq = (s, st) => !!s.required || s.nameId === 'mod_magazine' || (!!st && o.scope && !st.sc && s.nameId === 'mod_scope');
+  const isReq = (s, st) => !!s.required || s.nameId === 'mod_magazine' || (!!st && o.scope && !st.sc && /^mod_scope/.test(s.nameId));
   const capOf = id => (items[id].properties && items[id].properties.capacity) || 0;
   const capOk = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || (capOf(id) >= o.mag && (o.mag >= 100 || capOf(id) < o.mag * 1.25));
   const capGe = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || capOf(id) >= o.mag;
   const rng = !!(o.scope && o.range && o.range !== 'any');
   const rangeOk = (s, id) => { if (!rng || !isSight(id)) return true; if (/^mod_scope/.test(s.nameId)) return o.range === 'long' ? zoomOf(id) >= 3 : zoomOf(id) < 3; if (/^mod_sight/.test(s.nameId)) return !!s.required; return true; };
   const listFor = s => { const l = ((s.filters && s.filters.allowedItems) || []).filter(id => items[id] && price(id)); const l2 = l.filter(id => capOk(s, id) && rangeOk(s, id)); if (l2.length) return l2; const l2b = l.filter(id => capGe(s, id) && rangeOk(s, id)); if (l2b.length && s.nameId === 'mod_magazine') { const mn = Math.min(...l2b.map(capOf)); return l2b.filter(id => capOf(id) < mn * 1.25); } if (s.nameId === 'mod_magazine' && o.mag && l.length) { const mx = Math.max(...l.map(capOf)); const lm = l.filter(id => capOf(id) >= mx * 0.85 && rangeOk(s, id)); if (lm.length) return lm; } const l3 = l.filter(id => rangeOk(s, id)); return o.scope && o.range && o.range !== 'any' ? l3 : (l3.length ? l3 : l); };
+  const rcache = {};
+  const reachItem = id => { if (id in rcache) return rcache[id]; rcache[id] = false; return (rcache[id] = slotsOf(id).some(reachSlot)); };
+  const reachSlot = s => listFor(s).some(c => (/^mod_scope/.test(s.nameId) && isSight(c)) || reachItem(c));
+  const dcache = {};
+  const dead = id => { if (id in dcache) return dcache[id]; return (dcache[id] = slotsOf(id).some(s => /^mod_scope/.test(s.nameId) && !reachSlot(s))); };
   const bcache = {}, sbcache = {};
   const bnd = id => { if (id in bcache) return bcache[id]; bcache[id] = -1e9; let v = val(id); slotsOf(id).forEach(s => { v += sb(s); }); return (bcache[id] = v); };
   const sb = s => { const k = s.id; if (k in sbcache) return sbcache[k]; let best = -Infinity; listFor(s).forEach(id => { const b = bnd(id); if (b > best) best = b; }); const r = (s.required || s.nameId === 'mod_magazine') ? (best === -Infinity ? -1e6 : best) : Math.max(0, best === -Infinity ? 0 : best); return (sbcache[k] = r); };
@@ -2557,7 +2562,8 @@ function bldRun(B, gid, o, maxOver){
   const K = 7, BW = 60, MAXOVER = maxOver || 1.25;
   const root = { pend: slotsOf(gid).map(s => [gid, s, 0]), parts: [], v: 0, c: 0, used: new Set(), confl: new Set(), filled: new Set(), blocked: new Set(), bcats: new Set(), ucats: new Set(), sc: false };
   let live = [root], done = [];
-  const est = st => st.v + st.pend.reduce((a, p) => a + (st.blocked.has(p[1].id) ? 0 : sb(p[1])), 0) - pen(st.c);
+  const SCP = 60;
+  const est = st => (o.scope && !st.sc ? -SCP : 0) + st.v + st.pend.reduce((a, p) => a + (st.blocked.has(p[1].id) ? 0 : sb(p[1])), 0) - pen(st.c);
   let guard = 0;
   while (live.length && guard++ < 400) {
     const nxt = [], seen = new Set();
@@ -2566,22 +2572,24 @@ function bldRun(B, gid, o, maxOver){
       const [pid, s, d] = st.pend[0], rest = st.pend.slice(1);
       const push = ns => { const key = ns.parts.map(p => p[2]).sort().join(',') + '|' + ns.pend.length; if (seen.has(key)) return; seen.add(key); nxt.push(ns); };
       if (st.blocked.has(s.id)) { push(Object.assign({}, st, { pend: rest })); continue; }
-      const cs = listFor(s).filter(id => { const x = items[id];
+      const candFor = nodead => listFor(s).filter(id => { const x = items[id];
         if (st.used.has(id) || st.confl.has(id) || (x.conflictingItems || []).some(y => st.used.has(y))) return false;
         if ((x.conflictingSlotIds || []).some(y => st.filled.has(y))) return false;
-        const xc = x.categories || []; if (xc.some(c => st.bcats.has(c)) || (x.conflictingCategories || []).some(c => st.ucats.has(c))) return false;
+        if (!nodead && o.scope && !st.sc && dead(id)) return false; const xc = x.categories || []; if (xc.some(c => st.bcats.has(c)) || (x.conflictingCategories || []).some(c => st.ucats.has(c))) return false;
         return true; })
         .map(id => [id, bnd(id) - costW(id)]).sort((a, b) => b[1] - a[1]).slice(0, K);
+      let cs = candFor(false); if (!cs.length && s.required) cs = candFor(true);
+      const n0 = nxt.length;
       cs.forEach(([id]) => { const pr = price(id), x = items[id]; if (budget !== Infinity && st.c + pr.p > budget * MAXOVER) return;
         const used = new Set(st.used); used.add(id); const confl = new Set(st.confl); (x.conflictingItems || []).forEach(y => confl.add(y));
         const filled = new Set(st.filled); filled.add(s.id); const blocked = new Set(st.blocked); (x.conflictingSlotIds || []).forEach(y => blocked.add(y));
         const bcats = new Set(st.bcats); (x.conflictingCategories || []).forEach(y => bcats.add(y)); const ucats = new Set(st.ucats); (x.categories || []).forEach(y => ucats.add(y));
         push({ pend: rest.concat(slotsOf(id).map(y => [id, y, d + 1])), parts: st.parts.concat([[pid, s.nameId, id, d, s.id]]), v: st.v + val(id), c: st.c + pr.p, used, confl, filled, blocked, bcats, ucats, sc: st.sc || (/^mod_scope/.test(s.nameId) && isSight(id)) }); });
-      if (!isReq(s, st)) push(Object.assign({}, st, { pend: rest }));
+      if (!isReq(s, st) || (!s.required && s.nameId !== 'mod_magazine' && nxt.length === n0)) push(Object.assign({}, st, { pend: rest }));
     }
     nxt.sort((a, b) => est(b) - est(a)); live = nxt.slice(0, BW);
   }
-  done.forEach(st => { st.score = st.v - pen(st.c); });
+  done.forEach(st => { st.score = st.v - pen(st.c) - (o.scope && !st.sc ? 1000 : 0); });
   done.sort((a, b) => b.score - a.score);
   const out = [], sigs = new Set();
   for (const st of done) { const e1 = st.parts.reduce((a, p) => a + erg(p[2]), 0), r1 = st.parts.reduce((a, p) => a + rec(p[2]), 0), sg = e1.toFixed(1) + '|' + (r1 * 100).toFixed(1) + '|' + Math.round(st.c / 2000); if (sigs.has(sg)) continue; sigs.add(sg); out.push(st); if (out.length >= 3) break; }
@@ -2809,7 +2817,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 53 · Alcance de miras corregido', 'version 53 · Sight range fixed');
+  $('#ver').textContent = tx('versión 54 · Miras de largo alcance (montajes con rieles)', 'version 54 · Long-range sights (rail builds)');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
