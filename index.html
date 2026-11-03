@@ -293,6 +293,8 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 .pphg a{display:block;color:var(--txt);text-decoration:none;font-size:11.5px}.pphg img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px;background:#090b0e;display:block}
 .pphg span{display:block;margin-top:2px;line-height:1.25;color:var(--mute)}
 .pmapbox{position:relative}
+.pmapbox.full{position:fixed;inset:0;z-index:1000;background:#0b0e11}.pmapbox.full #pmap{height:100vh!important;border-radius:0;border:0}.pmapbox.full .pzoom{top:12px;right:12px}.pmapbox.full .pzoom button{width:36px;height:36px;font-size:19px}body.pfullon{overflow:hidden}body.pfullon #plabel{position:fixed;left:12px;bottom:12px;right:64px;max-width:680px;z-index:1001;background:#10151bf2;border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.pmines{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}.pmines polygon{fill:rgba(255,40,40,.30);stroke:#ff3b3b;stroke-width:1.6;stroke-dasharray:5 3;vector-effect:non-scaling-stroke}
 #pmap{position:relative;height:520px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#090b0d;cursor:grab;touch-action:none}
 #pmap.drag{cursor:grabbing}
 #pin{position:absolute;left:0;top:0;transform-origin:0 0;background:#0f1216}
@@ -434,7 +436,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
 
 /* ───────── Constantes ───────── */
 const WIKI = 'https://escapefromtarkov.fandom.com/wiki/';
-const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v16', LS_PRICES = 'tkv_prices_v2';
+const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v17', LS_PRICES = 'tkv_prices_v2';
 const DATA_MAX = 24 * 3600e3, PRICE_MAX = 3600e3;
 
 // Cada paso: ['Título', 'objetivo', 'objetivo opcional*', ...]  (el asterisco final marca un objetivo opcional)
@@ -886,7 +888,7 @@ const searchLink = name => WIKI + 'Special:Search?query=' + encodeURIComponent(n
 
 /* ───────── Estado (progreso del usuario) ───────── */
 let S = { mode:'pve', done:{}, fail:{}, story:{}, hideout:{}, collected:{}, hcol:{}, icol:{}, iview:'items', isrc:'all', ihide:true, kmap:'all', kdet:null, hnext:true, hready:false, hopen:{}, order:[], level:0, view:'quests',
-          lang:null, plan:{}, pmap:null, pfocus:null, planOpen:true, tfilter:'imp', extShow:true, extNames:true, roomNames:true, hideDone:false, hideLocked:false, chain:false, hideBuilt:true, q:'', trader:'prapor', obj:{}, sobj:{}, chapter:null, sel:null, zoom:1, itemFilter:'pending', hview:'summary', open:{}, custom:[], adding:false, gsel:null, gown:{} };
+          lang:null, plan:{}, pmap:null, pfocus:null, planOpen:true, tfilter:'imp', extShow:true, mines:true, extNames:true, roomNames:true, hideDone:false, hideLocked:false, chain:false, hideBuilt:true, q:'', trader:'prapor', obj:{}, sobj:{}, chapter:null, sel:null, zoom:1, itemFilter:'pending', hview:'summary', open:{}, custom:[], adding:false, gsel:null, gown:{} };
 function loadState(){ try { const r = localStorage.getItem(LS_STATE); if (r) S = Object.assign(S, JSON.parse(r)); } catch(e){} if (S.view === 'hideout' || S.view === 'items') S.view = 'both';
   if (!S.icol) S.icol = {}; if (!S.hopen) S.hopen = {};
   if (!S.mig17) { S.mig17 = 1; const o = Object.assign({}, S.hcol || {}); Object.entries(S.collected || {}).forEach(([k, v]) => { o[k] = Math.max(o[k] || 0, v); }); S.icol = Object.assign(o, S.icol); }
@@ -1046,6 +1048,9 @@ async function fetchStatic(){
   Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
     (m.extracts || []).forEach(x => { if (!x.position || (x.faction !== 'pmc' && x.faction !== 'shared')) return; const list = ext[k] = ext[k] || []; if (list.some(e => e[6] === x.name)) return;
       list.push([mapsEs[x.name] || mapsEn[x.name] || x.name, mapsEn[x.name] || mapsEs[x.name] || x.name, r1(x.position.x), r1(x.position.z), r1(x.position.y || 0), x.faction === 'shared' ? 1 : 0, x.name, ...(() => { const ti = x.transferItem, it = ti && regItem(ti.item); return it ? [it.id, ti.count || 1] : []; })()]); }); });
+  const hz = {};
+  Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
+    (m.hazards || []).forEach(x => { if (!x || x.hazardType !== 'minefield' || !x.outline || x.outline.length < 3) return; (hz[k] = hz[k] || []).push(x.outline.map(p => [r1(p.x), r1(p.z)])); }); });
   const tr = {};
   Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
     (m.transits || []).forEach(x => { if (!x || !x.position) return; const dk = MAPKEY[x.map], dn = dk ? MAPS[dk].en : (mapsEn[x.map + ' Name'] || mapsEs[x.map + ' Name'] || ''); if (!dn) return;
@@ -1069,7 +1074,7 @@ async function fetchStatic(){
     if (typeof es !== 'string' || typeof en !== 'string' || es === en || /^[0-9a-f]{24}/.test(k) || /_(DESC|COND)$/.test(k) || /^(QuestCondition|FAC_)/.test(k)) return;
     if (es.length < 4 || es.length > 50 || !/^[A-ZÁÉÍÓÚÑ0-9]/.test(es)) return; pl.push([es, en]); });
   Object.values(items).forEach(it => { if (it.key && !it.special && it.nameEs && it.nameEn && it.nameEs !== it.nameEn) pl.push([it.nameEs, it.nameEn]); });
-  return { ts: Date.now(), xmaps, tasks, reqs, items, ammo, hideout, gun, trn: trnames, stn, mapn, ext, tr, barters, traders, klock, kloose, pl, lootKeys, pm, warnings, prices: buildPrices(allItems, items) };
+  return { ts: Date.now(), xmaps, tasks, reqs, items, ammo, hideout, gun, trn: trnames, stn, mapn, ext, tr, hz, barters, traders, klock, kloose, pl, lootKeys, pm, warnings, prices: buildPrices(allItems, items) };
 }
 
 /* Elige los textos según el idioma (los dos idiomas se guardan siempre). */
@@ -1283,7 +1288,7 @@ async function loadData(force){
   try {
     setStatus(tx('Descargando misiones, Hideout y precios (', 'Downloading quests, Hideout and prices (') + S.mode.toUpperCase() + tx(') desde tarkov.dev… puede tardar unos segundos', ') from tarkov.dev… this may take a few seconds'));
     const fresh = await fetchStatic(); P = fresh.prices; delete fresh.prices; D = fresh; computeOrder(D);
-    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, tr:D.tr, klock:D.klock, kloose:D.kloose, pl:D.pl, lootKeys:D.lootKeys, pm:D.pm, barters:D.barters, traders:D.traders, warnings:D.warnings, xmaps:D.xmaps, ammo:D.ammo })); } catch(e){}
+    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, tr:D.tr, hz:D.hz, klock:D.klock, kloose:D.kloose, pl:D.pl, lootKeys:D.lootKeys, pm:D.pm, barters:D.barters, traders:D.traders, warnings:D.warnings, xmaps:D.xmaps, ammo:D.ammo })); } catch(e){}
     try { localStorage.setItem(LS_PRICES + S.mode, JSON.stringify(P)); } catch(e){}
   } catch(e) {
     if (cached) { D = cached; regInfected(D.xmaps); computeOrder(D); setStatus(tx('No se pudo actualizar (', 'Could not update (') + e.message + tx('). Usando datos guardados de hace ', '). Using saved data from ') + Math.round((Date.now()-cached.ts)/3600e3) + tx(' h.', ' h ago.'), 'warn'); return; }
@@ -2356,8 +2361,14 @@ async function drawPlanMap(){
   }
   if (note) note.textContent = MAPS[k].tiles ? '' : url ? (LL && (!LL.svg || svgCache['miss|' + svgKey(k, lv)]) ? tx('Esta planta no tiene dibujo propio: se ve el mapa base y se resaltan sus puntos.', 'This floor has no drawing of its own: the base map is shown and its points are highlighted.') : '') : (MAPS[k].svg ? tx('No se pudo cargar la imagen del mapa: solo se ven los puntos.', 'Could not load the map image: only the points are shown.') : tx('Para este mapa no hay imagen: solo se ven los puntos.', 'There is no image for this map: only the points are shown.'));
 }
+function togglePlanFull(force){
+  const box = document.querySelector('.pmapbox'); if (!box) return; const on = force != null ? force : !box.classList.contains('full');
+  window.__pfull = on; box.classList.toggle('full', on); document.body.classList.toggle('pfullon', on); fitPlan(); PV.key = null; drawPlanMap();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.querySelector('.pmapbox.full')) togglePlanFull(false); });
 function fitPlan(){
   const narrow = window.innerWidth < 900, m = $('#pmap'), c = $('#plistcol');
+  if (m && m.parentNode.classList.contains('full')) { m.style.height = '100vh'; return; }
   if (m) m.style.height = narrow ? '340px' : Math.max(340, window.innerHeight - m.getBoundingClientRect().top - 78) + 'px';
   if (c) c.style.height = narrow ? 'auto' : Math.max(340, window.innerHeight - c.getBoundingClientRect().top - 14) + 'px';
 }
@@ -2408,7 +2419,7 @@ function renderPlan(){
   const n = D.tasks.filter(t => S.plan[t.id]).length;
   $('#sum').textContent = n ? tx(`${n} misiones en tu plan`, `${n} quests in your plan`) : '';
   const oc = $('#plistcol'), ot = oc ? oc.scrollTop : 0, ow = window.scrollY;
-  $('#list').innerHTML = planHtml(); fitPlan(); drawPlanMap();
+  $('#list').innerHTML = planHtml(); if (!$('#pmap') && window.__pfull) { window.__pfull = false; document.body.classList.remove('pfullon'); } fitPlan(); drawPlanMap();
   const nc = $('#plistcol'); if (nc && ot) nc.scrollTop = ot; if (ow && window.scrollY !== ow) window.scrollTo(0, ow);
 }
 const CURR = { '5449016a4bdc2d6f028b456f': '₽', '5696686a4bdc2d3d298b4569': '$', '569668774bdc2da2298b4568': '€' };
@@ -2457,13 +2468,14 @@ function planHtml(){
       dots.push(`<i class="pdot ${p[5] ? 'loc' : ''} ${dim ? 'dim' : ''} ${S.pfocus === t.id ? 'foc' : ''}" style="--pc:${pcol[t.id] || '#e5271b'};left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-qid="${esc(t.id)}" data-oi="${p[4]}" data-act="ppt" data-txt="${esc(t.name + (o && o.x ? ' — ' + o.x : '') + (p[5] ? tx(' (posible ubicación del objeto)', ' (possible item location)') : ''))}"></i>`); }));
     const exs = S.extShow && D.ext && D.ext[k] ? D.ext[k].map((e, ei) => { const [u, v] = g.uv(e[2], e[3]); const nm = e[1] || e[0];
       return `<i class="pex ${e[5] ? 'shared' : ''} ${e[7] ? 'req' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="pex" data-ex="${k}|${ei}"><s></s><b>${esc(nm)}${e[7] ? ' 🔑' : ''}</b></i>`; }).join('') : '';
+    const mines = S.mines !== false && D.hz && D.hz[k] ? `<svg class="pmines" viewBox="0 0 100 100" preserveAspectRatio="none">${D.hz[k].map(o => `<polygon points="${o.map(q => { const [u, v] = g.uv(q[0], q[1]); return (u * 100).toFixed(2) + ',' + (v * 100).toFixed(2); }).join(' ')}"/>`).join('')}</svg>` : '';
     const trs = S.extShow && D.tr && D.tr[k] ? D.tr[k].map((e, ei) => { const [u, v] = g.uv(e[1], e[2]);
       return `<i class="ptr" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="ptr" data-ex="${k}|${ei}"><s>➜</s><b>${esc(e[0])}</b></i>`; }).join('') : '';
     mapHtml = `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="pmap" data-id="${x}">${esc(mapName(x))} <b>${cnt[x]}</b></button>`).join('')}</div>
       ${lvBar}
-      <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (rombo verde; amarillo = también Scav) y tránsitos (cuadrado azul ➜)', 'Show PMC extracts (green diamond; yellow = also Scav) and transits (blue square ➜)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label><label><input type="checkbox" id="planOnly" ${S.planAll ? '' : 'checked'}> ${tx('Mostrar solo las misiones de este mapa', 'Show only the quests of this map')}${nHid && !S.planAll ? ` <small style="color:var(--mute)">(${nHid} ${tx(nHid === 1 ? 'oculta' : 'ocultas', 'hidden')})</small>` : ''}</label>${ROOMS[baseOf(k)] ? `<label><input type="checkbox" id="roomNames" ${S.roomNames ? 'checked' : ''}> ${tx('Mostrar nombres de las salas', 'Show room names')}</label>` : ''}</div>
-      <div class="pmapbox"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}" data-lv="${lvSel}"><div id="pin"><img id="pimg" alt="" src="${svgCache[svgKey(k, lvSel)] || ''}">${S.roomNames && ROOMS[baseOf(k)] ? roomHtml(k, lvSel, g) : ''}${exs}${trs}${dots.join('')}</div></div>
-        <div class="pzoom"><button data-act="pzoom" data-d="in" title="Zoom +">+</button><button data-act="pzoom" data-d="out" title="Zoom −">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button></div></div>
+      <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (rombo verde; amarillo = también Scav) y tránsitos (cuadrado azul ➜)', 'Show PMC extracts (green diamond; yellow = also Scav) and transits (blue square ➜)')}</label><label><input type="checkbox" id="minesShow" ${S.mines !== false ? 'checked' : ''}> ${tx('Mostrar zonas de minas (rojo)', 'Show minefields (red)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label><label><input type="checkbox" id="planOnly" ${S.planAll ? '' : 'checked'}> ${tx('Mostrar solo las misiones de este mapa', 'Show only the quests of this map')}${nHid && !S.planAll ? ` <small style="color:var(--mute)">(${nHid} ${tx(nHid === 1 ? 'oculta' : 'ocultas', 'hidden')})</small>` : ''}</label>${ROOMS[baseOf(k)] ? `<label><input type="checkbox" id="roomNames" ${S.roomNames ? 'checked' : ''}> ${tx('Mostrar nombres de las salas', 'Show room names')}</label>` : ''}</div>
+      <div class="pmapbox${window.__pfull ? ' full' : ''}"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}" data-lv="${lvSel}"><div id="pin"><img id="pimg" alt="" src="${svgCache[svgKey(k, lvSel)] || ''}">${S.roomNames && ROOMS[baseOf(k)] ? roomHtml(k, lvSel, g) : ''}${mines}${exs}${trs}${dots.join('')}</div></div>
+        <div class="pzoom"><button data-act="pzoom" data-d="in" title="Zoom +">+</button><button data-act="pzoom" data-d="out" title="Zoom −">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button><button data-act="pzoom" data-d="full" title="${tx('Pantalla completa (Esc para salir)', 'Full screen (Esc to exit)')}">⛶</button></div></div>
       <div id="plabel">${tx('Pulsa un punto de color (cada misión tiene el suyo) o un rombo verde (extracción) para ver qué es. Rueda del ratón = zoom; arrastra para moverte.', 'Click a coloured dot (each quest has its own colour) or a green diamond (extract) to see what it is. Mouse wheel = zoom; drag to move around.')}</div><div id="pphoto"></div><div class="pnote" id="pnote"></div>`;
   }
   // misiones
@@ -2532,7 +2544,7 @@ document.addEventListener('click', e => {
   else if (a === 'planclear') { if (confirm(tx('¿Vaciar el plan?', 'Clear the plan?'))) { S.plan = {}; S.pfocus = null; saveState(); renderList(); } }
   else if (a === 'pmap') { S.pmap = id; saveState(); renderList(); }
   else if (a === 'pfocus') { S.pfocus = S.pfocus === id ? null : id; renderList(); }
-  else if (a === 'pzoom') { const b = $('#pmap'); if (b) { const d = t.dataset.d; if (d === 'reset') { PV.key = null; drawPlanMap(); } else window.__pz(d === 'in' ? 1.4 : 1 / 1.4, b.clientWidth / 2, b.clientHeight / 2); } }
+  else if (a === 'pzoom') { const b = $('#pmap'); if (b) { const d = t.dataset.d; if (d === 'reset') { PV.key = null; drawPlanMap(); } else if (d === 'full') { togglePlanFull(); } else window.__pz(d === 'in' ? 1.4 : 1 / 1.4, b.clientWidth / 2, b.clientHeight / 2); } }
   else if (a === 'ptr') { const l = $('#plabel'), [k, ei] = t.dataset.ex.split('|'), e = D.tr && D.tr[k] && D.tr[k][+ei]; if (l && e) l.innerHTML = `<div><b>${tx('Tránsito a otro mapa', 'Transit to another map')}: ${esc(e[0])}</b></div>`; }
   else if (a === 'pex') { const l = $('#plabel'), [k, ei] = t.dataset.ex.split('|'); if (l) l.innerHTML = extInfoHtml(k, +ei); }
   else if (a === 'plv') { PLV[S.pmap] = id === '0' ? '' : id; renderList(); }
@@ -2585,6 +2597,7 @@ document.addEventListener('change', e => {
   else if (t.id === 'friendFile' && t.files[0]) { const rd = new FileReader(); rd.onload = () => { try { const f = frParse(rd.result), nm = frSave($('#ffn') ? $('#ffn').value : '', f); renderFriends(); const m = $('#fmsg'); if (m) { m.textContent = tx('Cargado: ', 'Loaded: ') + nm + ' (' + f.d.length + ' ' + tx('misiones hechas', 'completed quests') + ')'; m.style.color = 'var(--ok)'; } } catch (err) { const m = $('#fmsg'); if (m) { m.textContent = tx('Ese archivo no es válido.', 'That file is not valid.'); m.style.color = 'var(--bad)'; } } }; rd.readAsText(t.files[0]); t.value = ''; }
   else if (t.id === 'tfilter') { S.tfilter = t.value; saveState(); renderList(); }
   else if (t.id === 'extShow') { S.extShow = t.checked; saveState(); renderList(); }
+  else if (t.id === 'minesShow') { S.mines = t.checked; saveState(); renderList(); }
   else if (t.id === 'extNames') { S.extNames = t.checked; saveState(); renderList(); }
   else if (t.id === 'planOnly') { S.planAll = !t.checked; saveState(); renderList(); }
   else if (t.id === 'roomNames') { S.roomNames = t.checked; saveState(); renderList(); }
@@ -2663,7 +2676,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 48 · Halloween completo', 'version 48 · Full Halloween');
+  $('#ver').textContent = tx('versión 49 · Pantalla completa + minas', 'version 49 · Full screen + minefields');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
