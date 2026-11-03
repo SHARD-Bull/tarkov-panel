@@ -2546,7 +2546,8 @@ function bldRun(B, gid, o, maxOver){
   const capOf = id => (items[id].properties && items[id].properties.capacity) || 0;
   const capOk = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || (capOf(id) >= o.mag && (o.mag >= 100 || capOf(id) < o.mag * 1.25));
   const capGe = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || capOf(id) >= o.mag;
-  const rangeOk = (s, id) => !(o.scope && o.range && o.range !== 'any') || s.nameId !== 'mod_scope' || !isSight(id) || (o.range === 'long' ? zoomOf(id) >= 3 : zoomOf(id) < 3);
+  const rng = !!(o.scope && o.range && o.range !== 'any');
+  const rangeOk = (s, id) => { if (!rng || !isSight(id)) return true; if (/^mod_scope/.test(s.nameId)) return o.range === 'long' ? zoomOf(id) >= 3 : zoomOf(id) < 3; if (/^mod_sight/.test(s.nameId)) return !!s.required; return true; };
   const listFor = s => { const l = ((s.filters && s.filters.allowedItems) || []).filter(id => items[id] && price(id)); const l2 = l.filter(id => capOk(s, id) && rangeOk(s, id)); if (l2.length) return l2; const l2b = l.filter(id => capGe(s, id) && rangeOk(s, id)); if (l2b.length && s.nameId === 'mod_magazine') { const mn = Math.min(...l2b.map(capOf)); return l2b.filter(id => capOf(id) < mn * 1.25); } if (s.nameId === 'mod_magazine' && o.mag && l.length) { const mx = Math.max(...l.map(capOf)); const lm = l.filter(id => capOf(id) >= mx * 0.85 && rangeOk(s, id)); if (lm.length) return lm; } const l3 = l.filter(id => rangeOk(s, id)); return o.scope && o.range && o.range !== 'any' ? l3 : (l3.length ? l3 : l); };
   const bcache = {}, sbcache = {};
   const bnd = id => { if (id in bcache) return bcache[id]; bcache[id] = -1e9; let v = val(id); slotsOf(id).forEach(s => { v += sb(s); }); return (bcache[id] = v); };
@@ -2575,7 +2576,7 @@ function bldRun(B, gid, o, maxOver){
         const used = new Set(st.used); used.add(id); const confl = new Set(st.confl); (x.conflictingItems || []).forEach(y => confl.add(y));
         const filled = new Set(st.filled); filled.add(s.id); const blocked = new Set(st.blocked); (x.conflictingSlotIds || []).forEach(y => blocked.add(y));
         const bcats = new Set(st.bcats); (x.conflictingCategories || []).forEach(y => bcats.add(y)); const ucats = new Set(st.ucats); (x.categories || []).forEach(y => ucats.add(y));
-        push({ pend: rest.concat(slotsOf(id).map(y => [id, y, d + 1])), parts: st.parts.concat([[pid, s.nameId, id, d, s.id]]), v: st.v + val(id), c: st.c + pr.p, used, confl, filled, blocked, bcats, ucats, sc: st.sc || (s.nameId === 'mod_scope' && isSight(id)) }); });
+        push({ pend: rest.concat(slotsOf(id).map(y => [id, y, d + 1])), parts: st.parts.concat([[pid, s.nameId, id, d, s.id]]), v: st.v + val(id), c: st.c + pr.p, used, confl, filled, blocked, bcats, ucats, sc: st.sc || (/^mod_scope/.test(s.nameId) && isSight(id)) }); });
       if (!isReq(s, st)) push(Object.assign({}, st, { pend: rest }));
     }
     nxt.sort((a, b) => est(b) - est(a)); live = nxt.slice(0, BW);
@@ -2808,7 +2809,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 52 · Cargadores y alcance de miras', 'version 52 · Magazines and sight range');
+  $('#ver').textContent = tx('versión 53 · Alcance de miras corregido', 'version 53 · Sight range fixed');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
