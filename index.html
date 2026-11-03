@@ -294,6 +294,9 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 .pphg span{display:block;margin-top:2px;line-height:1.25;color:var(--mute)}
 .pmapbox{position:relative}
 .pmapbox.full{position:fixed;inset:0;z-index:1000;background:#0b0e11}.pmapbox.full #pmap{height:100vh!important;border-radius:0;border:0}.pmapbox.full .pzoom{top:12px;right:12px}.pmapbox.full .pzoom button{width:36px;height:36px;font-size:19px}body.pfullon{overflow:hidden}body.pfullon #plabel{position:fixed;left:12px;bottom:12px;right:64px;max-width:680px;z-index:1001;background:#10151bf2;border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.bform{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;margin-bottom:10px}.bform label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--mute)}.bform label.bchk{flex-direction:row;align-items:center;color:var(--txt);gap:6px}.bform select,.bform input[type=number]{background:#10151b;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit}.bmodes{display:flex;gap:6px;flex-basis:100%}
+.bres{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:12px 0}.bres h3{margin:0 0 8px}.bstats{display:flex;flex-wrap:wrap;gap:10px 22px;margin-bottom:10px}.bst{display:flex;flex-direction:column}.bst small{color:var(--mute)}.bst b{font-size:20px}.bst .pos{color:#5fd38a;font-size:12.5px}.bst .neg{color:#ff8a6b;font-size:12.5px}
+.bt{border-collapse:collapse;width:100%}.bt td{padding:4px 8px;border-top:1px solid var(--line);font-size:13.5px}.bt .bsrc{color:var(--mute);text-align:right;white-space:nowrap}.bt small{color:var(--mute)}
 .pmines{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}.pmines polygon{fill:rgba(255,40,40,.30);stroke:#ff3b3b;stroke-width:1.6;stroke-dasharray:5 3;vector-effect:non-scaling-stroke}
 #pmap{position:relative;height:520px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#090b0d;cursor:grab;touch-action:none}
 #pmap.drag{cursor:grabbing}
@@ -419,6 +422,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
     <button data-view="both"></button>
     <button data-view="trade"></button>
     <button data-view="ammo"></button>
+    <button data-view="build"></button>
     <button data-view="friends"></button>
   </nav>
   <div id="status"></div>
@@ -1920,7 +1924,7 @@ function renderView(){
     ctl = `<input type="search" id="q" placeholder="${tx('Buscar una munición…', 'Search an ammo…')}" value="${esc(S.q)}">
       <label>${tx('Calibre', 'Caliber')} <select id="acal"><option value="">${tx('Todos', 'All')}</option>${cals.map(c => `<option value="${esc(c)}" ${S.acal === c ? 'selected' : ''}>${esc(calName(c))}</option>`).join('')}</select></label>
       <label>${tx('Ordenar por', 'Sort by')} <select id="asort"><option value="cal" ${S.asort === 'cal' || !S.asort ? 'selected' : ''}>${tx('Calibre y penetración', 'Caliber and penetration')}</option><option value="pen" ${S.asort === 'pen' ? 'selected' : ''}>${tx('Penetración', 'Penetration')}</option><option value="dmg" ${S.asort === 'dmg' ? 'selected' : ''}>${tx('Daño a la carne', 'Flesh damage')}</option><option value="price" ${S.asort === 'price' ? 'selected' : ''}>${tx('Precio (menor primero)', 'Price (lowest first)')}</option></select></label>`;
-  } else if (S.view === 'friends') {
+  } else if (S.view === 'friends' || S.view === 'build') {
     app.classList.add('wide'); ctl = '';
   } else if (S.view === 'plan') {
     app.classList.add('wide');
@@ -2501,9 +2505,121 @@ function fitPanes(){
 function renderList(){
   if (!D) return; const y = window.scrollY;
   updTabs();
-  if (S.view === 'quests') renderQuests(); else if (S.view === 'plan') renderPlan(); else if (S.view === 'trade') renderTrade(); else if (S.view === 'ammo') renderAmmo(); else if (S.view === 'friends') renderFriends(); else if (S.view === 'gun') renderGun(); else renderBoth();
+  if (S.view === 'quests') renderQuests(); else if (S.view === 'plan') renderPlan(); else if (S.view === 'trade') renderTrade(); else if (S.view === 'ammo') renderAmmo(); else if (S.view === 'build') renderBuild(); else if (S.view === 'friends') renderFriends(); else if (S.view === 'gun') renderGun(); else renderBoth();
   renderDrawer(); window.scrollTo(0, y);
 }
+
+/* ───────── Modear armas: busca el mejor montaje de piezas ───────── */
+let BLD = null, BLDLOAD = null;
+const SLOTN = { mod_barrel: ['Cañón', 'Barrel'], mod_handguard: ['Guardamanos', 'Handguard'], mod_stock: ['Culata', 'Stock'], mod_stock_000: ['Culata', 'Stock'], mod_stock_001: ['Culata', 'Stock'], mod_stock_axis: ['Culata (eje)', 'Stock (axis)'], mod_pistol_grip: ['Empuñadura', 'Pistol grip'], mod_magazine: ['Cargador', 'Magazine'], mod_reciever: ['Cajón / receptor', 'Receiver'], mod_charge: ['Palanca de montar', 'Charging handle'], mod_gas_block: ['Bloque de gas', 'Gas block'], mod_muzzle: ['Boca del cañón', 'Muzzle'], mod_muzzle_000: ['Boca del cañón', 'Muzzle'], mod_muzzle_001: ['Boca del cañón', 'Muzzle'], mod_scope: ['Mira', 'Sight'], mod_sight_front: ['Punto de mira', 'Front sight'], mod_sight_rear: ['Alza', 'Rear sight'], mod_foregrip: ['Empuñadura delantera', 'Foregrip'], mod_bipod: ['Bípode', 'Bipod'], mod_mount: ['Montaje', 'Mount'], mod_mount_000: ['Montaje', 'Mount'], mod_mount_001: ['Montaje', 'Mount'], mod_tactical: ['Táctico', 'Tactical'], mod_tactical_000: ['Táctico', 'Tactical'], mod_tactical_001: ['Táctico', 'Tactical'], mod_tactical_002: ['Táctico', 'Tactical'], mod_tactical_003: ['Táctico', 'Tactical'], mod_trigger: ['Gatillo', 'Trigger'], mod_hammer: ['Martillo', 'Hammer'], mod_catch: ['Retén del cargador', 'Mag catch'], mod_bolt: ['Cerrojo', 'Bolt'], mod_equipment: ['Accesorio', 'Accessory'], mod_nvg: ['Visión nocturna', 'NVG'], mod_launcher: ['Lanzador', 'Launcher'], mod_handguard_001: ['Guardamanos', 'Handguard'], mod_sight_front_001: ['Punto de mira', 'Front sight'], mod_flashlight: ['Linterna', 'Flashlight'] };
+const slotName = n => { const x = SLOTN[n] || SLOTN[String(n).replace(/_\d+$/, '')]; return x ? tx(x[0], x[1]) : String(n || '').replace(/^mod_/, '').replace(/_/g, ' '); };
+async function bldLoad(){
+  if (BLD && BLD.mode === S.mode) return BLD; if (BLDLOAD) return BLDLOAD;
+  BLDLOAD = (async () => {
+    const [ij, ies, ien] = await Promise.all([getJson('items'), getJson('items_es').catch(() => ({})), getJson('items_en').catch(() => ({}))]);
+    const items = ij.items || {}, cats = ij.itemCategories || {}, guns = [];
+    Object.values(items).forEach(x => { const ty = x.types || []; if (ty.includes('gun') && !ty.includes('preset') && x.properties && x.properties.slots) guns.push(x.id); });
+    BLD = { mode: S.mode, items, cats, ies: ies || {}, ien: ien || {}, guns }; BLDLOAD = null; return BLD;
+  })().catch(e => { BLDLOAD = null; throw e; });
+  return BLDLOAD;
+}
+const bn = (B, id) => (S.lang === 'en' ? (B.ien[id + ' Name'] || B.ies[id + ' Name']) : (B.ies[id + ' Name'] || B.ien[id + ' Name'])) || (B.items[id] && B.items[id].normalizedName) || id;
+function bldTypeName(B, gid){ const c = (B.items[gid].categories || [])[0]; return c ? ((S.lang === 'en' ? (B.ien[c + ' Name'] || B.ies[c + ' Name']) : (B.ies[c + ' Name'] || B.ien[c + ' Name'])) || (B.cats[c] && B.cats[c].normalizedName) || c) : '?'; }
+function bldRun(B, gid, o, maxOver){
+  const items = B.items, g = items[gid], W = { ergo: [1, 0.1], bal: [1, 1], rec: [0.1, 1] }[o.mode] || [1, 1];
+  const budget = o.unlimited || !(o.budget > 0) ? Infinity : o.budget;
+  const erg = id => { const x = items[id]; return x.ergonomicsModifier != null ? x.ergonomicsModifier : ((x.properties && x.properties.ergonomics) || 0); };
+  const rec = id => (items[id].properties && items[id].properties.recoilModifier) || 0;
+  const val = id => W[0] * erg(id) + W[1] * (-rec(id) * 100);
+  const pcache = {};
+  const price = id => { if (id in pcache) return pcache[id]; const x = items[id]; let best = null, src = null;
+    if (x) {
+      (x.buyFromTrader || []).forEach(b => { if (!b.priceRUB || (b.minTraderLevel || 1) > o.ll || (b.taskUnlock && !S.done[b.taskUnlock])) return; if (best == null || b.priceRUB < best) { best = b.priceRUB; src = { t: 'trader', tr: b.trader, l: b.minTraderLevel || 1 }; } });
+      if (!(x.types || []).includes('noFlea') && (!S.level || !x.minLevelForFlea || S.level >= x.minLevelForFlea)) { const p = x.lastLowPrice || x.avg24hPrice; if (p && (best == null || p < best)) { best = p; src = { t: 'flea' }; } }
+      if (best == null && o.raid) { best = 0; src = { t: 'raid' }; }
+    }
+    return (pcache[id] = best == null ? null : { p: best, src }); };
+  const isSight = id => { const pp = items[id].properties || {}; return pp.sightingRange != null || pp.zoomLevels != null; };
+  const slotsOf = id => (items[id].properties && items[id].properties.slots) || [];
+  const isReq = (s, st) => !!s.required || s.nameId === 'mod_magazine' || (!!st && o.scope && !st.sc && s.nameId === 'mod_scope');
+  const capOk = (s, id) => s.nameId !== 'mod_magazine' || !o.mag || ((items[id].properties && items[id].properties.capacity) || 0) >= o.mag;
+  const listFor = s => { let l = ((s.filters && s.filters.allowedItems) || []).filter(id => items[id] && price(id)); const l2 = l.filter(id => capOk(s, id)); return l2.length ? l2 : l; };
+  const bcache = {}, sbcache = {};
+  const bnd = id => { if (id in bcache) return bcache[id]; bcache[id] = -1e9; let v = val(id); slotsOf(id).forEach(s => { v += sb(s); }); return (bcache[id] = v); };
+  const sb = s => { const k = s.id; if (k in sbcache) return sbcache[k]; let best = -Infinity; listFor(s).forEach(id => { const b = bnd(id); if (b > best) best = b; }); const r = (s.required || s.nameId === 'mod_magazine') ? (best === -Infinity ? -1e6 : best) : Math.max(0, best === -Infinity ? 0 : best); return (sbcache[k] = r); };
+  const pen = c => { if (budget === Infinity) return 0; return c <= budget ? 0.5 * c / budget : 0.5 + 100 * (c - budget) / budget; };
+  const costW = id => budget === Infinity ? 0 : 1.5 * price(id).p / budget;
+  const K = 7, BW = 60, MAXOVER = maxOver || 1.25;
+  const mk = (pend, parts, val0, cost, used, confl, sc) => ({ pend, parts, v: val0, c: cost, used, confl, sc: !!sc });
+  let live = [mk(slotsOf(gid).map(s => [gid, s, 0]), [], 0, 0, new Set(), new Set(), false)], done = [];
+  const est = st => st.v + st.pend.reduce((a, p) => a + sb(p[1]), 0) - pen(st.c);
+  let guard = 0;
+  while (live.length && guard++ < 400) {
+    const nxt = [], seen = new Set();
+    for (const st of live) {
+      if (!st.pend.length) { done.push(st); continue; }
+      const [pid, s, d] = st.pend[0], rest = st.pend.slice(1);
+      const cs = listFor(s).filter(id => !st.used.has(id) && !st.confl.has(id) && !(items[id].conflictingItems || []).some(x => st.used.has(x)))
+        .map(id => [id, bnd(id) - costW(id)]).sort((a, b) => b[1] - a[1]).slice(0, K);
+      const push = ns => { const key = ns.parts.map(p => p[2]).sort().join(',') + '|' + ns.pend.length; if (seen.has(key)) return; seen.add(key); nxt.push(ns); };
+      cs.forEach(([id]) => { const pr = price(id); if (budget !== Infinity && st.c + pr.p > budget * MAXOVER) return;
+        const used = new Set(st.used); used.add(id); const confl = new Set(st.confl); (items[id].conflictingItems || []).forEach(x => confl.add(x));
+        push(mk(rest.concat(slotsOf(id).map(x => [id, x, d + 1])), st.parts.concat([[pid, s.nameId, id, d]]), st.v + val(id), st.c + pr.p, used, confl, st.sc || (s.nameId === 'mod_scope' && isSight(id)))); });
+      if (!isReq(s, st)) push(mk(rest, st.parts, st.v, st.c, st.used, st.confl, st.sc));
+    }
+    nxt.sort((a, b) => est(b) - est(a)); live = nxt.slice(0, BW);
+  }
+  done.forEach(st => { st.score = st.v - pen(st.c); });
+  done.sort((a, b) => b.score - a.score);
+  const out = [], sigs = new Set();
+  for (const st of done) { const e1 = st.parts.reduce((a, p) => a + erg(p[2]), 0), r1 = st.parts.reduce((a, p) => a + rec(p[2]), 0), sg = e1.toFixed(1) + '|' + (r1 * 100).toFixed(1) + '|' + Math.round(st.c / 2000); if (sigs.has(sg)) continue; sigs.add(sg); out.push(st); if (out.length >= 3) break; }
+  const gp = g.properties || {};
+  return out.map(st => { const e = st.parts.reduce((a, p) => a + erg(p[2]), 0), r = st.parts.reduce((a, p) => a + rec(p[2]), 0);
+    return { parts: st.parts.map(p => ({ slot: p[1], id: p[2], depth: p[3], pr: price(p[2]) })), cost: st.c, ergo: (gp.ergonomics || 0) + e, dErgo: e, rv: (gp.recoilVertical || 0) * (1 + r), rh: (gp.recoilHorizontal || 0) * (1 + r), dRec: r * 100, bv: gp.recoilVertical || 0, bh: gp.recoilHorizontal || 0, be: gp.ergonomics || 0, budget }; });
+}
+function bldSrc(pr){ if (!pr) return ''; if (pr.src.t === 'raid') return tx('solo en incursión', 'raid only'); if (pr.src.t === 'flea') return 'Flea · ' + fmt(pr.p); return trn(pr.src.tr) + ' ' + tx('nv.', 'LL') + pr.src.l + ' · ' + fmt(pr.p); }
+function bldOpts(){ S.bld = Object.assign({ type: '', gun: '', mode: 'bal', budget: 250000, unlimited: false, ll: 4, raid: false, scope: true, mag: 30 }, S.bld || {}); return S.bld; }
+function bldResultHtml(B, res, o){
+  if (res === 'none') return `<div class="msg">${tx('No he encontrado ningún montaje completo con esas condiciones. Prueba a subir el presupuesto, el nivel de lealtad o a incluir piezas que solo se encuentran en incursión.', 'I could not find a complete build with these conditions. Try a higher budget, a higher loyalty level, or include raid-only parts.')}</div>`;
+  return res.map((r, i) => { const over = r.budget !== Infinity && r.cost > r.budget;
+    const stat = (l, v, d, good) => `<div class="bst"><small>${l}</small><b>${v}</b><span class="${good ? 'pos' : 'neg'}">${d}</span></div>`;
+    return `<section class="bres"><h3>${tx('Montaje', 'Build')} ${i + 1}${i === 0 ? ' · ' + tx('el mejor', 'the best') : ''}</h3>
+      <div class="bstats">${stat(tx('Ergonomía', 'Ergonomics'), r.ergo.toFixed(1), (r.dErgo >= 0 ? '+' : '') + r.dErgo.toFixed(1), r.dErgo >= 0)}${stat(tx('Retroceso vertical', 'Vertical recoil'), Math.round(r.rv), (r.dRec >= 0 ? '+' : '') + r.dRec.toFixed(0) + ' %', r.dRec <= 0)}${stat(tx('Retroceso horizontal', 'Horizontal recoil'), Math.round(r.rh), '', true)}${stat(tx('Coste de las piezas', 'Parts cost'), fmt(r.cost), over ? (r.cost > r.budget * 1.25 ? tx('el presupuesto no alcanza para un montaje completo', 'budget is not enough for a full build') : tx('algo por encima del presupuesto', 'a bit over budget')) : '', !over)}</div>
+      <table class="bt"><tbody>${r.parts.map(p => `<tr><td style="padding-left:${6 + p.depth * 16}px"><small>${esc(slotName(p.slot))}</small></td><td><a href="${esc(B.items[p.id].wikiLink || searchLink(bn(B, p.id)))}" target="_blank" rel="noopener">${esc(bn(B, p.id))}</a></td><td class="bsrc">${esc(bldSrc(p.pr))}</td></tr>`).join('')}</tbody></table></section>`; }).join('');
+}
+async function renderBuild(){
+  const o = bldOpts(); $('#sum').innerHTML = '';
+  const box = $('#list'); box.innerHTML = `<div class="msg">${tx('Cargando datos de armas y piezas…', 'Loading weapon and part data…')}</div>`;
+  let B; try { B = await bldLoad(); } catch (e) { box.innerHTML = `<div class="msg">${esc(e.message)}</div>`; return; }
+  if (S.view !== 'build') return;
+  const types = [...new Set(B.guns.map(id => bldTypeName(B, id)))].sort((a, b) => a.localeCompare(b, LOC()));
+  const gunsOf = B.guns.filter(id => !o.type || bldTypeName(B, id) === o.type).sort((a, b) => bn(B, a).localeCompare(bn(B, b), LOC()));
+  if (o.gun && !gunsOf.includes(o.gun)) o.gun = '';
+  const sel = (k, opts, cur) => `<select data-bld="${k}">${opts.map(x => `<option value="${esc(x[0])}" ${String(cur) === String(x[0]) ? 'selected' : ''}>${esc(x[1])}</option>`).join('')}</select>`;
+  const modes = [['ergo', tx('Mucha ergonomía', 'High ergonomics')], ['bal', tx('Equilibrado', 'Balanced')], ['rec', tx('Poco retroceso', 'Low recoil')]];
+  const res = BLD.res && BLD.resKey === JSON.stringify([o.gun, o.mode, o.budget, o.unlimited, o.ll, o.raid, o.scope, o.mag, S.level]) ? BLD.res : null;
+  box.innerHTML = `<div class="bform">
+    <label>${tx('Tipo de arma', 'Weapon type')} ${sel('type', [['', tx('Todos', 'All')]].concat(types.map(t => [t, t])), o.type)}</label>
+    <label>${tx('Arma', 'Weapon')} ${sel('gun', [['', tx('— elige un arma —', '— choose a weapon —')]].concat(gunsOf.map(id => [id, bn(B, id)])), o.gun)}</label>
+    <div class="bmodes">${modes.map(m => `<button class="ich ${o.mode === m[0] ? 'on' : ''}" data-bldmode="${m[0]}">${m[1]}</button>`).join('')}</div>
+    <label>${tx('Presupuesto aproximado (₽)', 'Approximate budget (₽)')} <input type="number" min="0" step="10000" data-bld="budget" value="${o.budget}" ${o.unlimited ? 'disabled' : ''}></label>
+    <label class="bchk"><input type="checkbox" data-bld="unlimited" ${o.unlimited ? 'checked' : ''}> ${tx('Sin límite de presupuesto', 'No budget limit')}</label>
+    <label>${tx('Lealtad máxima de los comerciantes', 'Max trader loyalty')} ${sel('ll', [[1, 'LL1'], [2, 'LL2'], [3, 'LL3'], [4, 'LL4']], o.ll)}</label>
+    <label>${tx('Cargador mínimo', 'Min magazine')} ${sel('mag', [[0, tx('Cualquiera', 'Any')], [20, '20+'], [30, '30+'], [40, '40+']], o.mag)}</label>
+    <label class="bchk"><input type="checkbox" data-bld="scope" ${o.scope ? 'checked' : ''}> ${tx('Poner una mira', 'Include a sight')}</label>
+    <label class="bchk"><input type="checkbox" data-bld="raid" ${o.raid ? 'checked' : ''}> ${tx('Incluir piezas que solo se encuentran en incursión', 'Include raid-only parts')}</label>
+    <button class="btn prim" data-bldgo="1" ${o.gun ? '' : 'disabled'}>🔧 ${tx('Buscar el mejor montaje', 'Find the best build')}</button></div>
+    <p class="hint">${tx('El presupuesto es orientativo: puede pasarse un poco si compensa, pero no demasiado. No cuenta el precio del arma, solo el de las piezas. Los números son suma de modificadores de tarkov.dev (no incluyen el peso, el sonido ni tu habilidad).', 'The budget is approximate: it can go a bit over if it pays off, but not by much. The weapon price is not counted, only the parts. Numbers are the sum of tarkov.dev modifiers (weight, sound and your skills are not included).')}</p>
+    <div id="bresults">${res ? bldResultHtml(B, res, o) : ''}</div>`;
+}
+function bldGo(){
+  const o = bldOpts(), B = BLD; if (!B || !o.gun) return; const out = $('#bresults'); out.innerHTML = `<div class="msg">${tx('Calculando…', 'Calculating…')}</div>`;
+  setTimeout(() => { let r; try { r = bldRun(B, o.gun, o); if (!r.length) r = bldRun(B, o.gun, o, 1e9); } catch (e) { out.innerHTML = `<div class="msg">${esc(e.message)}</div>`; return; }
+    if (!r.length) r = 'none'; B.res = r; B.resKey = JSON.stringify([o.gun, o.mode, o.budget, o.unlimited, o.ll, o.raid, o.scope, o.mag, S.level]); out.innerHTML = bldResultHtml(B, r, o); }, 30);
+}
+document.addEventListener('change', e => { const t = e.target; if (!t.dataset || t.dataset.bld === undefined) return; const o = bldOpts(), k = t.dataset.bld;
+  o[k] = t.type === 'checkbox' ? t.checked : (['budget', 'll', 'mag'].includes(k) ? +t.value : t.value); if (k === 'type') o.gun = ''; saveState(); renderBuild(); });
+document.addEventListener('click', e => { const m = e.target.closest && e.target.closest('[data-bldmode]'); if (m) { bldOpts().mode = m.dataset.bldmode; saveState(); renderBuild(); return; } const g = e.target.closest && e.target.closest('[data-bldgo]'); if (g) bldGo(); });
 
 /* ───────── Eventos ───────── */
 document.addEventListener('click', e => {
@@ -2676,7 +2792,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 49 · Pantalla completa + minas', 'version 49 · Full screen + minefields');
+  $('#ver').textContent = tx('versión 50 · Modear armas', 'version 50 · Weapon builder');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
@@ -2684,7 +2800,7 @@ function applyStatic(){
   set('[data-act=reload]', tx('Actualizar datos', 'Refresh data')); set('[data-act=prices]', tx('Actualizar precios', 'Refresh prices'));
   set('[data-act=export]', tx('Guardar copia', 'Save backup')); set('[data-act=import]', tx('Cargar copia', 'Load backup'));
   set('#tabs [data-view=quests]', tx('Misiones', 'Quests')); updTabs(); set('#tabs [data-view=gun]', 'Gunsmith');
-  set('#tabs [data-view=both]', tx('Items, llaves y Hideout', 'Items, keys & Hideout')); set('#tabs [data-view=trade]', tx('Tradeos', 'Barters')); set('#tabs [data-view=ammo]', tx('Municiones', 'Ammo'));
+  set('#tabs [data-view=both]', tx('Items, llaves y Hideout', 'Items, keys & Hideout')); set('#tabs [data-view=trade]', tx('Tradeos', 'Barters')); set('#tabs [data-view=ammo]', tx('Municiones', 'Ammo')); set('#tabs [data-view=build]', '🔧 ' + tx('Modear armas', 'Weapon builder'));
   $('#drawer').setAttribute('aria-label', tx('Detalle de la misión', 'Quest details'));
   $('#foot').innerHTML = tx('Datos y precios', 'Data and prices') + ': <a href="https://tarkov.dev" target="_blank" rel="noopener">tarkov.dev</a> · ' + tx('Enlaces', 'Links') + ': <a href="https://escapefromtarkov.fandom.com/wiki/Escape_from_Tarkov_Wiki" target="_blank" rel="noopener">Tarkov Wiki</a>. ' + tx('Tu progreso se guarda solo en este navegador.', 'Your progress is saved only in this browser.');
 }
