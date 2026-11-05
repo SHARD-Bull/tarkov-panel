@@ -318,6 +318,14 @@ a.btn{text-decoration:none;color:var(--txt);display:inline-flex;align-items:cent
 .ptr s{position:absolute;left:-9px;top:-9px;width:18px;height:18px;line-height:15px;text-align:center;text-decoration:none;font-size:13px;font-weight:700;color:#fff;background:#2f8cff;border:2px solid #fff;border-radius:5px;box-shadow:0 0 0 2px #0008}
 .ptr b{position:absolute;left:14px;top:-8px;white-space:nowrap;font-size:11px;font-weight:600;color:#bfe0ff;text-shadow:0 0 3px #000,0 0 3px #000,0 0 2px #000;display:none;pointer-events:none}
 #pmap.names .ptr b{display:block}
+.plk{position:absolute;width:0;height:0;transform:scale(calc(1 / var(--z,1)));cursor:pointer}
+.plk s{position:absolute;left:-7px;top:-7px;width:14px;height:14px;background:var(--lc,#888);border:2px solid #fff;border-radius:2px;box-shadow:0 0 0 2px #000a}
+.plk.key s{border-radius:50%;border-style:dashed;background:#8a5a2b}
+.plk.dim{opacity:.25}
+.plk b{position:absolute;left:12px;top:-8px;white-space:nowrap;font-size:11px;font-weight:700;color:#ffe9c9;text-shadow:0 0 3px #000,0 0 3px #000,0 0 2px #000;pointer-events:none}
+.plk.card b{color:#fff;display:none}
+#pmap.names .plk.card b{display:block}
+.lkleg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin:6px 0}.lkleg i{display:inline-block;width:11px;height:11px;border:2px solid #fff;border-radius:2px;margin-right:4px;vertical-align:-2px;background:var(--lc)}
 .pex.req s{outline:2px solid #ff8a3d;outline-offset:1px}
 .pinfo{display:flex;gap:10px;align-items:center;background:#13171b;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 .pinfo img{width:56px;height:56px;object-fit:contain;background:#090b0e;border-radius:8px;flex:none}
@@ -440,7 +448,7 @@ nav button.on{background:rgba(130,168,200,.15);color:#a3c2dc;font-weight:600;bor
 
 /* ───────── Constantes ───────── */
 const WIKI = 'https://escapefromtarkov.fandom.com/wiki/';
-const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v17', LS_PRICES = 'tkv_prices_v2';
+const LS_STATE = 'tkv_progress_v1', LS_DATA = 'tkv_data_v18', LS_PRICES = 'tkv_prices_v2';
 const DATA_MAX = 24 * 3600e3, PRICE_MAX = 3600e3;
 
 // Cada paso: ['Título', 'objetivo', 'objetivo opcional*', ...]  (el asterisco final marca un objetivo opcional)
@@ -1059,6 +1067,9 @@ async function fetchStatic(){
   Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k) return;
     (m.transits || []).forEach(x => { if (!x || !x.position) return; const dk = MAPKEY[x.map], dn = dk ? MAPS[dk].en : (mapsEn[x.map + ' Name'] || mapsEs[x.map + ' Name'] || ''); if (!dn) return;
       const list = tr[k] = tr[k] || [], nm = MAPS[k].en + ' - ' + dn; if (list.some(e => e[4] === x.id)) return; list.push([nm, r1(x.position.x), r1(x.position.z), r1(x.position.y || 0), x.id]); }); });
+  const lk = {};
+  Object.values((mapsJ && (mapsJ.maps || mapsJ)) || {}).forEach(m => { const k = m && MAPKEY[m.id]; if (!k || baseOf(k) !== 'the-lab') return;
+    (m.locks || []).forEach(l => { if (!l || !l.position || !l.key) return; const it = regItem(l.key); if (!it) return; (lk[k] = lk[k] || []).push([it.id, r1(l.position.x), r1(l.position.z), r1(l.position.y || 0), l.needsPower ? 1 : 0, l.key]); }); });
   Object.values(allItems).forEach(a => { if (a && (a.types || []).includes('keys')) regItem(a.id); });
   const ammo = [];
   Object.values(allItems).forEach(a => { const pr = a && a.properties; if (!pr || pr.penetrationPower == null || pr.damage == null || !pr.caliber) return;
@@ -1078,7 +1089,7 @@ async function fetchStatic(){
     if (typeof es !== 'string' || typeof en !== 'string' || es === en || /^[0-9a-f]{24}/.test(k) || /_(DESC|COND)$/.test(k) || /^(QuestCondition|FAC_)/.test(k)) return;
     if (es.length < 4 || es.length > 50 || !/^[A-ZÁÉÍÓÚÑ0-9]/.test(es)) return; pl.push([es, en]); });
   Object.values(items).forEach(it => { if (it.key && !it.special && it.nameEs && it.nameEn && it.nameEs !== it.nameEn) pl.push([it.nameEs, it.nameEn]); });
-  return { ts: Date.now(), xmaps, tasks, reqs, items, ammo, hideout, gun, trn: trnames, stn, mapn, ext, tr, hz, barters, traders, klock, kloose, pl, lootKeys, pm, warnings, prices: buildPrices(allItems, items) };
+  return { ts: Date.now(), xmaps, tasks, reqs, items, ammo, hideout, gun, trn: trnames, stn, mapn, ext, tr, hz, lk, barters, traders, klock, kloose, pl, lootKeys, pm, warnings, prices: buildPrices(allItems, items) };
 }
 
 /* Elige los textos según el idioma (los dos idiomas se guardan siempre). */
@@ -1292,7 +1303,7 @@ async function loadData(force){
   try {
     setStatus(tx('Descargando misiones, Hideout y precios (', 'Downloading quests, Hideout and prices (') + S.mode.toUpperCase() + tx(') desde tarkov.dev… puede tardar unos segundos', ') from tarkov.dev… this may take a few seconds'));
     const fresh = await fetchStatic(); P = fresh.prices; delete fresh.prices; D = fresh; computeOrder(D);
-    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, tr:D.tr, hz:D.hz, klock:D.klock, kloose:D.kloose, pl:D.pl, lootKeys:D.lootKeys, pm:D.pm, barters:D.barters, traders:D.traders, warnings:D.warnings, xmaps:D.xmaps, ammo:D.ammo })); } catch(e){}
+    try { localStorage.setItem(LS_DATA + S.mode, JSON.stringify({ ts:D.ts, tasks:D.tasks, reqs:D.reqs, items:D.items, hideout:D.hideout, gun:D.gun, trn:D.trn, stn:D.stn, mapn:D.mapn, ext:D.ext, tr:D.tr, hz:D.hz, lk:D.lk, klock:D.klock, kloose:D.kloose, pl:D.pl, lootKeys:D.lootKeys, pm:D.pm, barters:D.barters, traders:D.traders, warnings:D.warnings, xmaps:D.xmaps, ammo:D.ammo })); } catch(e){}
     try { localStorage.setItem(LS_PRICES + S.mode, JSON.stringify(P)); } catch(e){}
   } catch(e) {
     if (cached) { D = cached; regInfected(D.xmaps); computeOrder(D); setStatus(tx('No se pudo actualizar (', 'Could not update (') + e.message + tx('). Usando datos guardados de hace ', '). Using saved data from ') + Math.round((Date.now()-cached.ts)/3600e3) + tx(' h.', ' h ago.'), 'warn'); return; }
@@ -2475,10 +2486,16 @@ function planHtml(){
     const mines = S.mines !== false && D.hz && D.hz[k] ? `<svg class="pmines" viewBox="0 0 100 100" preserveAspectRatio="none">${D.hz[k].map(o => `<polygon points="${o.map(q => { const [u, v] = g.uv(q[0], q[1]); return (u * 100).toFixed(2) + ',' + (v * 100).toFixed(2); }).join(' ')}"/>`).join('')}</svg>` : '';
     const trs = S.extShow && D.tr && D.tr[k] ? D.tr[k].map((e, ei) => { const [u, v] = g.uv(e[1], e[2]);
       return `<i class="ptr" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="ptr" data-ex="${k}|${ei}"><s>➜</s><b>${esc(e[0])}</b></i>`; }).join('') : '';
+    const LKC = { '5c1d0f4986f7744bb01837fa': ['#1b1b1b', 'Negra', 'Black'], '5c1d0efb86f7744baf2e7b7b': ['#e5271b', 'Roja', 'Red'], '5c1d0dc586f7744baf2e7b79': ['#2ecc71', 'Verde', 'Green'], '5c1d0d6d86f7744bb2683e1f': ['#f1c40f', 'Amarilla', 'Yellow'], '5c1d0c5f86f7744bb2683cf0': ['#2f6bff', 'Azul', 'Blue'], '5c1e495a86f7743109743dfb': ['#a855f7', 'Violeta', 'Violet'], '5efde6b4f5448336730dbd61': ['#5ec8ff', 'Marca azul', 'Blue marking'], '6711039f9e648049e50b3307': ['#ff8a3d', 'Unidad residencial', 'Residential unit'] };
+    const lkOn = baseOf(k) === 'the-lab' && S.labLocks !== false && D.lk && D.lk[k] && D.lk[k].length;
+    const lks = lkOn ? D.lk[k].map((e, ei) => { const it = D.items[e[0]]; if (!it) return ''; const [u, v] = g.uv(e[1], e[2]), c = LKC[e[5]], dim = lvSel && levelOf(k, e[1], e[2], e[3]) !== lvSel;
+      return c ? `<i class="plk card ${dim ? 'dim' : ''}" style="--lc:${c[0]};left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="plk" data-ex="${k}|${ei}"><s></s><b>${tx(c[1], c[2])}</b></i>`
+        : `<i class="plk key ${dim ? 'dim' : ''}" style="left:${(u * 100).toFixed(2)}%;top:${(v * 100).toFixed(2)}%" data-act="plk" data-ex="${k}|${ei}"><s></s><b>🔑 ${esc(it.name)}</b></i>`; }).join('') : '';
+    const lkLeg = lkOn ? `<div class="lkleg">${Object.values(LKC).filter(c => D.lk[k].some(e => LKC[e[5]] === c)).map(c => `<span><i style="--lc:${c[0]}"></i>${tx(c[1], c[2])}</span>`).join('')}<span>🔑 ${tx('llave (se muestra su nombre)', 'key (name shown)')}</span></div>` : '';
     mapHtml = `<div class="pmaps">${ks.map(x => `<button class="${x === k ? 'on' : ''}" data-act="pmap" data-id="${x}">${esc(mapName(x))} <b>${cnt[x]}</b></button>`).join('')}</div>
       ${lvBar}
-      <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (rombo verde; amarillo = también Scav) y tránsitos (cuadrado azul ➜)', 'Show PMC extracts (green diamond; yellow = also Scav) and transits (blue square ➜)')}</label><label><input type="checkbox" id="minesShow" ${S.mines !== false ? 'checked' : ''}> ${tx('Mostrar zonas de minas (rojo)', 'Show minefields (red)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label><label><input type="checkbox" id="planOnly" ${S.planAll ? '' : 'checked'}> ${tx('Mostrar solo las misiones de este mapa', 'Show only the quests of this map')}${nHid && !S.planAll ? ` <small style="color:var(--mute)">(${nHid} ${tx(nHid === 1 ? 'oculta' : 'ocultas', 'hidden')})</small>` : ''}</label>${ROOMS[baseOf(k)] ? `<label><input type="checkbox" id="roomNames" ${S.roomNames ? 'checked' : ''}> ${tx('Mostrar nombres de las salas', 'Show room names')}</label>` : ''}</div>
-      <div class="pmapbox${window.__pfull ? ' full' : ''}"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}" data-lv="${lvSel}"><div id="pin"><img id="pimg" alt="" src="${svgCache[svgKey(k, lvSel)] || ''}">${S.roomNames && ROOMS[baseOf(k)] ? roomHtml(k, lvSel, g) : ''}${mines}${exs}${trs}${dots.join('')}</div></div>
+      <div class="pchk"><label><input type="checkbox" id="extShow" ${S.extShow ? 'checked' : ''}> ${tx('Mostrar extracciones PMC (rombo verde; amarillo = también Scav) y tránsitos (cuadrado azul ➜)', 'Show PMC extracts (green diamond; yellow = also Scav) and transits (blue square ➜)')}</label><label><input type="checkbox" id="minesShow" ${S.mines !== false ? 'checked' : ''}> ${tx('Mostrar zonas de minas (rojo)', 'Show minefields (red)')}</label><label><input type="checkbox" id="extNames" ${S.extNames ? 'checked' : ''}> ${tx('Mostrar sus nombres', 'Show their names')}</label><label><input type="checkbox" id="planOnly" ${S.planAll ? '' : 'checked'}> ${tx('Mostrar solo las misiones de este mapa', 'Show only the quests of this map')}${nHid && !S.planAll ? ` <small style="color:var(--mute)">(${nHid} ${tx(nHid === 1 ? 'oculta' : 'ocultas', 'hidden')})</small>` : ''}</label>${baseOf(k) === 'the-lab' && D.lk && D.lk[k] ? `<label><input type="checkbox" id="labLocks" ${S.labLocks !== false ? 'checked' : ''}> ${tx('Mostrar puertas con tarjeta (recuadro de su color) y con llave', 'Show keycard doors (box in the card colour) and key doors')}</label>` : ''}${ROOMS[baseOf(k)] ? `<label><input type="checkbox" id="roomNames" ${S.roomNames ? 'checked' : ''}> ${tx('Mostrar nombres de las salas', 'Show room names')}</label>` : ''}</div>
+      <div class="pmapbox${window.__pfull ? ' full' : ''}"><div id="pmap" class="${S.extNames ? 'names' : ''}" data-map="${k}" data-lv="${lvSel}"><div id="pin"><img id="pimg" alt="" src="${svgCache[svgKey(k, lvSel)] || ''}">${S.roomNames && ROOMS[baseOf(k)] ? roomHtml(k, lvSel, g) : ''}${mines}${exs}${trs}${lks}${dots.join('')}</div></div>${lkLeg}
         <div class="pzoom"><button data-act="pzoom" data-d="in" title="Zoom +">+</button><button data-act="pzoom" data-d="out" title="Zoom −">−</button><button data-act="pzoom" data-d="reset" title="${tx('Ver todo', 'Fit all')}">⤢</button><button data-act="pzoom" data-d="full" title="${tx('Pantalla completa (Esc para salir)', 'Full screen (Esc to exit)')}">⛶</button></div></div>
       <div id="plabel">${tx('Pulsa un punto de color (cada misión tiene el suyo) o un rombo verde (extracción) para ver qué es. Rueda del ratón = zoom; arrastra para moverte.', 'Click a coloured dot (each quest has its own colour) or a green diamond (extract) to see what it is. Mouse wheel = zoom; drag to move around.')}</div><div id="pphoto"></div><div class="pnote" id="pnote"></div>`;
   }
@@ -2687,6 +2704,7 @@ document.addEventListener('click', e => {
   else if (a === 'pfocus') { S.pfocus = S.pfocus === id ? null : id; renderList(); }
   else if (a === 'pzoom') { const b = $('#pmap'); if (b) { const d = t.dataset.d; if (d === 'reset') { PV.key = null; drawPlanMap(); } else if (d === 'full') { togglePlanFull(); } else window.__pz(d === 'in' ? 1.4 : 1 / 1.4, b.clientWidth / 2, b.clientHeight / 2); } }
   else if (a === 'ptr') { const l = $('#plabel'), [k, ei] = t.dataset.ex.split('|'), e = D.tr && D.tr[k] && D.tr[k][+ei]; if (l && e) l.innerHTML = `<div><b>${tx('Tránsito a otro mapa', 'Transit to another map')}: ${esc(e[0])}</b></div>`; }
+  else if (a === 'plk') { const l = $('#plabel'), [k, ei] = t.dataset.ex.split('|'), e = D.lk && D.lk[k] && D.lk[k][+ei], it = e && D.items[e[0]]; if (l && it) l.innerHTML = `<div class="pinfo">${it.icon ? `<img src="${esc(it.icon)}" alt="">` : ''}<div><div><b>${tx('Puerta que se abre con', 'Door opened with')}: ${esc(it.name)}</b></div>${e[4] ? `<div class="w">${tx('Necesita electricidad', 'Needs power')}</div>` : ''}</div></div>`; }
   else if (a === 'pex') { const l = $('#plabel'), [k, ei] = t.dataset.ex.split('|'); if (l) l.innerHTML = extInfoHtml(k, +ei); }
   else if (a === 'plv') { PLV[S.pmap] = id === '0' ? '' : id; renderList(); }
   else if (a === 'ppt') { const l = $('#plabel'); if (l) l.textContent = '● ' + t.dataset.txt; if (t.dataset.qid) showPhotos(t.dataset.qid, +t.dataset.oi); }
@@ -2738,6 +2756,7 @@ document.addEventListener('change', e => {
   else if (t.id === 'friendFile' && t.files[0]) { const rd = new FileReader(); rd.onload = () => { try { const f = frParse(rd.result), nm = frSave($('#ffn') ? $('#ffn').value : '', f); renderFriends(); const m = $('#fmsg'); if (m) { m.textContent = tx('Cargado: ', 'Loaded: ') + nm + ' (' + f.d.length + ' ' + tx('misiones hechas', 'completed quests') + ')'; m.style.color = 'var(--ok)'; } } catch (err) { const m = $('#fmsg'); if (m) { m.textContent = tx('Ese archivo no es válido.', 'That file is not valid.'); m.style.color = 'var(--bad)'; } } }; rd.readAsText(t.files[0]); t.value = ''; }
   else if (t.id === 'tfilter') { S.tfilter = t.value; saveState(); renderList(); }
   else if (t.id === 'extShow') { S.extShow = t.checked; saveState(); renderList(); }
+  else if (t.id === 'labLocks') { S.labLocks = t.checked; saveState(); renderList(); }
   else if (t.id === 'minesShow') { S.mines = t.checked; saveState(); renderList(); }
   else if (t.id === 'extNames') { S.extNames = t.checked; saveState(); renderList(); }
   else if (t.id === 'planOnly') { S.planAll = !t.checked; saveState(); renderList(); }
@@ -2766,7 +2785,7 @@ document.addEventListener('input', e => {
   document.addEventListener('pointerdown', e => { const w = e.target.closest && e.target.closest('#treewrap'); if (!w || e.button !== 0 || e.target.closest('.node')) return; d = { w, x: e.clientX, y: e.clientY, sl: w.scrollLeft, st: w.scrollTop, moved: false }; });
   document.addEventListener('pointermove', e => { if (!d) return; const dx = e.clientX - d.x, dy = e.clientY - d.y; if (!d.moved && Math.abs(dx) + Math.abs(dy) < 4) return; d.moved = true; d.w.classList.add('drag'); d.w.scrollLeft = d.sl - dx; d.w.scrollTop = d.st - dy; });
   let pd = null;
-  document.addEventListener('pointerdown', e => { const b = e.target.closest && e.target.closest('#pmap'); if (!b || e.button !== 0 || e.target.closest('.pdot, .pex, .ptr')) return; pd = { x: e.clientX, y: e.clientY, ox: PV.x, oy: PV.y }; b.classList.add('drag'); });
+  document.addEventListener('pointerdown', e => { const b = e.target.closest && e.target.closest('#pmap'); if (!b || e.button !== 0 || e.target.closest('.pdot, .pex, .ptr, .plk')) return; pd = { x: e.clientX, y: e.clientY, ox: PV.x, oy: PV.y }; b.classList.add('drag'); });
   document.addEventListener('pointermove', e => { if (!pd) return; PV.x = pd.ox + e.clientX - pd.x; PV.y = pd.oy + e.clientY - pd.y; applyPV(); });
   const pend = () => { pd = null; const b = $('#pmap'); if (b) b.classList.remove('drag'); };
   document.addEventListener('pointerup', pend); document.addEventListener('pointercancel', pend);
@@ -2817,7 +2836,7 @@ function applyStatic(){
   document.documentElement.lang = S.lang;
   document.title = tx('Tarkov – Panel de progreso', 'Tarkov – Progress panel');
   $('#ttl').textContent = tx('⌖ TARKOV · Panel de progreso', '⌖ TARKOV · Progress panel');
-  $('#ver').textContent = tx('versión 54 · Miras de largo alcance (montajes con rieles)', 'version 54 · Long-range sights (rail builds)');
+  $('#ver').textContent = tx('versión 55 · Tarjetas y llaves en Labs', 'version 55 · Labs keycards and keys');
   $('#lang').value = S.lang; $('#lang').title = 'Idioma / Language';
   $('#mode').title = tx('Modo de juego', 'Game mode');
   $('#mode').options[0].textContent = tx('Modo PVE', 'PVE mode'); $('#mode').options[1].textContent = tx('Modo PVP', 'PVP mode');
